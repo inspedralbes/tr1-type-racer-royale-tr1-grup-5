@@ -9,12 +9,10 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.get("/", (req, res) => res.send("Backend Type Racer Royale listo 🏁"));
 
-/*només guarda l'ID com a clau i despres posem un objecte com valor aquesta seria l'estructura 
-"abc123" : {id: "abc123" , name:"Tony", preparat: false, admin:false  }*/
-const jugadors = {};
+let jugadors = [];
 
 function broadcastPlayerList() {
-  io.emit("updatePlayerList", Object.values(jugadors));
+  io.emit("updatePlayerList", jugadors);
 }
 
 //Començen amb la connexió del servidor
@@ -24,7 +22,7 @@ io.on("connection", (socket) => {
   // Desconnexió de l'usuari
   socket.on("disconnect", () => {
     console.log("Jugador desconectat:", socket.id);
-    delete jugadors[socket.id];
+    jugadors = jugadors.filter((f) => f.id !== socket.id);
     broadcastPlayerList(); // Informem a la resta que algú ha marxat
   });
 
@@ -32,56 +30,65 @@ io.on("connection", (socket) => {
   socket.on("setPlayerName", (name) => {
     if (!name) return;
 
-    const admin = Object.values(jugadors).some((j) => j.admin);
+    const admin = jugadors.some((j) => j.admin);
 
-    jugadors[socket.id] = {
+    const jugador = {
       id: socket.id,
       name: name,
       preparat: false,
       admin: !admin, // el primero en unirse será admin
     };
+
+    jugadors.push(jugador);
+
     console.log(`L'usuari ${name}  s'ha unit`);
     broadcastPlayerList(); // Enviem la llista actualitzada a tothom
   });
 
   //escoltem l'ordre de quan l'usuari li dona a preparat
   socket.on("usuariPreparat", () => {
-    jugadors[socket.id].preparat = !jugadors[socket.id].preparat;
+    const jugador = jugadors.find((j) => j.id === socket.id);
+    if (!jugador) return;
 
-    console.log(
-      `Jugador ${jugadors[socket.id].name} preparat: ${
-        jugadors[socket.id].preparat
-      }`
-    );
+    jugador.preparat = !jugador.preparat;
+
+    console.log(`Jugador ${jugador.name} preparat: ${jugador.preparat}`);
     broadcastPlayerList();
   });
 
   //Escolta quan expulsem al jugador que te el idJugador
   socket.on("expulsarJugador", (idJugador) => {
-    if (!jugadors[socket.id] || !jugadors[socket.id].admin) return;
+    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+    if (!admin) return;
 
-    if (jugadors[idJugador]) {
-      io.to(idJugador).emit("expulsat");
-      delete jugadors[idJugador];
-      console.log(`Jugador ${idJugador} ha estat expulsat per l'admin`);
-      broadcastPlayerList();
-    }
+    const expulsat = jugadors.find((j) => j.id === idJugador);
+    if (!expulsat) return;
+
+    io.to(idJugador).emit("expulsat");
+    jugadors = jugadors.filter((j) => j.id !== idJugador);
+    console.log(`Jugador ${expulsat.name} ha estat expulsat per l'admin`);
+    broadcastPlayerList();
   });
 
   socket.on("transferirAdmin", (idNuevoAdmin) => {
-    if (!jugadors[socket.id] || !jugadors[socket.id].admin) return;
+    const adminActual = jugadors.find((j) => j.id === socket.id && j.admin);
+    const adminNuevo = jugadors.find((j) => j.id === idNuevoAdmin);
 
-    if (jugadors[idNuevoAdmin]) {
-      jugadors[socket.id] = false;
-      jugadors[idNuevoAdmin] = true;
+    if (!adminActual || !adminNuevo) return;
 
-      broadcastPlayerList();
-    }
+    adminActual.admin = false;
+
+    adminNuevo.admin = true;
+
+    console.log(
+      `${adminActual.name} ha transferit l'admin a ${adminNuevo.name}`
+    );
+    broadcastPlayerList();
   });
 
   socket.on("IniciarJoc", () => {
-    if (!jugadors[socket.id] || !jugadors[socket.id].admin) return;
-
+    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+    if (!admin) return;
     io.emit("JocIniciat");
   });
 
