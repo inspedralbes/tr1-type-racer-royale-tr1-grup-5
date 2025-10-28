@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Lobby from '../components/Lobby.vue'
-import GameEngine from '../components/GameEngine.vue'
+import GameEngine from '../components/Game/GameEngine.vue'
 
 const routes = [
   {
