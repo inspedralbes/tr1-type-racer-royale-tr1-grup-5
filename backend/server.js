@@ -10,6 +10,10 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.get("/", (req, res) => res.send("Backend Type Racer Royale listo 🏁"));
 
 let jugadors = [];
+let configuracioPartida = {
+  idioma: "cat",
+  temps: 60,
+};
 
 function broadcastPlayerList() {
   io.emit("updatePlayerList", jugadors);
@@ -56,6 +60,19 @@ io.on("connection", (socket) => {
     broadcastPlayerList();
   });
 
+  //Admin pot escollir la configuració de la partidaa al lobby
+  socket.on("configurarPartida", (novaConfig) => {
+    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+    if (!admin) return;
+
+    /*operador Spread para fusionar cambios que se realizen sino alternativas:
+    configuracioPartida.temps = novaConfig.temps;
+    configuracioPartida.idioma = novaConfig.idioma;
+
+    */
+    configuracioPartida = { ...configuracioPartida, ...novaConfig };
+  });
+
   //Escolta quan expulsem al jugador que te el idJugador
   socket.on("expulsarJugador", (idJugador) => {
     const admin = jugadors.find((j) => j.id === socket.id && j.admin);
@@ -70,6 +87,7 @@ io.on("connection", (socket) => {
     broadcastPlayerList();
   });
 
+  //Transferir l'admin a l'usuari escollit
   socket.on("transferirAdmin", (idNuevoAdmin) => {
     const adminActual = jugadors.find((j) => j.id === socket.id && j.admin);
     const adminNuevo = jugadors.find((j) => j.id === idNuevoAdmin);
