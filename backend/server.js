@@ -15,9 +15,31 @@ let configuracioPartida = {
   idioma: "cat",
   temps: 60,
 };
+let temporitzador = null;
 
 function broadcastPlayerList() {
   io.emit("setPlayerList", jugadors);
+}
+
+function eliminarJugador(idJugador) {
+  if (!partidaEnCurs) return;
+
+  const jugador = jugadors.find((j) => j.id === idJugador);
+  if (!jugador) return;
+
+  jugador.rol = "espectador";
+  broadcastPlayerList();
+}
+
+function acabarPartida() {
+  partidaEnCurs = false;
+
+  const classificacio = [...jugadors]
+    .filter((j) => j.rol === "jugador")
+    .sort((a, b) => b.puntuacio - a.puntuacio);
+
+  io.emit("PartidaFinalitzada", { classificacio });
+  clearTimeout(temporitzador);
 }
 
 //Començen amb la connexió del servidor
@@ -35,6 +57,12 @@ io.on("connection", (socket) => {
   socket.on("setPlayerName", (name) => {
     if (!name) return;
 
+    const jugadorsActius = jugadors.filter((j) => j.rol === "espectador");
+    if (jugadorsActius.length >= 6) {
+      socket.emit("lobbyLleno", { mensaje: "El lobby ya está lleno." });
+      return;
+    }
+
     const admin = jugadors.some((j) => j.admin);
 
     const jugador = {
@@ -43,6 +71,7 @@ io.on("connection", (socket) => {
       preparat: false,
       admin: !admin, // el primero en unirse será admin
       rol: partidaEnCurs ? "espectador" : "jugador",
+      puntuacio: 0,
     };
 
     jugadors.push(jugador);
@@ -58,8 +87,7 @@ io.on("connection", (socket) => {
 
     jugador.preparat = !jugador.preparat;
 
-    jugador.rol =
-      jugador.preparat && !partidaEncurs ? "jugador" : "espectadors";
+    jugador.rol = jugador.preparat && !partidaEnCurs ? "jugador" : "espectador";
 
     console.log(`Jugador ${jugador.name} preparat: ${jugador.preparat}`);
     broadcastPlayerList();
@@ -121,21 +149,39 @@ io.on("connection", (socket) => {
         j.rol = "espectador";
       }
     });
-    io.emit("JocIniciat", { jugadores: jugadors });
+    io.emit("JocIniciat", {
+      jugadores: jugadors,
+      temps: configuracioPartida.temps,
+    });
+
+    temporitzador = setTimeout(() => {
+      acabarPartida();
+    }, configuracioPartida.temps * 1000);
   });
 
-  socket.on("eliminarJugador", (idEliminado) => {
-    if (!partidaEnCurs) return;
-
+  //socket que escolta els punts sumats al jugador
+  socket.on("sumarPunts", (punts) => {
     const jugador = jugadors.find((j) => j.id === socket.id);
-    if (!jugador) return;
+    if (!jugador || jugador.rol !== "jugador") return;
 
-    jugador.rol = "espectador";
+    jugador.puntuacio += punts;
+  });
+
+  socket.on("sortir", () => {
+    jugadors = jugadors.filter((j) => j.id !== socket.id);
+    socket.disconnect();
+
     broadcastPlayerList();
   });
 
-  socket.on("JocIniciat", () => {
-    //En aquest apartat canviarem la vista
+  socket.on("tornarAJugar", () => {
+    const jugador = jugadors.find((j) => j.id === socket.id);
+    if (!jugador) return;
+
+    jugador.preparat = false;
+    jugador.puntuacio = 0;
+    jugador.rol = "jugador";
+    broadcastPlayerList();
   });
 });
 
