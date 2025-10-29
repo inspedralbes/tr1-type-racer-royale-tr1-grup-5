@@ -10,13 +10,14 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.get("/", (req, res) => res.send("Backend Type Racer Royale listo 🏁"));
 
 let jugadors = [];
+let partidaEnCurs = false;
 let configuracioPartida = {
   idioma: "cat",
   temps: 60,
 };
 
 function broadcastPlayerList() {
-  io.emit("updatePlayerList", jugadors);
+  io.emit("setPlayerList", jugadors);
 }
 
 //Començen amb la connexió del servidor
@@ -41,6 +42,7 @@ io.on("connection", (socket) => {
       name: name,
       preparat: false,
       admin: !admin, // el primero en unirse será admin
+      rol: partidaEnCurs ? "espectador" : "jugador",
     };
 
     jugadors.push(jugador);
@@ -55,6 +57,9 @@ io.on("connection", (socket) => {
     if (!jugador) return;
 
     jugador.preparat = !jugador.preparat;
+
+    jugador.rol =
+      jugador.preparat && !partidaEncurs ? "jugador" : "espectadors";
 
     console.log(`Jugador ${jugador.name} preparat: ${jugador.preparat}`);
     broadcastPlayerList();
@@ -104,10 +109,29 @@ io.on("connection", (socket) => {
     broadcastPlayerList();
   });
 
+  // Escolta quan l'admin comença el joc i posa als usuaris no preparats com espectadors
   socket.on("IniciarJoc", () => {
     const admin = jugadors.find((j) => j.id === socket.id && j.admin);
     if (!admin) return;
-    io.emit("JocIniciat");
+
+    partidaEnCurs = true;
+
+    jugadors.forEach((j) => {
+      if (!j.preparat) {
+        j.rol = "espectador";
+      }
+    });
+    io.emit("JocIniciat", { jugadores: jugadors });
+  });
+
+  socket.on("eliminarJugador", (idEliminado) => {
+    if (!partidaEnCurs) return;
+
+    const jugador = jugadors.find((j) => j.id === socket.id);
+    if (!jugador) return;
+
+    jugador.rol = "espectador";
+    broadcastPlayerList();
   });
 
   socket.on("JocIniciat", () => {
