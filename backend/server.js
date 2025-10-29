@@ -68,9 +68,9 @@ io.on("connection", (socket) => {
     /*operador Spread para fusionar cambios que se realizen sino alternativas:
     configuracioPartida.temps = novaConfig.temps;
     configuracioPartida.idioma = novaConfig.idioma;
-
     */
     configuracioPartida = { ...configuracioPartida, ...novaConfig };
+    io.emit("configuracioActualizada", configuracioPartida);
   });
 
   //Escolta quan expulsem al jugador que te el idJugador
