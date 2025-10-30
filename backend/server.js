@@ -17,10 +17,12 @@ let configuracioPartida = {
 };
 let temporitzador = null;
 
+// Funció per enviar la llista de jugadors a tots els clients connectats
 function broadcastPlayerList() {
   io.emit("setPlayerList", jugadors);
 }
 
+// Funció per eliminar un jugador de la partida (Encara no s'utilitza)
 function eliminarJugador(idJugador) {
   if (!partidaEnCurs) return;
 
@@ -31,6 +33,7 @@ function eliminarJugador(idJugador) {
   broadcastPlayerList();
 }
 
+// Funció per acabar la partida i enviar la classificació final
 function acabarPartida() {
   partidaEnCurs = false;
 
@@ -81,7 +84,7 @@ io.on("connection", (socket) => {
   });
 
   //escoltem l'ordre de quan l'usuari li dona a preparat
-  socket.on("usuariPreparat", () => {
+  socket.on("setPreparat", () => {
     const jugador = jugadors.find((j) => j.id === socket.id);
     if (!jugador) return;
 
@@ -167,13 +170,24 @@ io.on("connection", (socket) => {
     jugador.puntuacio += punts;
   });
 
+  //En cas de l'usuari premi el boto de sortir es desconecta
   socket.on("sortir", () => {
     jugadors = jugadors.filter((j) => j.id !== socket.id);
-    socket.disconnect();
+
+    if (jugador.admin) {
+      const nouAdmin = jugadors.find((j) => j.id === socket.id);
+      if (nouAdmin) {
+        nouAdmin.admin = true;
+      }
+    }
+
+    jugadors = jugadors.filter((j) => j.id !== socket.id);
 
     broadcastPlayerList();
+    socket.disconnect();
   });
 
+  //Escoltem quan l'usuari vol tornar a jugar després d'una partida
   socket.on("tornarAJugar", () => {
     const jugador = jugadors.find((j) => j.id === socket.id);
     if (!jugador) return;
