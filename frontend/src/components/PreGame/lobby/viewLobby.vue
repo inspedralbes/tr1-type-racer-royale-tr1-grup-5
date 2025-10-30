@@ -1,5 +1,5 @@
 <template>
-    <p>Benvingut {{ jugadorClient.name }} en aquesta partida tens el rol de {{ jugadorClient.rol }} <!--El rol--></p>
+    <p>Benvingut {{ jugadorClient.name }} en aquesta partida tens el rol de {{ jugadorClient.rol }}</p>
 <!-- Llista pel admin-->
 	<div>
 		<playerList :socket-c="socket" :llista-jug="llistaJugadors" :is-admin="isAdmin"/>
@@ -7,7 +7,7 @@
 		<button v-if="isAdmin" v-bind:class="isMajority ? '' : 'disabled'" @click="startGame">
 			Començar
 		</button>
-		<button v-bind:class="imReady ? 'ready' : 'notReady'" @click="isReady(jugador.value.id)">
+		<button v-bind:class="imReady ? 'ready' : 'notReady'" @click="isReady(jugadorClient.id)">
 			Preparat
 		</button>
 	</div>
@@ -22,32 +22,22 @@ defineProps(['socketC', 'llistaJug', 'jug'])
 const socket = this.props.socketC;
 const llistaJugadors = this.props.llistaJug;
 const jugadorClient = this.props.jug;
+const imReady = ref(false)
+const isMajority = ref(llistaJugadors.filter(player => player.state === 'ready').length >= Math.round(llistaJugadors.length/2))
+const isAdmin = ref((jugadorClient.rol === 'admin'));
 
 //sockets
 
 
 //funcions
-function setAdmin(id){
-    /*socket intenta canviar rol admin actiu per jugador i jugador especific per admin
-    i sobreescriu al servidor intercanviant l'id d'ambdos jugadors*/
-    console.log(id)
-  }
-
-  function deletePlayer(id){
-    /*socket intenta eliminar jugador forçant-li desconnection i s'actualitza la llista de
-    jugadors al servidor*/
-    console.log(id)
-  }
-
   function startGame(){
-    /*compte enrrere de 5 segons, si es compleix sense interrupcions, envia comença el joc */
+    socket.emit('IniciarJoc')
   }
 
   function isReady(id){
-	console.log(id)
+    socket.emit('setPreparat', id)
   }
 
-const llistatJugadors = ref('')
 </script>
 
 <style scoped></style>

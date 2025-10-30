@@ -1,5 +1,4 @@
 <template>
-  <router-view />
   <!-- vista de lobby -->
   <div v-if="vista === 'preGame'">
     <!-- Un cop entres i no tens nom : Nickname-->
@@ -24,10 +23,6 @@
 
 </template>
 
-<script>
-  
-</script>
-
 <script setup>
 //imports && exports
   import { ref } from 'vue';
@@ -41,9 +36,6 @@
 
   const vista = ref('preGame'); //preGame, game, endGame
   const isConnected = ref((socket !== null)); //Depèn de si connecta o no
-  const isMajority = ref(jugadors.value.filter(player => player.state === 'ready').length >= Math.round(jugadors.value.length/2))
-  const imReady = ref(false)
-  const isAdmin = ref((jugador.value.rol === 'admin'))
   const jugador = ref({name: '', rol: '', state: 'notReady'}) //rol: 'ready' | 'notReady'
   const jugadors = ref([]);
 
@@ -53,7 +45,6 @@ socket.on('setPlayerList', (data) => {
 	jugadors.value = data.playerList;
 	jugador.value = data.playerList[data.playerList.length - 1];
 })
-
 </script>
 
 <style scoped>
