@@ -1,3 +1,4 @@
+const { error } = require("console");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -47,18 +48,11 @@ function acabarPartida() {
 
 //Començen amb la connexió del servidor
 io.on("connection", (socket) => {
-  console.log("Jugador conectat:", socket.id);
+  console.log("Jugador conectat");
 
-  // Desconnexió de l'usuari
-  socket.on("disconnect", () => {
-    console.log("Jugador desconectat:", socket.id);
-    jugadors = jugadors.filter((f) => f.id !== socket.id);
-    broadcastPlayerList(); // Informem a la resta que algú ha marxat
-  });
-
-  // Quan un usuari ens envia el seu nom
-  socket.on("setPlayerName", (name) => {
-    if (!name) return;
+  // Quan un usuari ens envia el seu nom i id
+  socket.on("setPlayerName", ({ name, id }) => {
+    if (!name || id === undefined) return;
 
     const jugadorsActius = jugadors.filter((j) => j.rol === "espectador");
     if (jugadorsActius.length >= 6) {
@@ -69,23 +63,24 @@ io.on("connection", (socket) => {
     const admin = jugadors.some((j) => j.admin);
 
     const jugador = {
-      id: socket.id,
+      id, // id enviat des del frontend
       name: name,
       preparat: false,
       admin: !admin, // el primero en unirse será admin
       rol: partidaEnCurs ? "espectador" : "jugador",
       puntuacio: 0,
+      errors: 0,
     };
 
     jugadors.push(jugador);
 
-    console.log(`L'usuari ${name}  s'ha unit`);
+    console.log(`L'usuari ${name}  s'ha unit amb id ${id}`);
     broadcastPlayerList(); // Enviem la llista actualitzada a tothom
   });
 
   //escoltem l'ordre de quan l'usuari li dona a preparat
-  socket.on("setPreparat", () => {
-    const jugador = jugadors.find((j) => j.id === socket.id);
+  socket.on("setPreparat", ({ id }) => {
+    const jugador = jugadors.find((j) => j.id === id);
     if (!jugador) return;
 
     jugador.preparat = !jugador.preparat;
@@ -96,36 +91,34 @@ io.on("connection", (socket) => {
     broadcastPlayerList();
   });
 
-  //Admin pot escollir la configuració de la partidaa al lobby
-  socket.on("configurarPartida", (novaConfig) => {
-    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+  //Admin pot escollir la configuració de la partida al lobby
+  socket.on("configurarPartida", ({ id, novaConfig }) => {
+    const admin = jugadors.find((j) => j.id === id && j.admin);
     if (!admin) return;
 
-    /*operador Spread para fusionar cambios que se realizen sino alternativas:
-    configuracioPartida.temps = novaConfig.temps;
-    configuracioPartida.idioma = novaConfig.idioma;
-    */
     configuracioPartida = { ...configuracioPartida, ...novaConfig };
     io.emit("configuracioActualizada", configuracioPartida);
   });
 
   //Escolta quan expulsem al jugador que te el idJugador
-  socket.on("expulsarJugador", (idJugador) => {
-    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+  socket.on("expulsarJugador", ({ adminId, idJugador }) => {
+    const admin = jugadors.find((j) => j.id === adminId && j.admin);
     if (!admin) return;
 
     const expulsat = jugadors.find((j) => j.id === idJugador);
     if (!expulsat) return;
 
-    io.to(idJugador).emit("expulsat");
+    // Notifiquem al frontend que ha estat expulsat
+    io.emit("expulsat", { id: idJugador });
+
     jugadors = jugadors.filter((j) => j.id !== idJugador);
     console.log(`Jugador ${expulsat.name} ha estat expulsat per l'admin`);
     broadcastPlayerList();
   });
 
   //Transferir l'admin a l'usuari escollit
-  socket.on("transferirAdmin", (idNuevoAdmin) => {
-    const adminActual = jugadors.find((j) => j.id === socket.id && j.admin);
+  socket.on("transferirAdmin", ({ adminId, idNuevoAdmin }) => {
+    const adminActual = jugadors.find((j) => j.id === adminId && j.admin);
     const adminNuevo = jugadors.find((j) => j.id === idNuevoAdmin);
 
     if (!adminActual || !adminNuevo) return;
@@ -141,8 +134,8 @@ io.on("connection", (socket) => {
   });
 
   // Escolta quan l'admin comença el joc i posa als usuaris no preparats com espectadors
-  socket.on("IniciarJoc", () => {
-    const admin = jugadors.find((j) => j.id === socket.id && j.admin);
+  socket.on("IniciarJoc", ({ id }) => {
+    const admin = jugadors.find((j) => j.id === id && j.admin);
     if (!admin) return;
 
     partidaEnCurs = true;
@@ -163,33 +156,41 @@ io.on("connection", (socket) => {
   });
 
   //socket que escolta els punts sumats al jugador
-  socket.on("sumarPunts", (punts) => {
-    const jugador = jugadors.find((j) => j.id === socket.id);
+  socket.on("sumarPunts", ({ id, punts }) => {
+    const jugador = jugadors.find((j) => j.id === id);
     if (!jugador || jugador.rol !== "jugador") return;
 
     jugador.puntuacio += punts;
   });
 
+  socket.on("sumarErrors", ({ id, errors }) => {
+    const jugador = jugadors.find((j) => j.id === id);
+    if (!jugador || jugador.rol !== "jugador") return;
+
+    jugador.errors += errors;
+  });
+
   //En cas de l'usuari premi el boto de sortir es desconecta
-  socket.on("sortir", () => {
-    jugadors = jugadors.filter((j) => j.id !== socket.id);
+  socket.on("sortir", ({ id }) => {
+    const jugador = jugadors.find((j) => j.id === id);
+    if (!jugador) return;
 
     if (jugador.admin) {
-      const nouAdmin = jugadors.find((j) => j.id === socket.id);
+      const nouAdmin = jugadors.find((j) => j.id !== id);
       if (nouAdmin) {
         nouAdmin.admin = true;
       }
     }
 
-    jugadors = jugadors.filter((j) => j.id !== socket.id);
+    jugadors = jugadors.filter((j) => j.id !== id);
 
     broadcastPlayerList();
     socket.disconnect();
   });
 
   //Escoltem quan l'usuari vol tornar a jugar després d'una partida
-  socket.on("tornarAJugar", () => {
-    const jugador = jugadors.find((j) => j.id === socket.id);
+  socket.on("tornarAJugar", ({ id }) => {
+    const jugador = jugadors.find((j) => j.id === id);
     if (!jugador) return;
 
     jugador.preparat = false;
