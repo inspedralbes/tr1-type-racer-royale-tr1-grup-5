@@ -156,18 +156,18 @@ io.on("connection", (socket) => {
   });
 
   //socket que escolta els punts sumats al jugador
-  socket.on("sumarPunts", ({ id, punts }) => {
+  socket.on("sumarPunts", ({ id }) => {
     const jugador = jugadors.find((j) => j.id === id);
     if (!jugador || jugador.rol !== "jugador") return;
 
-    jugador.puntuacio += punts;
+    jugador.puntuacio++;
   });
 
-  socket.on("sumarErrors", ({ id, errors }) => {
+  socket.on("sumarErrors", ({ id }) => {
     const jugador = jugadors.find((j) => j.id === id);
     if (!jugador || jugador.rol !== "jugador") return;
 
-    jugador.errors += errors;
+    jugador.errors++;
   });
 
   //En cas de l'usuari premi el boto de sortir es desconecta
