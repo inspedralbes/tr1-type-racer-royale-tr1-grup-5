@@ -37,6 +37,7 @@ const isAdmin = ref((jugadorClient.rol === 'admin'));
 
   function isReady(id){
     socket.emit('setPreparat', id)
+    
   }
 
 </script>
