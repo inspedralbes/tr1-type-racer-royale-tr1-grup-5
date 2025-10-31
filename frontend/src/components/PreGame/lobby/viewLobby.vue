@@ -16,6 +16,7 @@
 <script setup>
 import { ref } from 'vue';
 import playerList from './playerList.vue';
+import { io } from 'socket.io-client';
 
 //props
 defineProps(['socketC', 'llistaJug', 'jug'])
@@ -31,7 +32,7 @@ const isAdmin = ref((jugadorClient.rol === 'admin'));
 
 //funcions
   function startGame(){
-    socket.emit('IniciarJoc')
+    io.emit('IniciarJoc')
   }
 
   function isReady(id){
