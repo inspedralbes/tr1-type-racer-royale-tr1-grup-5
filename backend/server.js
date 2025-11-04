@@ -54,25 +54,25 @@ io.on("connection", (socket) => {
   console.log("Player connected");
 
   // When a user sends their name and ID
-  socket.on("setPlayerName", ({ _name, _id }) => {
-    if (!_name || _id === undefined) return;
+  socket.on("setPlayerName", ({ name, id }) => {
+    if (!name || id === undefined) return;
 
     if (players.length >= 6) {
       socket.emit("gameFull", { message: "The lobby is already full." });
       return;
     }
 
-    let _role = "player";
+    let role = "player";
     if (players.length === 0) {
-      _role = "admin";
+      role = "admin";
     }
 
     const player = {
       // Player Info
-      id: _id,
+      id: id,
       socketId: socket.id,
-      name: _name,
-      role: _role, // enum: 'admin', 'player', 'spectator'
+      name: name,
+      role: role, // enum: 'admin', 'player', 'spectator'
       // States
       isReady: false,
       // Game Stats
