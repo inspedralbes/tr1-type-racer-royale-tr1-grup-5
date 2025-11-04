@@ -13,20 +13,17 @@ const props = defineProps({
   tempsInicial: {
     type: Number,
     required: true
-  }
+  },
+  socket: { type: Object, required: true },
 });
 
-// 2. Definim els esdeveniments que enviarem al pare
-const emit = defineEmits(['tempsAcabat']);
-
-// 3. Variables del component
+// 2. Variables del component
 const tempsRestant = ref(0); //Temps restant
 let timerInstance = null; //Variable per guardar l'interval
 
-
 // 'onMounted', aquesta part del codi s'executa quan es carrega el component
 onMounted(() => {
-    iniciarComptador(props.tempsInicial);
+  iniciarComptador(props.tempsInicial);
 });
 
 // 'onUnmounted' quan el component desapareix executem aquesta part del codi
@@ -37,7 +34,6 @@ onUnmounted(() => {
 // Aquesta funció és gairebé idèntica a la que tenies
 function iniciarComptador(tempsInici) {
   pararComptador(); //Parem el comptador per si de cas 
-  
   tempsRestant.value = tempsInici; //reiniciem el temps restant amb el valor del temps inicial (60)
 
   //Creem un interval per anar restant cada cop 1s al temps total  
@@ -46,15 +42,15 @@ function iniciarComptador(tempsInici) {
       tempsRestant.value--;
     } else { //Quan s'acaba el temps
       pararComptador(); // Parem el set interval
-      emit('tempsAcabat'); // Avisem al component pare (App.vue) amb un emit de 'tempsAcabat'
+      props.socket.emit('timeEnded'); // Avisem al servidor amb un emit de 'timeEnded'
     }
   }, 1000);
 }
 
 // Funció per netejar l'interval
 function pararComptador() {
-    clearInterval(timerInstance);
-    timerInstance = null;
+  clearInterval(timerInstance);
+  timerInstance = null;
 }
 </script>
 
@@ -64,4 +60,3 @@ h1 {
   font-size: 1.8rem;
 }
 </style>
-

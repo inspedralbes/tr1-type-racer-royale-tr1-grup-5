@@ -52,10 +52,10 @@ var socket = null
 
 const vista = ref('preGame') //preGame, game, endGame
 const isConnected = ref(false) //Depèn de si connecta o no
-const jugador = ref({ name: '', id: null, estat: '', rol: '' }) //rol: 'ready' | 'notReady'
+const jugador = ref({ name: '', id: null, status: '', role: '' }) //rol: 'ready' | 'notReady'
 const jugadors = ref([])
 const tempsRestant = ref(-1)
-const isSpectator = ref(jugador.value.estat === 'espectador')
+const isSpectator = ref(jugador.value.status === 'spectator')
 
 //sockets
 
@@ -86,10 +86,10 @@ socket.on('setPlayerList', (playerList) => {
   }
 })
 
-  socket.on('JocIniciat', (data) => {
+  socket.on('gameStarted', (data) => {
     vista.value = 'game'
-    if (data.temps) {
-      iniciarComptador(data.temps)
+    if (data.time) {
+      iniciarComptador(data.time)
     }
   })
 }
@@ -132,7 +132,7 @@ function iniciarComptador(tempsInici) {
   function acabarPartida() {
     if (socket !== null) {
       clearInterval(timerInstance)
-      socket.emit('partidaAcabada')
+      socket.emit('gameEnded')
       vista.value = 'endGame'
     }
   }

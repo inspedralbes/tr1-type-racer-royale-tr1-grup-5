@@ -1,5 +1,5 @@
 <template>
-    <p>Benvingut {{ jugadorClient.name }} en aquesta partida tens el rol de {{ jugadorClient.rol }}</p>
+    <p>Benvingut {{ jugadorClient.name }} en aquesta partida tens el rol de {{ jugadorClient.role }}</p>
 <!-- Llista pel admin-->
 	<div>
 		<playerList :socket-c="socket" :llista-jug="llistaJugadors" :is-admin="isAdmin" :jugador="jugadorClient"/>
@@ -7,14 +7,14 @@
 		<button v-if="isAdmin" v-bind:class="isMajority ? '' : 'disabled'" @click="startGame">
 			Començar
 		</button>
-		<button v-bind:class="imReady ? 'ready' : 'notReady'" @click="isReady(jugadorClient.id)">
+		<button v-bind:class="imReady ? 'ready' : 'notReady'" @click="toggleReady(jugadorClient.id)">
 			Preparat
 		</button>
 	</div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import playerList from './playerList.vue';
 
 //props
@@ -28,11 +28,11 @@ const imReady = ref(false)
 // Computed per actualitzar-se quan canviïn les dades
 const isMajority = computed(() => {
   if (!llistaJugadors || !Array.isArray(llistaJugadors)) return false
-  return llistaJugadors.filter(player => player.preparat === true).length >= Math.round(llistaJugadors.length/2)
+  return llistaJugadors.filter(player => player.isReady === true).length >= Math.round(llistaJugadors.length/2)
 })
 
 const isAdmin = computed(() => {
-  return jugadorClient?.admin === true
+  return jugadorClient?.role === 'admin'
 })
 
 //sockets
@@ -41,13 +41,13 @@ const isAdmin = computed(() => {
 //funcions
 function startGame(){
   if (socket && jugadorClient?.id) {
-    socket.emit('IniciarJoc', { id: jugadorClient.id })
+    socket.emit('startGame', { id: jugadorClient.id })
   }
 }
 
-function isReady(id){
+function toggleReady(id){
   if (socket && id) {
-    socket.emit('setPreparat', { id: id })
+    socket.emit('setIsReady', { id: id })
   }
 }
 

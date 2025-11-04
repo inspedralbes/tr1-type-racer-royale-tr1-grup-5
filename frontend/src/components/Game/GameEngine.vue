@@ -80,14 +80,14 @@ function validarProgres() {
   if (inputActual.length > textAnterior.length) {
     const indexActual = inputActual.length - 1
     if (inputActual[indexActual] !== paraulaSencera[indexActual]) {
-      props.socket.emit('sumarErrors', { id: props.jugador.id })
+      props.socket.emit('addError', { id: props.jugador.id })
     }
   }
   textAnterior = inputActual
 
   // Comprovem encert de paraula sencera
   if (estatDelJoc.textEntrat === paraulaActiva.value.text) {
-    props.socket.emit('sumarCorrectes', { id: props.jugador.id })
+    props.socket.emit('addCorrect', { id: props.jugador.id })
 
     paraulaActiva.value.estat = 'completada'
     estatDelJoc.indexParaulaActiva++
