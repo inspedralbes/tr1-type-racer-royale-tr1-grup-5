@@ -1,21 +1,18 @@
 <template>
   <p>
-    Benvingut {{ jugadorClient.name }} en aquesta partida tens el rol de {{ jugadorClient.role }}
+    Bienvenido {{ jugadorClient.name }}. Tienes el rol de {{ jugadorClient.role }} en la sala.
   </p>
-  <!-- Llista pel admin-->
   <div>
     <playerList
       :socket-c="socket"
       :llista-jug="llistaJugadors"
       :is-admin="isAdmin"
       :jugador="jugadorClient"
+      :room-id="roomId"
     />
-    <!--Botons-->
-    <button v-if="isAdmin" v-bind:class="isMajority ? '' : 'disabled'" @click="startGame">
-      Començar
-    </button>
-    <button v-bind:class="imReady ? 'ready' : 'notReady'" @click="toggleReady(jugadorClient.id)">
-      Preparat
+    <button v-if="isAdmin" :class="isMajority ? '' : 'disabled'" @click="startGame">Comenzar</button>
+    <button :class="imReady ? 'ready' : 'notReady'" @click="toggleReady(jugadorClient.id)">
+      Preparado
     </button>
   </div>
 </template>
@@ -24,41 +21,29 @@
 import { ref, computed } from 'vue'
 import playerList from './playerList.vue'
 
-//props
-const props = defineProps(['socketC', 'llistaJug', 'jug'])
+const props = defineProps(['socketC', 'llistaJug', 'jug', 'roomId'])
 const socket = computed(() => props.socketC)
 const llistaJugadors = computed(() => props.llistaJug)
 const jugadorClient = computed(() => props.jug || {})
 
 const imReady = ref(false)
 
-// Computed per actualitzar-se quan canviïn les dades
 const isMajority = computed(() => {
-  if (!llistaJugadors || !Array.isArray(llistaJugadors)) return false
+  if (!llistaJugadors.value) return false
   return (
-    llistaJugadors.filter((player) => player.isReady === true).length >=
-    Math.round(llistaJugadors.length / 2)
+    llistaJugadors.value.filter((player) => player.isReady === true).length >=
+    Math.round(llistaJugadors.value.length / 2)
   )
 })
 
-const isAdmin = computed(() => {
-  return jugadorClient?.role === 'admin'
-})
+const isAdmin = computed(() => jugadorClient.value.role === 'admin')
 
-//sockets
-
-//funcions
 function startGame() {
-  if (socket && jugadorClient?.id) {
-    socket.emit('startGame', { id: jugadorClient.id })
-  }
+  socket.value.emit('startGame', { id: jugadorClient.value.id, roomId: props.roomId })
 }
 
 function toggleReady(id) {
-  if (socket && id) {
-    socket.emit('setIsReady', { id: id })
-  }
+  imReady.value = !imReady.value
+  socket.value.emit('setIsReady', { id, roomId: props.roomId })
 }
 </script>
-
-<style scoped></style>

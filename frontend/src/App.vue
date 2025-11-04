@@ -1,45 +1,56 @@
 <template>
+  <!-- Si aún no hemos entrado en una sala -->
+  <div v-if="!joinedRoom">
+    <h2>Selecciona o crea una sala</h2>
+    <input v-model="roomInput" placeholder="Nombre de la sala" />
+    <button @click="createOrJoinRoom">Entrar a sala</button>
+  </div>
+
   <!-- vista de lobby -->
-  <div v-if="vista === 'preGame'">
-    <!-- Un cop entres i no tens nom : Nickname-->
+  <div v-else-if="vista === 'preGame'">
     <div v-if="!isConnected">
-      <input type="text" v-model="jugador.name" placeholder="Introdueix nom" />
-      <button @click="sendNickname(jugador.name)">Entra</button>
-      <p>Type Racer Royale</p>
+      <input type="text" v-model="jugador.name" placeholder="Introduce tu nombre" />
+      <button @click="sendNickname(jugador.name)">Entrar</button>
+      <p>Type Racer Royale — Sala: {{ currentRoom }}</p>
     </div>
-    <!-- Un cop introdueixes el nickname: Lobby-->
+
     <div v-else>
-      <viewLobby :socket-c="socket" :llista-jug="jugadors" :jug="jugador" />
+      <viewLobby
+        :socket-c="socket"
+        :llista-jug="jugadors"
+        :jug="jugador"
+        :room-id="currentRoom"
+      />
     </div>
   </div>
 
-  <!-- vista de joc -->
+  <!-- vista de juego -->
   <div v-else-if="vista === 'game'">
     <div id="jugador" v-if="!isSpectator">
-      <!-- Div on mostrem la informació de la partida (els textos)-->
       <div id="partida">
-        <!--Truquem al game Engine i enviem les props que rebrà aquest component-->
-        <GameEngine :socket="socket" :jugador="jugador" :es-espectador="isSpectator" />
+        <GameEngine
+          :socket="socket"
+          :jugador="jugador"
+          :es-espectador="isSpectator"
+          :room-id="currentRoom"
+        />
       </div>
-      <!--Div on mostrem el temps restant de la partida-->
       <div id="tempsRestant">
-        <TempsRestant />
+        <TempsRestant :tempsInicial="tempsRestant" :socket="socket" :room-id="currentRoom" />
       </div>
-      <!--Div on llistem els usuaris de la partida i els accerts i errors d'aquests-->
       <div id="ranquing">
         <RankingComponent :llista-jug="jugadors" />
       </div>
     </div>
   </div>
 
-  <!-- vista de endgame-->
+  <!-- vista de endgame -->
   <div v-else-if="vista === 'endGame'">
     <RankingComponent :llista-jug="jugadors" />
   </div>
 </template>
 
 <script setup>
-//imports && exports
 import { ref } from 'vue'
 import { io } from 'socket.io-client'
 import RankingComponent from './components/RankingComponent.vue'
@@ -47,110 +58,113 @@ import viewLobby from './components/PreGame/lobby/viewLobby.vue'
 import GameEngine from './components/Game/GameEngine.vue'
 import TempsRestant from './components/Game/TempsRestant.vue'
 
-//variables
-var socket = null
+let socket = null
 
-const vista = ref('preGame') //preGame, game, endGame
-const isConnected = ref(false) //Depèn de si connecta o no
-const jugador = ref({ name: '', id: null, status: '', role: '' }) //rol: 'ready' | 'notReady'
+const vista = ref('preGame')
+const isConnected = ref(false)
+const jugador = ref({ name: '', id: null, status: '', role: '' })
 const jugadors = ref([])
 const tempsRestant = ref(-1)
-const isSpectator = ref(jugador.value.status === 'spectator')
+const isSpectator = ref(false)
 
-//sockets
+const currentRoom = ref('')
+const joinedRoom = ref(false)
+const roomInput = ref('')
 
-function tryConn() {
-  if (socket !== null && socket.connected) return // Ja està connectat
-  
+function createOrJoinRoom() {
+  if (!roomInput.value.trim()) return
+  currentRoom.value = roomInput.value.trim()
+  joinedRoom.value = true
+  tryConn(currentRoom.value)
+}
+
+function tryConn(roomId) {
+  if (socket && socket.connected) return
+
   socket = io('http://localhost:3001')
 
   socket.on('connect', () => {
-    console.log('Socket connectat')
+    console.log('Socket conectado ✅')
+    if (roomId) {
+      socket.emit('joinRoom', { roomId }, (res) => {
+        if (res?.ok) console.log('Unido a la sala', roomId)
+        else console.error(res?.message)
+      })
+    }
   })
 
-socket.on('setPlayerList', (playerList) => {
-  // Forzar reactividad al crear un nuevo array
-  jugadors.value = Array.isArray(playerList) ? [...playerList] : []
-
-  // Actualizar jugador actual sin romper la referencia reactiva
-  const actualitzat = jugadors.value.find(j => j.id === jugador.value.id)
-  if (actualitzat) {
-    Object.assign(jugador.value, actualitzat)
-  } else if (!jugador.value.id && jugadors.value.length > 0) {
-    Object.assign(jugador.value, jugadors.value[jugadors.value.length - 1])
-  }
-
-  // Actualizar estado de conexión
-  if (!isConnected.value && jugador.value.id && jugador.value.name) {
-    isConnected.value = true
-  }
-})
+  socket.on('setPlayerList', (playerList) => {
+    jugadors.value = Array.isArray(playerList) ? [...playerList] : []
+    const updated = jugadors.value.find((j) => j.id === jugador.value.id)
+    if (updated) Object.assign(jugador.value, updated)
+    isSpectator.value = jugador.value.role === 'spectator'
+    if (!isConnected.value && jugador.value.id && jugador.value.name) isConnected.value = true
+  })
 
   socket.on('gameStarted', (data) => {
     vista.value = 'game'
-    if (data.time) {
-      iniciarComptador(data.time)
+    if (data.time) iniciarComptador(data.time)
+  })
+
+  socket.on('playerKicked', ({ id }) => {
+    if (id === jugador.value.id) {
+      alert('Has sido expulsado de la sala.')
+      resetState()
     }
+  })
+
+  socket.on('gameFinished', () => {
+    vista.value = 'endGame'
   })
 }
 
+function resetState() {
+  isConnected.value = false
+  jugador.value = { name: '', id: null, status: '', role: '' }
+  jugadors.value = []
+  joinedRoom.value = false
+  currentRoom.value = ''
+  vista.value = 'preGame'
+  if (socket) socket.disconnect()
+  socket = null
+}
+
 function sendNickname(nickname) {
-  if (!nickname || nickname.trim() === '') return
-  
-  // Generar un ID únic per al jugador abans de connectar
+  if (!nickname.trim()) return
   const playerId = jugador.value.id || Date.now()
   jugador.value.id = playerId
   jugador.value.name = nickname.trim()
-  
-  tryConn()
-  
-  // Esperar a que el socket estigui connectat abans d'enviar
-  if (socket && socket.connected) {
-    // El backend espera 'setPlayerName' amb { name, id }
-    socket.emit('setPlayerName', { name: nickname.trim(), id: playerId })
-  } else {
-    // Si no està connectat, esperar a la connexió
-    socket.on('connect', () => {
-      socket.emit('setPlayerName', { name: nickname.trim(), id: playerId })
+
+  if (!socket || !socket.connected) {
+    tryConn(currentRoom.value)
+    socket.once('connect', () => {
+      socket.emit('setPlayerName', { name: nickname.trim(), id: playerId, roomId: currentRoom.value })
     })
+  } else {
+    socket.emit('setPlayerName', { name: nickname.trim(), id: playerId, roomId: currentRoom.value })
   }
 }
 
 function iniciarComptador(tempsInici) {
   tempsRestant.value = tempsInici
-
-  function timerInstance() {
-    setInterval(() => {
-      if (tempsRestant.value > 0) {
-        tempsRestant.value--
-      } else {
-        acabarPartida()
-      }
-    }, 1000)
-  }
-
-  function acabarPartida() {
-    if (socket !== null) {
-      clearInterval(timerInstance)
-      socket.emit('gameEnded')
+  const interval = setInterval(() => {
+    if (tempsRestant.value > 0) {
+      tempsRestant.value--
+    } else {
+      clearInterval(interval)
+      socket.emit('gameEnded', { roomId: currentRoom.value })
       vista.value = 'endGame'
     }
-  }
-  timerInstance()
+  }, 1000)
 }
 </script>
 
 <style scoped>
-.estat {
-  max-width: 60%;
-  width: 30px;
-  height: auto;
-}
 .ready {
   background-color: greenyellow;
 }
-
 .notReady {
   background-color: red;
 }
 </style>
+  

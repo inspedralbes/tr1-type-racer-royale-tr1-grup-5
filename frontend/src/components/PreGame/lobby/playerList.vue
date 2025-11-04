@@ -1,45 +1,50 @@
 <template>
-    <ul v-if="props.isAdmin">
-        <li v-for="player in props.llistaJug" :key="player.id">
-            <button v-if="player.id > 0" @click="setAdmin(player.id)">
-                <!--Logo estrella buit-->
-            </button>
-            {{ player.name }}
-            <button v-if="player.id > 0" @click="deletePlayer(player.id)">
-                <!--Logo creu-->
-            </button>
-            <div class="estat" v-bind:class="player.isReady === true ? 'ready' : 'notReady'"></div>
-        </li>
-    </ul>
-		<!-- Llista per jugador / espectador -->
-    <ul v-else>
-        <li v-for="player in props.llistaJug" :key="player.id">
-            {{ player.name }}
-            <div class="estat" v-bind:class="player.isReady === true ? 'ready' : 'notReady'"></div>
-        </li>
-    </ul>
+  <ul v-if="isAdmin">
+    <li v-for="player in llistaJugadors" :key="player.id">
+      <button @click="setAdmin(player.id)">⭐</button>
+      {{ player.name }}
+      <button @click="deletePlayer(player.id)">❌</button>
+      <div class="estat" :class="player.isReady ? 'ready' : 'notReady'"></div>
+    </li>
+  </ul>
+
+  <ul v-else>
+    <li v-for="player in llistaJugadors" :key="player.id">
+      {{ player.name }}
+      <div class="estat" :class="player.isReady ? 'ready' : 'notReady'"></div>
+    </li>
+  </ul>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-const props = defineProps(['socketC', 'llistaJug', 'isAdmin', 'jugador'])
+import { computed } from 'vue'
 
-const adminRol = computed(() => props.isAdmin);
-const llistaJugadors = computed(() => props.llistaJug);
-const socket = computed(() => props.socketC);
-const jugadorClient = computed(() => props.jugador || {});
+const props = defineProps(['socketC', 'llistaJug', 'isAdmin', 'jugador', 'roomId'])
+const socket = computed(() => props.socketC)
+const llistaJugadors = computed(() => props.llistaJug)
 
-
-//Functions
-function setAdmin(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('transferAdmin', { adminId: props.jugador.id, newAdminId: id });
-  }
+function setAdmin(id) {
+  socket.value.emit('transferAdmin', {
+    adminId: props.jugador.id,
+    newAdminId: id,
+    roomId: props.roomId,
+  })
 }
 
-function deletePlayer(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('kickPlayer', { adminId: props.jugador.id, playerId: id });
-  }
+function deletePlayer(id) {
+  socket.value.emit('kickPlayer', {
+    adminId: props.jugador.id,
+    playerId: id,
+    roomId: props.roomId,
+  })
 }
 </script>
+
+<style scoped>
+.ready {
+  background-color: greenyellow;
+}
+.notReady {
+  background-color: red;
+}
+</style>
