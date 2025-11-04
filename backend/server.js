@@ -54,8 +54,8 @@ io.on("connection", (socket) => {
   console.log("Player connected");
 
   // When a user sends their name and ID
-  socket.on("setPlayerName", ({ _name, _id }) => {
-    if (!_name || _id === undefined) return;
+  socket.on("setPlayerName", ({ name, id }) => {
+    if (!name || id === undefined) return;
 
     const activePlayers = players.filter(
       (player) => player.role !== "spectator"
@@ -65,16 +65,16 @@ io.on("connection", (socket) => {
       return;
     }
 
-    let _role = "spectator";
+    let role = "spectator";
     if (players.length === 0) {
-      _role = "admin";
+      role = "admin";
     }
 
     const player = {
       // Player Info
-      id: _id,
-      name: _name,
-      role: _role, // enum: 'admin', 'player', 'spectator'
+      id: id,
+      name: name,
+      role: role, // enum: 'admin', 'player', 'spectator'
       // States
       isReady: false,
       // Game Stats
