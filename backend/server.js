@@ -57,7 +57,9 @@ io.on("connection", (socket) => {
   socket.on("setPlayerName", ({ _name, _id }) => {
     if (!_name || _id === undefined) return;
 
-    const activePlayers = players.filter((player) => player.role !== "spectator");
+    const activePlayers = players.filter(
+      (player) => player.role !== "spectator"
+    );
     if (activePlayers.length >= 6) {
       socket.emit("gameFull", { message: "The lobby is already full." });
       return;
@@ -80,7 +82,8 @@ io.on("connection", (socket) => {
       errors: 0,
     };
 
-    players.push(player).sort((a, b) => b.id - a.id);
+    players.push(player);
+    players.sort((a, b) => b.id - a.id);
 
     console.log(`User ${player.name} joined with id ${player.id}`);
     broadcastPlayerList(); // Send updated list to everyone
@@ -92,16 +95,21 @@ io.on("connection", (socket) => {
     if (!changingPlayer) return;
 
     changingPlayer.isReady = !changingPlayer.isReady;
-    players.filter((player) => player.id === changingPlayer.id);
-    players.push(changingPlayer).sort((a, b) => b.id - a.id);
+    players = players.filter((player) => player.id !== changingPlayer.id);
+    players.push(changingPlayer);
+    players.sort((a, b) => b.id - a.id);
 
-    console.log(`Player ${changingPlayer.name} ready: ${changingPlayer.isReady}`);
+    console.log(
+      `Player ${changingPlayer.name} ready: ${changingPlayer.isReady}`
+    );
     broadcastPlayerList();
   });
 
   // Admin can configure the game in the lobby
   socket.on("configGame", ({ id, newConfig }) => {
-    const admin = players.find((player) => player.id === id && player.role === "admin");
+    const admin = players.find(
+      (player) => player.id === id && player.role === "admin"
+    );
     if (!admin) return;
 
     gameConfig = newConfig;
@@ -126,7 +134,9 @@ io.on("connection", (socket) => {
 
   // Transfer admin rights to a selected user
   socket.on("transferAdmin", ({ adminId, newAdminId }) => {
-    const currentAdmin = players.find((p) => p.id === adminId && p.role === "admin");
+    const currentAdmin = players.find(
+      (p) => p.id === adminId && p.role === "admin"
+    );
     const newAdmin = players.find((p) => p.id === newAdminId);
 
     if (!currentAdmin || !newAdmin) return;
@@ -134,7 +144,9 @@ io.on("connection", (socket) => {
     currentAdmin.role = "player";
     newAdmin.role = "admin";
 
-    console.log(`${currentAdmin.name} has transferred admin rights to ${newAdmin.name}`);
+    console.log(
+      `${currentAdmin.name} has transferred admin rights to ${newAdmin.name}`
+    );
     broadcastPlayerList();
   });
 
@@ -183,7 +195,7 @@ io.on("connection", (socket) => {
     if (!player) return;
 
     if (player.role === "admin") {
-      const newAdmin = players.find((p) => p.id !== id);
+      const newAdmin = players.find((p) => p.role === "player");
       if (newAdmin) {
         newAdmin.role = "admin";
       }
