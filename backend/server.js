@@ -123,7 +123,7 @@ io.on("connection", (socket) => {
     if (!kickedPlayer) return;
 
     // Notify the frontend that the player has been kicked
-    io.emit("playerKicked", { id: playerId });
+    io.to(kickedPlayer.socketId).emit("kicked");
 
     players = players.filter((p) => p.id !== playerId);
     console.log(`Player ${kickedPlayer.name} has been kicked by the admin`);
@@ -141,6 +141,8 @@ io.on("connection", (socket) => {
 
     currentAdmin.role = "player";
     newAdmin.role = "admin";
+
+    io.to(newAdmin.socketId).emit("youAreNowAdmin");
 
     console.log(
       `${currentAdmin.name} has transferred admin rights to ${newAdmin.name}`

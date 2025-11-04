@@ -1,45 +1,36 @@
 <template>
-    <ul v-if="props.isAdmin">
-        <li v-for="player in props.llistaJug" :key="player.id">
-            <button v-if="player.id > 0" @click="setAdmin(player.id)">
-                <!--Logo estrella buit-->
-            </button>
-            {{ player.name }}
-            <button v-if="player.id > 0" @click="deletePlayer(player.id)">
-                <!--Logo creu-->
-            </button>
-            <div class="estat" v-bind:class="player.isReady === true ? 'ready' : 'notReady'"></div>
-        </li>
-    </ul>
-		<!-- Llista per jugador / espectador -->
-    <ul v-else>
-        <li v-for="player in props.llistaJug" :key="player.id">
-            {{ player.name }}
-            <div class="estat" v-bind:class="player.isReady === true ? 'ready' : 'notReady'"></div>
-        </li>
-    </ul>
+  <ul>
+    <li v-for="player in props.llistaJug" :key="player.id">
+      {{ player.name }}
+      <span v-if="player.id === props.jugador.id">(Tú)</span>
+      <span v-if="player.role === 'admin'">⭐</span>
+
+      <!-- Solo el admin ve los botones y nunca sobre sí mismo -->
+      <template v-if="props.isAdmin && player.id !== props.jugador.id">
+        <button @click="setAdmin(player.id)">Convertir en administrador</button>
+        <button @click="deletePlayer(player.id)">Expulsar jugador</button>
+      </template>
+
+      <div class="estat" :class="player.isReady ? 'ready' : 'notReady'"></div>
+    </li>
+  </ul>
 </template>
 
 <script setup>
-import { computed } from 'vue';
 const props = defineProps(['socketC', 'llistaJug', 'isAdmin', 'jugador'])
 
-const adminRol = computed(() => props.isAdmin);
-const llistaJugadors = computed(() => props.llistaJug);
-const socket = computed(() => props.socketC);
-const jugadorClient = computed(() => props.jugador || {});
-
+// ES BORRA ELS COMPUTED NO FAN FALTA PODEM INDICARLO DIRECTAMENT DESDE props del pare viewLobby
 
 //Functions
-function setAdmin(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('transferAdmin', { adminId: props.jugador.id, newAdminId: id });
+function setAdmin(id) {
+  if (props.socketC && props.isAdmin && props.jugador?.id) {
+    props.socketC.emit('transferAdmin', { adminId: props.jugador.id, newAdminId: id })
   }
 }
 
-function deletePlayer(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('kickPlayer', { adminId: props.jugador.id, playerId: id });
+function deletePlayer(id) {
+  if (props.socketC && props.isAdmin && props.jugador?.id) {
+    props.socketC.emit('kickPlayer', { adminId: props.jugador.id, playerId: id })
   }
 }
 </script>
