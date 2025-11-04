@@ -68,28 +68,23 @@ function tryConn() {
     console.log('Socket connectat')
   })
 
-  socket.on('setPlayerList', (playerList) => {
-    // El backend envia l'array directament: io.emit("setPlayerList", jugadors)
-    jugadors.value = Array.isArray(playerList) ? playerList : []
-    
-    // Trobar el jugador actual per id
-    if (jugador.value.id !== null) {
-      const jugadorActual = jugadors.value.find(j => j.id === jugador.value.id)
-      if (jugadorActual) {
-        jugador.value = jugadorActual
-      }
-    } else {
-      // Si no tenim id, agafar l'últim jugador (el que s'acaba d'afegir)
-      if (jugadors.value.length > 0) {
-        jugador.value = jugadors.value[jugadors.value.length - 1]
-      }
-    }
-    
-    // Actualitzar isConnected quan rebem la llista de jugadors i tenim un jugador amb id
-    if (!isConnected.value && jugador.value.id !== null && jugador.value.name !== '') {
-      isConnected.value = true
-    }
-  })
+socket.on('setPlayerList', (playerList) => {
+  // Forzar reactividad al crear un nuevo array
+  jugadors.value = Array.isArray(playerList) ? [...playerList] : []
+
+  // Actualizar jugador actual sin romper la referencia reactiva
+  const actualitzat = jugadors.value.find(j => j.id === jugador.value.id)
+  if (actualitzat) {
+    Object.assign(jugador.value, actualitzat)
+  } else if (!jugador.value.id && jugadors.value.length > 0) {
+    Object.assign(jugador.value, jugadors.value[jugadors.value.length - 1])
+  }
+
+  // Actualizar estado de conexión
+  if (!isConnected.value && jugador.value.id && jugador.value.name) {
+    isConnected.value = true
+  }
+})
 
   socket.on('JocIniciat', (data) => {
     vista.value = 'game'

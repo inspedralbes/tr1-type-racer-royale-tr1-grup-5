@@ -20,13 +20,14 @@
     </ul>
 </template>
 <script setup>
+import { computed } from 'vue';
 const props = defineProps(['socketC', 'llistaJug', 'isAdmin', 'jugador'])
 
-//Variables
-const adminRol = props.isAdmin;
-const llistaJugadors = props.llistaJug || [];
-const socket = props.socketC;
-const jugadorClient = props.jugador || {};
+const adminRol = computed(() => props.isAdmin);
+const llistaJugadors = computed(() => props.llistaJug);
+const socket = computed(() => props.socketC);
+const jugadorClient = computed(() => props.jugador || {});
+
 
 //Functions
 function setAdmin(id){

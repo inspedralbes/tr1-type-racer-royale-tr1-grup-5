@@ -19,9 +19,10 @@ import playerList from './playerList.vue';
 
 //props
 const props = defineProps(['socketC', 'llistaJug', 'jug'])
-const socket = props.socketC;
-const llistaJugadors = props.llistaJug;
-const jugadorClient = props.jug;
+const socket = computed(() => props.socketC);
+const llistaJugadors = computed(() => props.llistaJug);
+const jugadorClient = computed(() => props.jug || {});
+
 const imReady = ref(false)
 
 // Computed per actualitzar-se quan canviïn les dades
