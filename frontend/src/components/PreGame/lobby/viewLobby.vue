@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import playerList from './playerList.vue';
 
 //props

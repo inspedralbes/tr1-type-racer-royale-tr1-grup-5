@@ -9,6 +9,7 @@
     </div>
     <!-- Un cop introdueixes el nickname: Lobby-->
     <div v-else>
+      <button @click="console.log(jugador.value, jugadors.value)">debug</button>
       <viewLobby :socket-c="socket" :llista-jug="jugadors" :jug="jugador" />
     </div>
   </div>
@@ -96,7 +97,7 @@ function sendNickname(nickname) {
   if (!nickname || nickname.trim() === '') return
   
   // Generar un ID únic per al jugador abans de connectar
-  const playerId = jugador.value.id || Date.now()
+  const playerId = jugador.value.id
   jugador.value.id = playerId
   jugador.value.name = nickname.trim()
   

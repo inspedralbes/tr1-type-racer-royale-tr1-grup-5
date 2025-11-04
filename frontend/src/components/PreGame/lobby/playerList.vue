@@ -1,6 +1,6 @@
 <template>
-    <ul v-if="props.isAdmin">
-        <li v-for="player in props.llistaJug" :key="player.id">
+    <ul v-if="adminRol">
+        <li v-for="player in llistaJugadors" :key="player.id">
             <button v-if="player.id > 0" @click="setAdmin(player.id)">
                 <!--Logo estrella buit-->
             </button>
@@ -13,7 +13,7 @@
     </ul>
 		<!-- Llista per jugador / espectador -->
     <ul v-else>
-        <li v-for="player in props.llistaJug" :key="player.id">
+        <li v-for="player in llistaJugadors" :key="player.id">
             {{ player.name }}
             <div class="estat" v-bind:class="player.isReady === true ? 'ready' : 'notReady'"></div>
         </li>
@@ -32,14 +32,14 @@ const jugadorClient = computed(() => props.jugador || {});
 
 //Functions
 function setAdmin(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('transferAdmin', { adminId: props.jugador.id, newAdminId: id });
+  if (socket && props.isAdmin && jugadorClient?.id) {
+    socket.emit('transferAdmin', { adminId: jugadorClient.id, newAdminId: id });
   }
 }
 
 function deletePlayer(id){
-  if (socket && props.isAdmin && props.jugador?.id) {
-    socket.emit('kickPlayer', { adminId: props.jugador.id, playerId: id });
+  if (socket && props.isAdmin && jugadorClient?.id) {
+    socket.emit('kickPlayer', { adminId: jugadorClient.id, playerId: id });
   }
 }
 </script>
