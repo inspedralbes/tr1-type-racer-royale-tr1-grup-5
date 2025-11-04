@@ -34,29 +34,27 @@ const imReady = ref(false)
 
 // Computed per actualitzar-se quan canviïn les dades
 const isMajority = computed(() => {
-  if (!llistaJugadors || !Array.isArray(llistaJugadors)) return false
+  if (!llistaJugadors.value || !Array.isArray(llistaJugadors.value)) return false
   return (
-    llistaJugadors.filter((player) => player.isReady === true).length >=
-    Math.round(llistaJugadors.length / 2)
+    llistaJugadors.value.filter((player) => player.isReady === true).length >=
+    Math.round(llistaJugadors.value.length / 2)
   )
 })
 
 const isAdmin = computed(() => {
-  return jugadorClient?.role === 'admin'
+  return jugadorClient.value?.role === 'admin'
 })
-
-//sockets
 
 //funcions
 function startGame() {
-  if (socket && jugadorClient?.id) {
-    socket.emit('startGame', { id: jugadorClient.id })
+  if (socket.value && jugadorClient.value?.id) {
+    socket.value.emit('startGame', { id: jugadorClient.value.id })
   }
 }
 
 function toggleReady(id) {
-  if (socket && id) {
-    socket.emit('setIsReady', { id: id })
+  if (socket.value && id) {
+    socket.value.emit('setIsReady', { id })
   }
 }
 </script>
