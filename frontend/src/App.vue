@@ -23,7 +23,7 @@
       </div>
       <!--Div on mostrem el temps restant de la partida-->
       <div id="tempsRestant">
-        <TempsRestant />
+        <TempsRestant :temps-inicial="tempsInicial" :socket="socket" />
       </div>
       <!--Div on llistem els usuaris de la partida i els accerts i errors d'aquests-->
       <div id="ranquing">
@@ -54,7 +54,7 @@ const vista = ref('preGame') //preGame, game, endGame
 const isConnected = ref(false) //Depèn de si connecta o no
 const jugador = ref({ name: '', id: null, status: '', role: '' }) //rol: 'ready' | 'notReady'
 const jugadors = ref([])
-const tempsRestant = ref(-1)
+const tempsInicial = ref(0)
 const isSpectator = ref(jugador.value.status === 'spectator')
 
 //sockets
@@ -86,10 +86,18 @@ socket.on('setPlayerList', (playerList) => {
   }
 })
 
-  socket.on('gameStarted', (data) => {
+  socket.on('gameStarted',  (data) => {
     vista.value = 'game'
     if (data.time) {
-      iniciarComptador(data.time)
+      tempsInicial.value = data.time;
+    }
+  })
+
+  socket.on('gameFinished', (data) => {
+    vista.value = 'endGame'
+    // Actualizar la lista de jugadores con el ranking final si es necesario
+    if (data.ranking) {
+      jugadors.value = data.ranking
     }
   })
 }
@@ -116,28 +124,7 @@ function sendNickname(nickname) {
   }
 }
 
-function iniciarComptador(tempsInici) {
-  tempsRestant.value = tempsInici
 
-  function timerInstance() {
-    setInterval(() => {
-      if (tempsRestant.value > 0) {
-        tempsRestant.value--
-      } else {
-        acabarPartida()
-      }
-    }, 1000)
-  }
-
-  function acabarPartida() {
-    if (socket !== null) {
-      clearInterval(timerInstance)
-      socket.emit('gameEnded')
-      vista.value = 'endGame'
-    }
-  }
-  timerInstance()
-}
 </script>
 
 <style scoped>

@@ -23,7 +23,9 @@ let timerInstance = null; //Variable per guardar l'interval
 
 // 'onMounted', aquesta part del codi s'executa quan es carrega el component
 onMounted(() => {
-  iniciarComptador(props.tempsInicial);
+  if (props.tempsInicial > 0) {
+    iniciarComptador(props.tempsInicial);
+  }
 });
 
 // 'onUnmounted' quan el component desapareix executem aquesta part del codi

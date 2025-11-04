@@ -47,6 +47,7 @@ function endGame() {
 
   io.emit("gameFinished", { ranking });
   clearTimeout(timer);
+  //TODO: Escuchar tambien el evento timeEnded que envia el frontendpara terminar la partida, si los dos se ejecutan, se termina la partida
 }
 
 // Start listening for server connections
@@ -162,7 +163,7 @@ io.on("connection", (socket) => {
     });
 
     io.emit("gameStarted", {
-      players,
+      //QUITO LOS PLAYERS DEBIDO A QUE DEMOMENTO NO UTILIZAMOS ESTA VARIABLE: players,
       time: gameConfig.time,
     });
     broadcastPlayerList();
