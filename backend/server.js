@@ -19,40 +19,67 @@ let gameConfig = {
   time: 60,
 };
 let timer = null;
+let rooms = [];
 
 // Function to send the player list to all connected clients
 function broadcastPlayerList() {
   io.emit("setPlayerList", players);
 }
 
-// Function to remove a player from the game (not used yet)
-function deletePlayer(playerId) {
-  if (!beingPlayed) return;
+// Trobar la Room per el seu nom
+function findRoom(roomName) {
+  return rooms.find((r) => r.name === roomName);
+}
 
-  const deletingPlayer = players.find((player) => player.id === playerId);
-  if (!deletingPlayer) return;
+// Enviar l'estat actualitzar de la sala a tots en la sala
+function broadcastRoomState(roomName) {
+  const room = findRoom(roomName);
+  if (room) {
+    io.to(roomName).emit("updateRoomState", room);
+  }
+}
 
-  deletingPlayer.role = "spectator";
-  broadcastPlayerList();
+function broadcastRoomList() {
+  const roomList = rooms.map((r) => ({
+    name: r.name,
+    playerCount: r.players.length,
+    beingPlayed: r.beingPlayed,
+  }));
+  io.emit("roomList", roomList);
 }
 
 // Function to end the game and send the final ranking
 // TODO: Add error-based ranking
-function endGame() {
+function endGame(roomName) {
+  const room = findRoom(roomName);
   beingPlayed = false;
 
-  const ranking = [...players]
+  const ranking = [...room.players]
     .filter((player) => player.role === "player")
     .sort((a, b) => b.points - a.points);
 
-  io.emit("gameFinished", { ranking });
-  clearTimeout(timer);
-  //TODO: Escuchar tambien el evento timeEnded que envia el frontendpara terminar la partida, si los dos se ejecutan, se termina la partida
+  io.to(roomName).emit("gameFinished", { ranking });
+  if (room.timer) {
+    clearTimeout(room.timer);
+    room.timer = null;
+  } //TODO: Escuchar tambien el evento timeEnded que envia el frontendpara terminar la partida, si los dos se ejecutan, se termina la partida
+  broadcastRoomState(roomName);
 }
 
 // Start listening for server connections
 io.on("connection", (socket) => {
   console.log("Player connected");
+
+  // L'usuari demana la lista de salas acutals
+  socket.on("getRoomList", () => {
+    const roomList = rooms.map((r) => ({
+      name: r.name,
+      playerCount: r.players.length,
+      beingPlayed: r.beingPlayed,
+    }));
+    socket.emit("roomList", roomList);
+  });
+  // Un jugador crea una nova sala
 
   // When a user sends their name and ID
   socket.on("setPlayerName", ({ name, id }) => {
