@@ -61,30 +61,30 @@ const isSpectator = ref(jugador.value.status === 'spectator')
 
 function tryConn() {
   if (socket !== null && socket.connected) return // Ja està connectat
-  
+
   socket = io('http://localhost:3001')
 
   socket.on('connect', () => {
     console.log('Socket connectat')
   })
 
-socket.on('setPlayerList', (playerList) => {
-  // Forzar reactividad al crear un nuevo array
-  jugadors.value = Array.isArray(playerList) ? [...playerList] : []
+  socket.on('setPlayerList', (playerList) => {
+    // Forzar reactividad al crear un nuevo array
+    jugadors.value = Array.isArray(playerList) ? [...playerList] : []
 
-  // Actualizar jugador actual sin romper la referencia reactiva
-  const actualitzat = jugadors.value.find(j => j.id === jugador.value.id)
-  if (actualitzat) {
-    Object.assign(jugador.value, actualitzat)
-  } else if (!jugador.value.id && jugadors.value.length > 0) {
-    Object.assign(jugador.value, jugadors.value[jugadors.value.length - 1])
-  }
+    // Actualizar jugador actual sin romper la referencia reactiva
+    const actualitzat = jugadors.value.find((j) => j.id === jugador.value.id)
+    if (actualitzat) {
+      Object.assign(jugador.value, actualitzat)
+    } else if (!jugador.value.id && jugadors.value.length > 0) {
+      Object.assign(jugador.value, jugadors.value[jugadors.value.length - 1])
+    }
 
-  // Actualizar estado de conexión
-  if (!isConnected.value && jugador.value.id && jugador.value.name) {
-    isConnected.value = true
-  }
-})
+    // Actualizar estado de conexión
+    if (!isConnected.value && jugador.value.id && jugador.value.name) {
+      isConnected.value = true
+    }
+  })
 
   socket.on('gameStarted',  (data) => {
     vista.value = 'game'
@@ -100,18 +100,29 @@ socket.on('setPlayerList', (playerList) => {
       jugadors.value = data.ranking
     }
   })
+
+  //expulsar al jugador i notificar-lo
+  socket.on('kicked', () => {
+    alert("Expulsat per l'admin")
+    socket.disconnect()
+    window.location.href = '/'
+  })
+  //Transferim l'admin
+  socket.on('youAreNowAdmin', () => {
+    jugador.value.role = 'admin'
+  })
 }
 
 function sendNickname(nickname) {
   if (!nickname || nickname.trim() === '') return
-  
+
   // Generar un ID únic per al jugador abans de connectar
   const playerId = jugador.value.id || Date.now()
   jugador.value.id = playerId
   jugador.value.name = nickname.trim()
-  
+
   tryConn()
-  
+
   // Esperar a que el socket estigui connectat abans d'enviar
   if (socket && socket.connected) {
     // El backend espera 'setPlayerName' amb { name, id }
