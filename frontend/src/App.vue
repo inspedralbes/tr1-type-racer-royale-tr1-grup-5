@@ -27,7 +27,7 @@
       </div>
       <!--Div on llistem els usuaris de la partida i els accerts i errors d'aquests-->
       <div id="ranquing">
-        <RankingComponent :llista-jug="jugadors" :socket="socket" />
+        <RankingComponent :llista-jug="jugadors" />
       </div>
     </div>
   </div>
@@ -84,6 +84,12 @@ function tryConn() {
     if (!isConnected.value && jugador.value.id && jugador.value.name) {
       isConnected.value = true
     }
+  })
+
+  //Rebem l'informació que ens envia el server.js de la llista dels jugadors
+  socket.on('updateRanking', (novaLlistaJugadors) => {
+    console.log('Rànquing actualitzat rebut!');
+    jugadors.value = [...novaLlistaJugadors];
   })
 
   socket.on('gameStarted',  (data) => {

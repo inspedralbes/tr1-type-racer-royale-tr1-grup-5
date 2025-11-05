@@ -184,22 +184,23 @@ io.on("connection", (socket) => {
 
   // Listen when points are added to a player
   socket.on("addPoints", ({ id }) => {
+    console.log("sumemCorrecte")
     const player = players.find((p) => p.id === id);
-    if (!player || player.role !== "player") return;
-    console.log(player)
+    if (!player || player.role === "spectator") return;
+    players = players.filter((p) => p !== player)
     player.points++;
-    console.log(player)
+    players.push(player);
     enviarLlistatJugadors();
-
   });
 
   // Listen when errors are added to a player
   socket.on("addErrors", ({ id }) => {
+    console.log("sumemError")
     const player = players.find((p) => p.id === id);
-    if (!player || player.role !== "player") return;
-    console.log(player)
+    if (!player || player.role === "spectator") return;
+    players = players.filter((p) => p !== player)
     player.errors++;
-    console.log(player)
+    players.push(player)
     enviarLlistatJugadors();
   });
 
@@ -235,5 +236,5 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => console.log(`http://localhost:${PORT}`));
