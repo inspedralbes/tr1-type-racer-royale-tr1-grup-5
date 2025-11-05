@@ -16,7 +16,7 @@ let players = [];
 let beingPlayed = false;
 let gameConfig = {
   language: "cat",
-  time: 60,
+  time: 5,
 };
 let timer = null;
 
@@ -42,7 +42,7 @@ function endGame() {
   beingPlayed = false;
 
   const ranking = [...players]
-    .filter((player) => player.role === "player")
+    .filter((player) => player.role !== "spectator")
     .sort((a, b) => b.points - a.points);
 
   io.emit("gameFinished", { ranking });
