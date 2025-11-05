@@ -196,18 +196,24 @@ io.on("connection", (socket) => {
 
   // Listen when points are added to a player
   socket.on("addPoints", ({ id }) => {
+    console.log("sumemCorrecte");
     const player = players.find((p) => p.id === id);
-    if (!player || player.role !== "player") return;
-
+    if (!player || player.role === "spectator") return;
+    players = players.filter((p) => p !== player);
     player.points++;
+    players.push(player);
+    enviarLlistatJugadors();
   });
 
   // Listen when errors are added to a player
   socket.on("addErrors", ({ id }) => {
+    console.log("sumemError");
     const player = players.find((p) => p.id === id);
-    if (!player || player.role !== "player") return;
-
+    if (!player || player.role === "spectator") return;
+    players = players.filter((p) => p !== player);
     player.errors++;
+    players.push(player);
+    enviarLlistatJugadors();
   });
 
   socket.on("disconnect", () => {
