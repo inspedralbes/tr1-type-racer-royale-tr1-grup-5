@@ -102,7 +102,7 @@ function broadcastRanking(roomName) {
 
   const ranking = [...room.players]
     .filter((p) => p.role === "player")
-    .sort((a, b) => b.points - a.points || a.errors - b.errors);
+    .sort((a, b) => b.points - a.points || a.errors - b.errors); //Aixó fa el mateix que compareFN ya que si b - a es igual 0 es sumen els
 
   io.to(roomName).emit("updateRanking", ranking);
 }
@@ -268,7 +268,7 @@ io.on("connection", (socket) => {
     if (!player || player.role === "spectator") return;
 
     player.points++;
-    broadcastRanking(roomName); // <--- Nuevo
+    broadcastRanking(roomName);
   });
 
   socket.on("addErrors", ({ roomName, id }) => {
