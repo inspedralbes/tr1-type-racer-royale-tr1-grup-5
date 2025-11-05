@@ -3,7 +3,6 @@ const { error } = require("console");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
@@ -37,7 +36,10 @@ function findRoom(roomName) {
 function broadcastRoomState(roomName) {
   const room = findRoom(roomName);
   if (room) {
-    io.to(roomName).emit("updateRoomState", room);
+    const { timer, ...roomState } = room;
+
+    // Ahora emitimos el objeto 'roomState' limpio
+    io.to(roomName).emit("updateRoomState", roomState);
   }
 }
 
@@ -133,14 +135,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createRoom", ({ roomName }) => {
+    const player = socket.data.player;
+
+    if (!player) {
+      return socket.emit("error", {
+        message: "Jugador no registrado. Envía 'setPlayerName' primero.",
+      });
+    }
+
     if (findRoom(roomName)) {
       socket.emit("error", { message: "La sala ya existe." });
       return;
     }
 
-    const player = socket.data.player;
-    player.role = "admin"; // El creador es admin
-
+    player.role = "admin";
     const room = createRoom(roomName, player);
 
     socket.join(roomName);
@@ -150,14 +158,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", ({ roomName }) => {
+    const player = socket.data.player;
+
+    if (!player) {
+      return socket.emit("error", {
+        message: "Jugador no registrado. Envía 'setPlayerName' primero.",
+      });
+    }
+
     const room = findRoom(roomName);
     if (!room) return socket.emit("error", { message: "Sala no encontrada" });
 
     if (room.players.length >= 6) {
       return socket.emit("error", { message: "La sala está plena" });
     }
-
-    const player = socket.data.player;
 
     if (room.beingPlayed) {
       player.role = "spectator";
@@ -310,7 +324,6 @@ io.on("connection", (socket) => {
     player.isReady = false;
     player.points = 0;
     player.errors = 0;
-    player.role = "player";
 
     broadcastRoomState(roomName);
   });
