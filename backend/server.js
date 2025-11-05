@@ -11,14 +11,6 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.get("/", (req, res) => res.send("Type Racer Royale backend ready 🏁"));
 
-// DATA
-let players = [];
-let beingPlayed = false;
-let gameConfig = {
-  language: "cat",
-  time: 60,
-};
-let timer = null;
 let rooms = [];
 
 // Function to send the player list to all connected clients
