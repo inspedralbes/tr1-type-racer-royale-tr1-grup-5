@@ -20,6 +20,7 @@ let gameConfig = {
 };
 let timer = null;
 let gameStats = [];
+let spectators = []
 
 // Function to send the player list to all connected clients
 function broadcastPlayerList() {
@@ -176,6 +177,7 @@ io.on("connection", (socket) => {
 
   // Listen when the admin starts the game and set unready users as spectators
   socket.on("startGame", ({ id }) => {
+    //admin
     const admin = players.find((p) => p.id === id && p.role === "admin");
     if (!admin) return;
 
@@ -186,6 +188,13 @@ io.on("connection", (socket) => {
         p.role = "spectator";
       }
     });
+    //spectators
+    players.forEach(player => {
+      if (players.role == 'spectator') {
+          spectators.push(player)
+      }
+    });
+
 
     io.emit("gameStarted", {
       //QUITO LOS PLAYERS DEBIDO A QUE DEMOMENTO NO UTILIZAMOS ESTA VARIABLE: players,
@@ -230,7 +239,8 @@ io.on("connection", (socket) => {
         player.paraules = newEntry.paraules;
       }
     });
-    io.emit('spectatorGameView', gameStats);
+    spectators.forEach(spectate => io.to(spectate.socketId).emit('spectatorGameView', gameStats);)
+    
     /*gameStats = gameStats.filter((p) => p.id !== newEntry.id);
     gameStats.push(newEntry);
     gameStats.sort((a,b) => b.id - a.id) 
