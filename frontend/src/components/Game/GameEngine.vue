@@ -1,8 +1,6 @@
 <template>
   <div id="game-engine">
     <div id="player" v-if="!isSpectator">
-
-    
       <h2>Escriu les paraules següents:</h2>
 
       <div class="paraules">
@@ -40,10 +38,35 @@
         autofocus
       />
     </div>
-    <div id="spectator" v-else>
-      <h1>Ets espectador, espera a que s'acabi la partida</h1>
-    </div>
 
+    <div id="spectator" v-else>
+      <!--TODO: MOSTRAR EL NOM DE AQUI ESTA ESPECTEJANT I FER LO DE SCROLL ENTRE USUARIS PER VEURE ALTRES USUARIS NO NOMES AL ADMIN-->
+      <div class="paraules">
+        <span
+          v-for="(paraula, wordIndex) in estatJugadorObservat.paraules"
+          :key="wordIndex"
+          class="paraula"
+          :class="{
+            completada: paraula.estat === 'completada',
+            actual: wordIndex === estatJugadorObservat.indexParaulaActiva,
+          }"
+        >
+          <template v-if="wordIndex === estatJugadorObservat.indexParaulaActiva && paraula.text">
+            <span
+              v-for="(lletra, letterIndex) in paraula.text.split('')"
+              :key="letterIndex"
+              :class="getSpectatorClasseLletra(letterIndex, paraula.text)"
+            >
+              {{ lletra }}
+            </span>
+          </template>
+
+          <template v-else>
+            {{ paraula.text }}
+          </template>
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,6 +78,7 @@ import { ref, reactive, computed } from 'vue'
 const props = defineProps({
   socket: { type: Object, required: true },
   jugador: { type: Object, required: true },
+  llistaJug: { type: Array, required: true },
 })
 
 // 2. VARIABLES DEL JOC
@@ -70,10 +94,37 @@ const estatDelJoc = reactive({
   textEntrat: '',
 })
 
+//Declarem la variable reactiva la qual guarda la informació del jugador que observem com a espectador
+const estatJugadorObservat = reactive({
+  paraules: estatDelJoc.paraules.map((p) => ({ ...p })), //Copiem les paraules de dins de estat del joc
+  indexParaulaActiva: 0,
+  textEntrat: '',
+})
+
 const paraulaActiva = ref(estatDelJoc.paraules[0])
 let textAnterior = ''
 const acabada = ref(false)
-const isSpectator = computed(() => props.jugador.role === 'spectator');
+const isSpectator = computed(() => props.jugador.role === 'spectator')
+
+// escoltem les dades que ens envia el servidor per el espectador
+props.socket.on('spectatorGameView', (gameStats) => {
+  if (!isSpectator.value) return
+
+  if (gameStats && gameStats.length > 0) {
+    const jugadorObservatStats = gameStats[0]
+
+    estatJugadorObservat.indexParaulaActiva = jugadorObservatStats.indexParaulaActiva
+    estatJugadorObservat.textEntrat = jugadorObservatStats.textEntrat
+
+    estatJugadorObservat.paraules.forEach((paraula, index) => {
+      if (index < jugadorObservatStats.indexParaulaActiva) {
+        paraula.estat = 'completada'
+      } else {
+        paraula.estat = 'pendent'
+      }
+    })
+  }
+})
 
 // 3. FUNCIONS DEL JOC
 function validarProgres() {
@@ -110,7 +161,7 @@ function validarProgres() {
     }
   }
 
-  playerGameStatus();
+  playerGameStatus()
 }
 
 // 4. Funció que afegeix estils a cada lletra
@@ -136,17 +187,39 @@ function getClasseLletra(indexLletra) {
   }
 }
 
+//Funcio d'estils per l'espectador (el mateix que el jugador)
+function getSpectatorClasseLletra(indexLletra, paraulaSencera) {
+  const lletraEsperada = paraulaSencera[indexLletra]
+  const lletraIntroduida = estatJugadorObservat.textEntrat[indexLletra]
+
+  // Si l'usuari (observat) encara no ha escrit aquesta lletra
+  if (lletraIntroduida === undefined) {
+    // Si és just la següent lletra que toca escriure, la marquem com a "cursor"
+    if (indexLletra === estatJugadorObservat.textEntrat.length) {
+      return 'lletra-actual'
+    }
+    // Si són lletres futures, no tenen estil
+    return 'lletra-noArribada'
+  }
+
+  // Si l'usuari (observat) ja ha escrit aquesta lletra
+  if (lletraIntroduida === lletraEsperada) {
+    return 'lletra-correcta' // Coincideix
+  } else {
+    return 'lletra-incorrecta' // No coincideix
+  }
+}
+
 // 5. Funció que envia al servidor l'informació actual del seu estat de la partida
 function playerGameStatus() {
   props.socket.emit('playerGameStatus', {
-    id: props.jugador.id,
-    textEntrat: estatDelJoc.textEntrat,
-    indexParaulaActiva: estatDelJoc.indexParaulaActiva,
-    paraules: estatDelJoc.paraules
-  });
+    data: {
+      id: props.jugador.id,
+      textEntrat: estatDelJoc.textEntrat,
+      indexParaulaActiva: estatDelJoc.indexParaulaActiva,
+    },
+  })
 }
-
-
 </script>
 
 <style scoped>

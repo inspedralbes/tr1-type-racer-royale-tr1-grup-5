@@ -20,7 +20,7 @@ let gameConfig = {
 };
 let timer = null;
 let gameStats = [];
-let spectators = []
+let spectators = [];
 
 // Function to send the player list to all connected clients
 function broadcastPlayerList() {
@@ -54,24 +54,23 @@ function endGame() {
 
 function enviarLlistatJugadors() {
   players.sort(compareFN);
-  console.log(players)
+  console.log(players);
   //Send the updateRanking to everyone
-  io.emit('updateRanking', players);
+  io.emit("updateRanking", players);
 
-  function compareFN(a,b){
+  function compareFN(a, b) {
     if (a.points > b.points) {
-      return -1
-    } else if (b. points > a.points) {
-      return 1
-    } else if (a.points == b.points){
-        if (a.errors > b.errors) {
-        return 1
+      return -1;
+    } else if (b.points > a.points) {
+      return 1;
+    } else if (a.points == b.points) {
+      if (a.errors > b.errors) {
+        return 1;
       } else if (b.errors > a.errors) {
-        return -1
+        return -1;
       }
     }
   }
-  
 }
 
 // Start listening for server connections
@@ -189,12 +188,11 @@ io.on("connection", (socket) => {
       }
     });
     //spectators
-    players.forEach(player => {
-      if (players.role == 'spectator') {
-          spectators.push(player)
+    players.forEach((player) => {
+      if (player.role == "spectator") {
+        spectators.push(player);
       }
     });
-
 
     io.emit("gameStarted", {
       //QUITO LOS PLAYERS DEBIDO A QUE DEMOMENTO NO UTILIZAMOS ESTA VARIABLE: players,
@@ -209,10 +207,10 @@ io.on("connection", (socket) => {
 
   // Listen when points are added to a player
   socket.on("addPoints", ({ id }) => {
-    console.log("sumemCorrecte")
+    console.log("sumemCorrecte");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player)
+    players = players.filter((p) => p !== player);
     player.points++;
     players.push(player);
     enviarLlistatJugadors();
@@ -220,37 +218,42 @@ io.on("connection", (socket) => {
 
   // Listen when errors are added to a player
   socket.on("addErrors", ({ id }) => {
-    console.log("sumemError")
+    console.log("sumemError");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player)
+    players = players.filter((p) => p !== player);
     player.errors++;
-    players.push(player)
+    players.push(player);
     enviarLlistatJugadors();
   });
 
   socket.on("playerGameStatus", ({ data }) => {
-    //rep: {id: 0, textEntrat: '', indexparaulaActiva: 0, paraules: ''}
+    //rep: {id: 0, textEntrat: '', indexparaulaActiva: 0}
     const newEntry = data;
-    gameStats.forEach(player => {
-      if(player.id == newEntry.id){
-        player.textEntrat = newEntry.textEntrat;
-        player.indexparaulaActiva = newEntry.indexparaulaActiva;
-        player.paraules = newEntry.paraules;
-      }
-    });
-    spectators.forEach(spectate => io.to(spectate.socketId).emit('spectatorGameView', gameStats);)
-    
+
+    // Buesquem si el jugador ja existeix a gameStats
+    const playerIndex = gameStats.findIndex((p) => p.id === newEntry.id);
+    if (playerIndex !== -1) {
+      // Si existeix, l'actualitzem
+      gameStats[playerIndex] = newEntry;
+    } else {
+      // si no l'afegim
+      gameStats.push(newEntry);
+    } // Enviem als espectadors l'informació gameStats
+    spectators.forEach((spectate) =>
+      io.to(spectate.socketId).emit("spectatorGameView", gameStats)
+    );
+
     /*gameStats = gameStats.filter((p) => p.id !== newEntry.id);
     gameStats.push(newEntry);
     gameStats.sort((a,b) => b.id - a.id) 
     /* Envio: [
-      {id: 0, textEntrat: '', indexparaulaActiva: 0, paraules: ''},
-      {id: 1, textEntrat: '', indexparaulaActiva: 0, paraules: ''},
-      {id: 2, textEntrat: '', indexparaulaActiva: 0, paraules: ''},
-      {id: 3, textEntrat: '', indexparaulaActiva: 0, paraules: ''}
+      {id: 0, textEntrat: '', indexparaulaActiva: 0},
+      {id: 1, textEntrat: '', indexparaulaActiva: 0},
+      {id: 2, textEntrat: '', indexparaulaActiva: 0},
+      {id: 3, textEntrat: '', indexparaulaActiva: 0}
     ]*/
-  })
+  });
 
   socket.on("disconnect", () => {
     const player = players.find((p) => p.socketId === socket.id);
