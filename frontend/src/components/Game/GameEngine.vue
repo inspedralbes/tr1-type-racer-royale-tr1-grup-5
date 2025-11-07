@@ -111,8 +111,8 @@ const isSpectator = computed(() => props.jugador.role === 'spectator')
 //Variables per la vista d'espectador
 const indexJugadorObservat = ref(0)
 const darrersGameStats = ref([])
-//---> filtra i guarda només els jugadors que no son espectadors
-let jugadorsReals = [];
+//---> filtra i guarda només els jugadors que no son espectadors FALTABA POSAR ref([]) per actualitzar
+const jugadorsReals = ref([])
 
 //Funció per controlar a quin jugador espectejar
 function canviarJugadorObservat(direccio) {
@@ -136,42 +136,34 @@ function canviarJugadorObservat(direccio) {
 //Funcio que actualiza la vista de l'espectador
 function actualitzarVistaEspectador() {
   if (!isSpectator.value) return
-  
+
   //Guardem les ultimes dades guardades en una nova variable
   const gameStats = darrersGameStats.value
-  
-  if (gameStats && gameStats.length > 0 && jugadorsReals.value.length > 0) {
-    
-    const jugadorObjectiu = jugadorsReals.value[indexJugadorObservat.value]
-    
-    // Busquem les dades del jugador observat dins les dades guardades
-    const jugadorObservatStats = gameStats.find(stats => stats.id === jugadorObjectiu.id)
 
-    // Si trobem les dades, les apliquem
-    if (jugadorObservatStats) {
-      estatJugadorObservat.indexParaulaActiva = jugadorObservatStats.indexParaulaActiva
-      estatJugadorObservat.textEntrat = jugadorObservatStats.textEntrat
-      
-      estatJugadorObservat.paraules.forEach((paraula, index) => {
-        if (index < jugadorObservatStats.indexParaulaActiva) {
-          paraula.estat = 'completada'
-        } else {
-          paraula.estat = 'pendent'
-        }
-      })
-    } else { // Si no les trobem, resetejem
-      estatJugadorObservat.indexParaulaActiva = 0
-      estatJugadorObservat.textEntrat = ''
-      estatJugadorObservat.paraules.forEach(p => p.estat = 'pendent')
-    }
-  }
+  if (!gameStats || !jugadorsReals.value.length) return
+
+  const jugadorObjectiu = jugadorsReals.value[indexJugadorObservat.value]
+  const stats = gameStats.find((s) => s.id === jugadorObjectiu.id)
+
+  if (!stats) return
+
+  estatJugadorObservat.indexParaulaActiva = stats.indexParaulaActiva
+  estatJugadorObservat.textEntrat = stats.textEntrat
+
+  estatJugadorObservat.paraules = stats.paraules.map((p) => ({ ...p }))
 }
 
 // escoltem les dades que ens envia el servidor per l'espectador
 props.socket.on('spectatorGameView', (gameStats) => {
   //Actualizem els camps de la variable darrersGameStats segons el que ens envia el servidor
   darrersGameStats.value = gameStats
-  
+
+  jugadorsReals.value = props.llistaJug.filter((p) => p.role !== 'spectator')
+
+  //En cas de fer scroll a l'últim jugador tornem a l'inici
+  if (indexJugadorObservat.value >= jugadorsReals.value.length) {
+    indexJugadorObservat.value = 0
+  }
   //Cridem a la funció actualitzar la vista d'espectador
   actualitzarVistaEspectador()
 })
@@ -267,6 +259,7 @@ function playerGameStatus() {
       id: props.jugador.id,
       textEntrat: estatDelJoc.textEntrat,
       indexParaulaActiva: estatDelJoc.indexParaulaActiva,
+      paraules: estatDelJoc.paraules,
     },
   })
 }

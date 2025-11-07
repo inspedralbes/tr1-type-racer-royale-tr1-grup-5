@@ -20,14 +20,14 @@ let gameConfig = {
 };
 let timer = null;
 let gameStats = [
-  {id: 0, textEntrat: '', indexparaulaActiva: 0},
-  {id: 1, textEntrat: '', indexparaulaActiva: 0},
-  {id: 2, textEntrat: '', indexparaulaActiva: 0},
-  {id: 3, textEntrat: '', indexparaulaActiva: 0},
-  {id: 4, textEntrat: '', indexparaulaActiva: 0},
-  {id: 5, textEntrat: '', indexparaulaActiva: 0}
+  { id: 0, textEntrat: "", indexParaulaActiva: 0 },
+  { id: 1, textEntrat: "", indexParaulaActiva: 0 },
+  { id: 2, textEntrat: "", indexParaulaActiva: 0 },
+  { id: 3, textEntrat: "", indexParaulaActiva: 0 },
+  { id: 4, textEntrat: "", indexParaulaActiva: 0 },
+  { id: 5, textEntrat: "", indexParaulaActiva: 0 },
 ];
-let spectators = []
+let spectators = [];
 
 // Function to send the player list to all connected clients
 function broadcastPlayerList() {
@@ -183,33 +183,30 @@ io.on("connection", (socket) => {
 
   // Listen when the admin starts the game and set unready users as spectators
   socket.on("startGame", ({ id }) => {
-    //admin
     const admin = players.find((p) => p.id === id && p.role === "admin");
     if (!admin) return;
 
     beingPlayed = true;
 
     players.forEach((p) => {
-      if (!p.isReady) {
-        p.role = "spectator";
-      }
-    });
-    //spectators
-    players.forEach((player) => {
-      if (player.role == "spectator") {
-        spectators.push(player);
-      }
+      if (!p.isReady) p.role = "spectator";
     });
 
-    io.emit("gameStarted", {
-      //QUITO LOS PLAYERS DEBIDO A QUE DEMOMENTO NO UTILIZAMOS ESTA VARIABLE: players,
-      time: gameConfig.time,
-    });
+    spectators = players.filter((p) => p.role === "spectator");
+
+    gameStats = players
+      .filter((p) => p.role !== "spectator")
+      .map((p) => ({
+        id: p.id,
+        textEntrat: "",
+        indexParaulaActiva: 0,
+        paraules: [],
+      }));
+
+    io.emit("gameStarted", { time: gameConfig.time });
     broadcastPlayerList();
 
-    timer = setTimeout(() => {
-      endGame();
-    }, gameConfig.time * 1000);
+    timer = setTimeout(endGame, gameConfig.time * 1000);
   });
 
   // Listen when points are added to a player
@@ -235,27 +232,29 @@ io.on("connection", (socket) => {
   });
 
   socket.on("playerGameStatus", ({ data }) => {
-    //rep: {id: 0, textEntrat: '', indexparaulaActiva: 0}
+    //rep: {id: 0, textEntrat: '', indexParaulaActiva: 0}
     const newEntry = data;
-    gameStats.forEach(player => {
-      if(player.id == newEntry.id){
+    gameStats.forEach((player) => {
+      if (player.id == newEntry.id) {
         player.textEntrat = newEntry.textEntrat;
-        player.indexparaulaActiva = newEntry.indexparaulaActiva;
+        player.indexParaulaActiva = newEntry.indexParaulaActiva;
         player.paraules = newEntry.paraules;
       }
     });
-    spectators.forEach( (spectate) => io.to(spectate.socketId).emit('spectatorGameView', gameStats))
-  })
-    /*gameStats = gameStats.filter((p) => p.id !== newEntry.id);
+    spectators.forEach((spectate) =>
+      io.to(spectate.socketId).emit("spectatorGameView", gameStats)
+    );
+  });
+  /*gameStats = gameStats.filter((p) => p.id !== newEntry.id);
     gameStats.push(newEntry);
     gameStats.sort((a,b) => b.id - a.id) 
     /* Envio: [
-      {id: 0, textEntrat: '', indexparaulaActiva: 0},
-      {id: 1, textEntrat: '', indexparaulaActiva: 0},
-      {id: 2, textEntrat: '', indexparaulaActiva: 0},
-      {id: 3, textEntrat: '', indexparaulaActiva: 0}
+      {id: 0, textEntrat: '', indexParaulaActiva: 0},
+      {id: 1, textEntrat: '', indexParaulaActiva: 0},
+      {id: 2, textEntrat: '', indexParaulaActiva: 0},
+      {id: 3, textEntrat: '', indexParaulaActiva: 0}
     ]*/
-  
+
   socket.on("disconnect", () => {
     const player = players.find((p) => p.socketId === socket.id);
     if (!player) return;
