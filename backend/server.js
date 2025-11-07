@@ -9,13 +9,13 @@ const nodeEnv = process.env.NODE_ENV;
 let port;
 const corsOptions = {};
 
-if (nodeEnv === 'production') {
-  console.log('Running in production mode');
+if (nodeEnv === "production") {
+  console.log("Running in production mode");
   port = process.env.PORT || 3001; // El puerto interno para producción
   // En producción, solo permite peticiones desde la URL del frontend definida en .env
   corsOptions.origin = process.env.FRONTEND_URL;
 } else {
-  console.log('Running in development mode');
+  console.log("Running in development mode");
   port = 3001; // Puerto de desarrollo
   // En desarrollo, permite cualquier origen
   corsOptions.origin = "*";
@@ -32,7 +32,6 @@ let players = [];
 let beingPlayed = false;
 let gameConfig = {
   language: "cat",
-  time: 30,
 };
 let timer = null;
 
@@ -68,24 +67,23 @@ function endGame() {
 
 function enviarLlistatJugadors() {
   players.sort(compareFN);
-  console.log(players)
+  console.log(players);
   //Send the updateRanking to everyone
-  io.emit('updateRanking', players);
+  io.emit("updateRanking", players);
 
   function compareFN(a, b) {
     if (a.points > b.points) {
-      return -1
+      return -1;
     } else if (b.points > a.points) {
-      return 1
+      return 1;
     } else if (a.points == b.points) {
       if (a.errors > b.errors) {
-        return 1
+        return 1;
       } else if (b.errors > a.errors) {
-        return -1
+        return -1;
       }
     }
   }
-
 }
 
 // Start listening for server connections
@@ -190,7 +188,7 @@ io.on("connection", (socket) => {
   });
 
   // Listen when the admin starts the game and set unready users as spectators
-  socket.on("startGame", ({ id }) => {
+  socket.on("startGame", ({ id, tempsEstablert }) => {
     const admin = players.find((p) => p.id === id && p.role === "admin");
     if (!admin) return;
 
@@ -202,23 +200,25 @@ io.on("connection", (socket) => {
       }
     });
 
+    const tempsDePartida = tempsEstablert || 60;
+
     io.emit("gameStarted", {
       //QUITO LOS PLAYERS DEBIDO A QUE DEMOMENTO NO UTILIZAMOS ESTA VARIABLE: players,
-      time: gameConfig.time,
+      time: tempsDePartida,
     });
     broadcastPlayerList();
 
     timer = setTimeout(() => {
       endGame();
-    }, gameConfig.time * 1000);
+    }, tempsDePartida * 1000);
   });
 
   // Listen when points are added to a player
   socket.on("addPoints", ({ id }) => {
-    console.log("sumemCorrecte")
+    console.log("sumemCorrecte");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player)
+    players = players.filter((p) => p !== player);
     player.points++;
     players.push(player);
     enviarLlistatJugadors();
@@ -226,12 +226,12 @@ io.on("connection", (socket) => {
 
   // Listen when errors are added to a player
   socket.on("addErrors", ({ id }) => {
-    console.log("sumemError")
+    console.log("sumemError");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player)
+    players = players.filter((p) => p !== player);
     player.errors++;
-    players.push(player)
+    players.push(player);
     enviarLlistatJugadors();
   });
 
