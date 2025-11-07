@@ -15,11 +15,11 @@
 
   <!-- vista de joc -->
   <div v-else-if="vista === 'game'">
-    <div id="jugador" >
+    <div id="jugador">
       <!-- Div on mostrem la informació de la partida (els textos)-->
       <div id="partida">
         <!--Truquem al game Engine i enviem les props que rebrà aquest component-->
-        <GameEngine :socket="socket" :jugador="jugador"/>
+        <GameEngine :socket="socket" :jugador="jugador" />
       </div>
       <!--Div on mostrem el temps restant de la partida-->
       <div id="tempsRestant">
@@ -87,14 +87,15 @@ function tryConn() {
 
   //Rebem l'informació que ens envia el server.js de la llista dels jugadors
   socket.on('updateRanking', (novaLlistaJugadors) => {
-    console.log('Rànquing actualitzat rebut!');
-    jugadors.value = [...novaLlistaJugadors];
+    console.log('Rànquing actualitzat rebut!')
+    jugadors.value = [...novaLlistaJugadors]
   })
 
-  socket.on('gameStarted',  (data) => {
+  socket.on('gameStarted', (data) => {
+    const temps = data.time
     vista.value = 'game'
-    if (data.time) {
-      tempsInicial.value = data.time;
+    if (temps && data) {
+      tempsInicial.value = temps
     }
   })
 
@@ -139,8 +140,6 @@ function sendNickname(nickname) {
     })
   }
 }
-
-
 </script>
 
 <style scoped>
