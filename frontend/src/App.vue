@@ -57,6 +57,8 @@ const tempsInicial = ref(0)
 // --- GESTIÓN DE EVENTOS DEL SOCKET ---
 // Estos listeners se activan una vez y escuchan durante toda la vida del componente.
 onMounted(() => {
+  socket.connect() // Conectamos el socket
+
   socket.on('connect', () => {
     console.log('Socket connectat')
   })
@@ -132,8 +134,8 @@ function sendNickname(nickname) {
   jugador.value.id = playerId
   jugador.value.name = nickname.trim()
 
-  socket.connect() // Conectamos el socket
   socket.emit('setPlayerName', { name: nickname.trim(), id: playerId })
+  isConnected.value = true
 }
 </script>
 

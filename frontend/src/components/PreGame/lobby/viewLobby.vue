@@ -4,11 +4,7 @@
   </p>
   <!-- Llista pel admin-->
   <div>
-    <playerList
-      :llista-jug="llistaJugadors"
-      :is-admin="isAdmin"
-      :jugador="jugadorClient"
-    />
+    <playerList :llista-jug="llistaJugadors" :is-admin="isAdmin" :jugador="jugadorClient" />
     <button v-if="isAdmin" @click="changeTime">Temps: {{ tempsEstablert }}s</button>
     <!--Botons-->
     <button v-if="isAdmin" v-bind:class="isMajority ? '' : 'disabled'" @click="startGame">
@@ -21,8 +17,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { socket } from '@/socket'; // Importamos el socket
+import { ref, computed } from 'vue'
+import { socket } from '@/socket' // Importamos el socket
 import playerList from './playerList.vue'
 
 //props
@@ -67,8 +63,8 @@ function changeTime() {
 
 //funcions
 function startGame() {
-  if (socket.value && jugadorClient.value?.id) {
-    socket.value.emit('startGame', {
+  if (jugadorClient.value?.id) {
+    socket.emit('startGame', {
       id: jugadorClient.value.id,
       tempsEstablert: tempsEstablert.value,
     })
