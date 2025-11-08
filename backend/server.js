@@ -113,6 +113,12 @@ io.on("connection", (socket) => {
     players.push(player);
     players.sort((a, b) => b.id - a.id);
 
+    if (beingPlayed) {
+      player.role = "spectator";
+      spectators.push(player.id);
+      io.to(player.socketId).emit("spectatorGameView", gameStats);
+    }
+
     console.log(`User ${player.name} joined with id ${player.id}`);
     broadcastPlayerList(); // Send updated list to everyone
   });
@@ -191,7 +197,7 @@ io.on("connection", (socket) => {
       if (!p.isReady) p.role = "spectator";
     });
 
-    spectators = players.filter((p) => p.role === "spectator");
+    spectators = players.filter((p) => p.role === "spectator").map((p) => p.id);
     const tempsDePartida = tempsEstablert || 60;
 
     gameStats = players
@@ -203,6 +209,7 @@ io.on("connection", (socket) => {
         paraules: [],
       }));
 
+    gameConfig.time = tempsEstablert || 60;
     io.emit("gameStarted", { time: gameConfig.time });
     broadcastPlayerList();
 
@@ -210,15 +217,14 @@ io.on("connection", (socket) => {
       endGame();
     }, tempsDePartida * 1000);
   });
-
+  //
   // Listen when points are added to a player
   socket.on("addPoints", ({ id }) => {
     console.log("sumemCorrecte");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player);
+
     player.points++;
-    players.push(player);
     enviarLlistatJugadors();
   });
 
@@ -227,9 +233,8 @@ io.on("connection", (socket) => {
     console.log("sumemError");
     const player = players.find((p) => p.id === id);
     if (!player || player.role === "spectator") return;
-    players = players.filter((p) => p !== player);
+
     player.errors++;
-    players.push(player);
     enviarLlistatJugadors();
   });
 
@@ -243,10 +248,25 @@ io.on("connection", (socket) => {
         player.paraules = newEntry.paraules;
       }
     });
-    spectators.forEach((spectate) =>
-      io.to(spectate.socketId).emit("spectatorGameView", gameStats)
-    );
+    spectators.forEach((spectatorId) => {
+      const spectatorPlayer = players.find((p) => p.id === spectatorId);
+      if (spectatorPlayer) {
+        io.to(spectatorPlayer.socketId).emit("spectatorGameView", gameStats);
+      }
+    });
   });
+  //quan l'espectador canvia al jugador que vol mirar
+  socket.on("spectatorChangeView", ({ id }) => {
+    const player = players.find((p) => p.id === id);
+    if (!player) return;
+
+    if (!spectators.includes(player.id)) {
+      spectators.push(player.id);
+    }
+
+    io.to(player.socketId).emit("spectatorGameView", gameStats);
+  });
+
   /*gameStats = gameStats.filter((p) => p.id !== newEntry.id);
     gameStats.push(newEntry);
     gameStats.sort((a,b) => b.id - a.id) 
@@ -274,6 +294,8 @@ io.on("connection", (socket) => {
     }
     // Lógica de reasignar admin y eliminar jugador
     players = players.filter((p) => p.socketId !== socket.id);
+    spectators = spectators.filter((sid) => sid !== id);
+
     broadcastPlayerList();
   });
 
@@ -285,6 +307,8 @@ io.on("connection", (socket) => {
     player.isReady = false;
     player.points = 0;
     player.role = "player";
+    spectators = spectators.filter((sid) => sid !== id);
+
     broadcastPlayerList();
   });
 });

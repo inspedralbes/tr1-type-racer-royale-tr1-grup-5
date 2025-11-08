@@ -109,48 +109,57 @@ const acabada = ref(false)
 const isSpectator = computed(() => props.jugador.role === 'spectator')
 
 //Variables per la vista d'espectador
-const indexJugadorObservat = ref(0)
+//const indexJugadorObservat = ref(0) ara usem l'ID per a que no canvii automaticament
+const idJugadorObservat = ref(null)
 const darrersGameStats = ref([])
 //---> filtra i guarda només els jugadors que no son espectadors FALTABA POSAR ref([]) per actualitzar
 const jugadorsReals = ref([])
 
 //Funció per controlar a quin jugador espectejar
 function canviarJugadorObservat(direccio) {
-  const numJugadors = jugadorsReals.value.length
+  const llista = jugadorsReals.value
+  if (!llista.length) return
+
+  const indexActual = llista.findIndex((p) => p.id === idJugadorObservat.value)
+
+  let nouIndex = indexActual
 
   if (direccio === 'seguent') {
-    indexJugadorObservat.value++
-    //Si passem del ultim, passem automàticament al primer (per no sortir-nos del array)
-    if (indexJugadorObservat.value >= numJugadors) {
-      indexJugadorObservat.value = 0
+    nouIndex++
+    if (nouIndex >= llista.length) {
+      nouIndex = 0
     }
   } else if (direccio === 'anterior') {
-    indexJugadorObservat.value--
-    //Si passem del primer anem al ultim
-    if (indexJugadorObservat.value < 0) {
-      indexJugadorObservat.value = numJugadors - 1
+    nouIndex--
+    if (nouIndex < 0) {
+      nouIndex = llista.length - 1
     }
   }
+
+  if (llista[nouIndex]) {
+    idJugadorObservat.value = llista[nouIndex].id
+  }
+
   actualitzarVistaEspectador()
 }
-//Funcio que actualiza la vista de l'espectador
+
 function actualitzarVistaEspectador() {
   if (!isSpectator.value) return
 
-  //Guardem les ultimes dades guardades en una nova variable
   const gameStats = darrersGameStats.value
 
-  if (!gameStats || !jugadorsReals.value.length) return
+  if (!gameStats || !idJugadorObservat.value) return
 
-  const jugadorObjectiu = jugadorsReals.value[indexJugadorObservat.value]
-  const stats = gameStats.find((s) => s.id === jugadorObjectiu.id)
+  const stats = gameStats.find((s) => s.id === idJugadorObservat.value)
 
   if (!stats) return
 
   estatJugadorObservat.indexParaulaActiva = stats.indexParaulaActiva
   estatJugadorObservat.textEntrat = stats.textEntrat
 
-  estatJugadorObservat.paraules = stats.paraules.map((p) => ({ ...p }))
+  if (stats.paraules && stats.paraules.length > 0) {
+    estatJugadorObservat.paraules = stats.paraules.map((p) => ({ ...p }))
+  }
 }
 
 // escoltem les dades que ens envia el servidor per l'espectador
@@ -160,33 +169,37 @@ props.socket.on('spectatorGameView', (gameStats) => {
 
   jugadorsReals.value = props.llistaJug.filter((p) => p.role !== 'spectator')
 
-  //En cas de fer scroll a l'últim jugador tornem a l'inici
-  if (indexJugadorObservat.value >= jugadorsReals.value.length) {
-    indexJugadorObservat.value = 0
+  const jugadorActualEncaraExisteix = jugadorsReals.value.find(
+    (p) => p.id === idJugadorObservat.value,
+  )
+
+  if (
+    (!idJugadorObservat.value || !jugadorActualEncaraExisteix) &&
+    jugadorsReals.value.length > 0
+  ) {
+    idJugadorObservat.value = jugadorsReals.value[0].id
   }
-  //Cridem a la funció actualitzar la vista d'espectador
   actualitzarVistaEspectador()
 })
 
 // 3. FUNCIONS DEL JOC
 function validarProgres() {
+  // ... (sense canvis aquí) ...
   if (acabada.value) return
 
   estatDelJoc.textEntrat = estatDelJoc.textEntrat.toLowerCase()
 
   const inputActual = estatDelJoc.textEntrat
-  const paraulaSencera = paraulaActiva.value.text
+  const paraulaSencera = paraulaActiva.value.text // Comprovem errors
 
-  // Comprovem errors
   if (inputActual.length > textAnterior.length) {
     const indexActual = inputActual.length - 1
     if (inputActual[indexActual] !== paraulaSencera[indexActual]) {
       props.socket.emit('addErrors', { id: props.jugador.id })
     }
   }
-  textAnterior = inputActual
+  textAnterior = inputActual // Comprovem encert de paraula sencera
 
-  // Comprovem encert de paraula sencera
   if (estatDelJoc.textEntrat === paraulaActiva.value.text) {
     props.socket.emit('addPoints', { id: props.jugador.id })
 
@@ -208,20 +221,18 @@ function validarProgres() {
 
 // 4. Funció que afegeix estils a cada lletra
 function getClasseLletra(indexLletra) {
+  // ... (sense canvis aquí) ...
   const lletraEsperada = paraulaActiva.value.text[indexLletra]
-  const lletraIntroduida = estatDelJoc.textEntrat[indexLletra]
+  const lletraIntroduida = estatDelJoc.textEntrat[indexLletra] // Si l'usuari encara no ha escrit aquesta lletra
 
-  // Si l'usuari encara no ha escrit aquesta lletra
   if (lletraIntroduida === undefined) {
     // Si és just la següent lletra que toca escriure, la marquem com a "cursor"
     if (indexLletra === estatDelJoc.textEntrat.length) {
       return 'lletra-actual'
-    }
-    // Si són lletres futures, no tenen estil
+    } // Si són lletres futures, no tenen estil
     return 'lletra-noArribada'
-  }
+  } // Si l'usuari ja ha escrit aquesta lletra
 
-  // Si l'usuari ja ha escrit aquesta lletra
   if (lletraIntroduida === lletraEsperada) {
     return 'lletra-correcta' // Coincideix
   } else {
@@ -231,20 +242,18 @@ function getClasseLletra(indexLletra) {
 
 //Funcio d'estils per l'espectador (el mateix que el jugador)
 function getSpectatorClasseLletra(indexLletra, paraulaSencera) {
+  // ... (sense canvis aquí) ...
   const lletraEsperada = paraulaSencera[indexLletra]
-  const lletraIntroduida = estatJugadorObservat.textEntrat[indexLletra]
+  const lletraIntroduida = estatJugadorObservat.textEntrat[indexLletra] // Si l'usuari (observat) encara no ha escrit aquesta lletra
 
-  // Si l'usuari (observat) encara no ha escrit aquesta lletra
   if (lletraIntroduida === undefined) {
     // Si és just la següent lletra que toca escriure, la marquem com a "cursor"
     if (indexLletra === estatJugadorObservat.textEntrat.length) {
       return 'lletra-actual'
-    }
-    // Si són lletres futures, no tenen estil
+    } // Si són lletres futures, no tenen estil
     return 'lletra-noArribada'
-  }
+  } // Si l'usuari (observat) ja ha escrit aquesta lletra
 
-  // Si l'usuari (observat) ja ha escrit aquesta lletra
   if (lletraIntroduida === lletraEsperada) {
     return 'lletra-correcta' // Coincideix
   } else {
@@ -254,6 +263,7 @@ function getSpectatorClasseLletra(indexLletra, paraulaSencera) {
 
 // 5. Funció que envia al servidor l'informació actual del seu estat de la partida
 function playerGameStatus() {
+  // ... (sense canvis aquí) ...
   props.socket.emit('playerGameStatus', {
     data: {
       id: props.jugador.id,
