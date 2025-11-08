@@ -8,7 +8,7 @@ const isProduction = import.meta.env.MODE === 'production';
 // Si VITE_BACKEND_URL no está definida en el build de producción,
 // usamos el mismo origen de la ventana (ideal para el proxy inverso de Nginx).
 const URL = isProduction
-    ? import.meta.env.VITE_BACKEND_URL || `https://${window.location.host}`
+    ? import.meta.env.VITE_BACKEND_URL || `http://${window.location.host}`
     : 'http://localhost:3001';
 
 export const socket = io(URL, {
