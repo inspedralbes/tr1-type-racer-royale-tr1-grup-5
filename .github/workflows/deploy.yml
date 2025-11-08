@@ -21,23 +21,11 @@ jobs:
             PROJECT_PATH="/var/www/html/${{ github.event.repository.name }}"
             REPO_URL="https://github.com/${{ github.repository }}.git"
             BRANCH="main"
-
-            # Clone repo if it doesn't exist
-            if [ ! -d "$PROJECT_PATH" ]; then
-              echo "Cloning repository..."
-              cd /var/www/html
-              git clone $REPO_URL $PROJECT_PATH
-            fi
-
+            
             # Navigate to project directory
             cd $PROJECT_PATH
 
-            # Ensure clean working directory before checkout
-            git reset --hard
-            git clean -fd
-
             # Pull latest changes
-            git checkout $BRANCH
             git pull origin $BRANCH
 
             # Create .env file from GitHub Secrets
