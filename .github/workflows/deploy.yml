@@ -17,16 +17,16 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Define project path and repo URL
-            PROJECT_PATH="/var/www/html/tr1-type-racer-royale-grup3daw"
+            # Define project path dynamically from the repository name
+            PROJECT_PATH="/var/www/html/${{ github.event.repository.name }}"
             REPO_URL="https://github.com/${{ github.repository }}.git"
             BRANCH="main"
 
             # Clone repo if it doesn't exist
             if [ ! -d "$PROJECT_PATH" ]; then
               echo "Cloning repository..."
-              cd /var/www/html/
-              git clone $REPO_URL
+              cd /var/www/html
+              git clone $REPO_URL $PROJECT_PATH
             fi
 
             # Navigate to project directory
