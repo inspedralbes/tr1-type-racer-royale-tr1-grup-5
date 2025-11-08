@@ -5,7 +5,7 @@ COPY frontend/package.json ./
 RUN npm install
 COPY frontend/ ./
 # Copia nginx.conf a la etapa de construcción para que esté disponible después
-COPY nginx.conf /app/nginx.conf
+COPY ./nginx.conf /app/nginx.conf
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
