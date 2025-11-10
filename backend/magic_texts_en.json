@@ -1,0 +1,444 @@
+{
+    "magics": {
+        "fire": [
+            {
+                "title": "Fire 1 - Volcano's Heart",
+                "lineas": [
+                    "The volcano's heart is",
+                    "beating with untamed",
+                    "fury. The true pyromancer",
+                    "does not fear the flame;",
+                    "he embraces, breathes,",
+                    "and converts it into an",
+                    "extension of his own",
+                    "destructive will. The",
+                    "pyromancy is the magic",
+                    "of rapid transformation,",
+                    "a process that does not",
+                    "wait, but instantly",
+                    "consumes. His touch can",
+                    "ignite the air. The Arcane",
+                    "Fire is the essence of",
+                    "pure energy, directly",
+                    "extracted from the",
+                    "elemental plane of",
+                    "eternal embers. The",
+                    "world is reduced to",
+                    "ashes."
+                ]
+            },
+            {
+                "title": "Fire 2 - Eternal Flame",
+                "lineas": [
+                    "The knowledge of the",
+                    "Eternal Flame was",
+                    "guarded by the Cinder",
+                    "order, who learned to",
+                    "channel the energy of",
+                    "Incandescent Fury without",
+                    "burning. They knew that",
+                    "fire not only destroys,",
+                    "but also purifies and",
+                    "forges metal and",
+                    "character. From the ashes",
+                    "of the past, the great",
+                    "heroes rise, and only in",
+                    "the heat of combat is the",
+                    "true nature of a soul",
+                    "revealed. The mage is a",
+                    "conductor of the Dragon",
+                    "of the Red Mountain's",
+                    "rage."
+                ]
+            },
+            {
+                "title": "Fire 3 - Prophecy",
+                "lineas": [
+                    "The ancient prophecy",
+                    "speaks of the day the",
+                    "Dragon of the Red",
+                    "Mountain will awaken to",
+                    "devour the sky. At that",
+                    "moment, the magical",
+                    "defenses of the cities",
+                    "will fall like dry straw",
+                    "before the beast's",
+                    "breath. Only he who",
+                    "masters the Arcane Fire—",
+                    "that which emerges from",
+                    "the elemental plane—",
+                    "can face it and seal the",
+                    "rift connecting our world",
+                    "with the hell of the",
+                    "embers. The ritual",
+                    "requires the sacrifice",
+                    "of the Last Sun Gem. His",
+                    "triumph is inevitable."
+                ]
+            }
+        ],
+        "darkness": [
+            {
+                "title": "Darkness 1 - Necromancer",
+                "lineas": [
+                    "The great necromancer",
+                    "summons the ancestral",
+                    "force lying beneath the",
+                    "realm, drawing power",
+                    "from the Plane of the",
+                    "Void. The ancient shadows",
+                    "stretch from the abyss,",
+                    "seeking souls to swallow",
+                    "and wills to subdue to",
+                    "their cold, spectral",
+                    "design. Silence is the",
+                    "soundtrack of the terror",
+                    "that looms. His summon is",
+                    "a chant in a forgotten",
+                    "tongue, and the air smells",
+                    "of ozone and despair.",
+                    "Darkness is not absence,",
+                    "it is a total, dominant",
+                    "presence."
+                ]
+            },
+            {
+                "title": "Darkness 2 - The Pact",
+                "lineas": [
+                    "The final pact was sealed",
+                    "with ink of nightmares on",
+                    "moon skin parchment and",
+                    "written beneath the",
+                    "starless sky. The mage",
+                    "gives his last ray of",
+                    "light and his memory in",
+                    "exchange for dominating",
+                    "the veil of shadows.",
+                    "Now, his touch freezes",
+                    "hope and his voice is an",
+                    "empty echo resonating",
+                    "in the hearts of his",
+                    "enemies. Every step he",
+                    "takes is a surrender of",
+                    "the light. His armor is",
+                    "condensed shadow. He who",
+                    "looks into his eyes will",
+                    "see only the devouring",
+                    "abyss."
+                ]
+            },
+            {
+                "title": "Darkness 3 - The Vortex",
+                "lineas": [
+                    "Night has swallowed the",
+                    "moon, and a vortex of",
+                    "dark magic opens over the",
+                    "city, consuming the",
+                    "magical shields as if",
+                    "they were dry straw. The",
+                    "collective fear is the",
+                    "supreme weapon, and in",
+                    "total darkness, no hero",
+                    "or paladin can discern",
+                    "the attacker from their",
+                    "own despair. The goal is",
+                    "not to destroy life, but",
+                    "to extinguish every flame",
+                    "of hope and joy. The",
+                    "specters walk free, for",
+                    "the law of Darkness",
+                    "reigns permanently in",
+                    "this world."
+                ]
+            }
+        ],
+        "light": [
+            {
+                "title": "Light 1 - Beacon of Hope",
+                "lineas": [
+                    "The cleric channels faith",
+                    "into a column of burning",
+                    "light that rips the",
+                    "darkness like paper. This",
+                    "sacred, radiant energy",
+                    "dispels the veil of",
+                    "illusions and purifies",
+                    "the earth of any stain,",
+                    "plague, or impure curse.",
+                    "It is the force of the",
+                    "revealed truth, an",
+                    "unwavering beacon of",
+                    "hope in the storm that",
+                    "cannot be extinguished by",
+                    "any shadow. His touch can",
+                    "heal terminal wounds.",
+                    "Light is the law of",
+                    "eternal order and",
+                    "supreme justice."
+                ]
+            },
+            {
+                "title": "Light 2 - The Champion",
+                "lineas": [
+                    "The ancestral blessing",
+                    "falls upon the champion,",
+                    "transforming his iron",
+                    "armor into a radiant",
+                    "mirror that blinds the",
+                    "nightly adversaries. The",
+                    "splendor emanating from",
+                    "his heart is the purest",
+                    "weapon, capable of curing",
+                    "diseases and vaporizing",
+                    "any spectral creature",
+                    "with just a glance. His",
+                    "will is as firm as",
+                    "diamond, and his faith is",
+                    "his shield. The",
+                    "confrontation against",
+                    "Light is always an act of",
+                    "desperation by Darkness."
+                ]
+            },
+            {
+                "title": "Light 3 - Divine Punishment",
+                "lineas": [
+                    "Light knows no malice,",
+                    "but its power of judgment",
+                    "is absolute and",
+                    "unstoppable. Its advance",
+                    "is relentless; before its",
+                    "presence, shadows retreat",
+                    "and chaos halts. The",
+                    "spell is an incantation",
+                    "of revelation. The Light",
+                    "mage is enveloped in an",
+                    "aura that fortifies the",
+                    "will of his allies and",
+                    "weakens the morale of the",
+                    "enemy. It is the promise",
+                    "of a world without",
+                    "deceit, where every",
+                    "action will be judged by",
+                    "the sun. Evil cannot hide",
+                    "from it."
+                ]
+            }
+        ],
+        "ice": [
+            {
+                "title": "Ice 1 - The Glacier",
+                "lineas": [
+                    "The north wind carries",
+                    "the breath of the eternal",
+                    "glacier. The ice mage",
+                    "raises his hand and the",
+                    "air transforms into",
+                    "crystal needles, creating",
+                    "a static storm. Frost",
+                    "covers the enemy's",
+                    "machinery, halting their",
+                    "advance and their will to",
+                    "fight alike. This power",
+                    "does not seek destruction",
+                    "by heat, but immobility",
+                    "by absolute cold. Each",
+                    "ice crystal contains the",
+                    "memory of a geological",
+                    "era. The cold wind is a",
+                    "silent ally."
+                ]
+            },
+            {
+                "title": "Ice 2 - Frost Wall",
+                "lineas": [
+                    "A wall of pure ice rises",
+                    "from the ground,",
+                    "impenetrable and",
+                    "completely transparent,",
+                    "reflecting the sunlight",
+                    "to confuse and blind the",
+                    "attackers. This power",
+                    "does not seek demolition,",
+                    "but total cessation. The",
+                    "mage's heart is as cold",
+                    "as the glacier from which",
+                    "he draws his energy.",
+                    "His enemies turn into",
+                    "frost statues that fall",
+                    "with the first touch. The",
+                    "freezing spell is",
+                    "irreversible. The cold",
+                    "silence is the final",
+                    "triumph."
+                ]
+            },
+            {
+                "title": "Ice 3 - Tundra",
+                "lineas": [
+                    "The sorceress summons an",
+                    "elemental spirit from the",
+                    "frozen tundra. This",
+                    "creature of frost and",
+                    "gale blindly obeys,",
+                    "turning the battlefield",
+                    "into a white wasteland",
+                    "where every step is",
+                    "slippery and every breath",
+                    "burns the lungs. The power",
+                    "of the snow is the",
+                    "perfect cover. The hero",
+                    "slowly succumbs,",
+                    "trapped in a labyrinth of",
+                    "blizzard and fog. The",
+                    "mastery of Ice is the",
+                    "mastery of time stopped.",
+                    "Its strength is patience."
+                ]
+            }
+        ],
+        "water": [
+            {
+                "title": "Water 1 - The Torrent",
+                "lineas": [
+                    "The river of life is also",
+                    "the torrent of",
+                    "unstoppable destruction.",
+                    "The hydromancer",
+                    "understands the patience",
+                    "of water, which can",
+                    "erode the highest",
+                    "mountain with only a",
+                    "constant drip. A thick",
+                    "mist envelops the",
+                    "enemies, completely",
+                    "disorienting them before",
+                    "a giant wave breaks their",
+                    "ranks effortlessly. The",
+                    "sea is the repository of",
+                    "all secrets and the",
+                    "memory of the ages, and",
+                    "she draws this ancestral",
+                    "wisdom. Strength lies in",
+                    "fluidity."
+                ]
+            },
+            {
+                "title": "Water 2 - The Tide",
+                "lineas": [
+                    "The sea holds secrets and",
+                    "the memory of the ages.",
+                    "The mage draws this",
+                    "wisdom, creating spheres",
+                    "of pure liquid that act",
+                    "as defensive prisms,",
+                    "refracting enemy magic.",
+                    "Water is adaptable and",
+                    "ethereal: it takes the",
+                    "shape of the container,",
+                    "but its force cannot be",
+                    "contained by anyone. The",
+                    "tide is its most feared",
+                    "weapon. Magical rain falls",
+                    "as a curative deluge for",
+                    "allies, but turns into",
+                    "acid for the enemies of",
+                    "nature."
+                ]
+            },
+            {
+                "title": "Water 3 - Siren",
+                "lineas": [
+                    "The great tide rises by",
+                    "order of the siren",
+                    "sorceress, dragging the",
+                    "soldiers and their heavy",
+                    "metal weapons toward the",
+                    "bottom. The power of water",
+                    "does not fear corruption;",
+                    "it purifies it. The",
+                    "mastery of water is the",
+                    "mastery of emotions and",
+                    "the constant flow of life.",
+                    "The sorceress can",
+                    "transform her own body",
+                    "into an indomitable",
+                    "torrent. Every dewdrop",
+                    "holds the promise of",
+                    "rebirth. Water is the",
+                    "final destiny of all",
+                    "matter."
+                ]
+            }
+        ],
+        "jungle": [
+            {
+                "title": "Jungle 1 - The Druid",
+                "lineas": [
+                    "The druid merges with the",
+                    "foliage, listening to the",
+                    "slow, powerful pulse of",
+                    "the earth. Roots rise as",
+                    "vengeful snakes,",
+                    "imprisoning intruders who",
+                    "dared to disturb the peace",
+                    "of the sacred forest.",
+                    "The jungle is a living",
+                    "organism that fights to",
+                    "defend its own existence",
+                    "with every leaf, branch,",
+                    "and thorn. The knowledge",
+                    "of poisonous plants grants",
+                    "him the power of subtlety.",
+                    "Green is a color of",
+                    "absolute and indomitable",
+                    "power."
+                ]
+            },
+            {
+                "title": "Jungle 2 - The Poison",
+                "lineas": [
+                    "A subtle, floral poison",
+                    "is distilled by the forest",
+                    "sorceress. It is not a",
+                    "rapid toxin, but one that",
+                    "dulls the will and",
+                    "confuses judgment, causing",
+                    "the enemy to attack their",
+                    "own allies. The branches",
+                    "form an impenetrable roof",
+                    "that steals the sunlight,",
+                    "plunging the field into an",
+                    "eternal, chaotic gloom.",
+                    "Camouflage is his best",
+                    "defense. Moss heals while",
+                    "vines strangle. Nature is",
+                    "neither good nor evil; it",
+                    "is law."
+                ]
+            },
+            {
+                "title": "Jungle 3 - The Spirit",
+                "lineas": [
+                    "The spirit of the oldest",
+                    "tree awakens for battle.",
+                    "Its branches are blunt",
+                    "clubs and its bark is a",
+                    "living stone armor. The",
+                    "magic of the jungle is the",
+                    "law of survival; only the",
+                    "fittest, the one in",
+                    "harmony with nature,",
+                    "will prevail. Wild",
+                    "animals obey its call,",
+                    "forming an instinctive,",
+                    "voracious army. The druid",
+                    "is the guardian of the",
+                    "cycles. The forest always",
+                    "reclaims what is its at",
+                    "the end of every conflict."
+                ]
+            }
+        ]
+    }
+}
