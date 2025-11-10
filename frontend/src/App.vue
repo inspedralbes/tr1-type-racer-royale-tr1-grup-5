@@ -17,7 +17,7 @@
           <span>👥 {{ room.playerCount }} jugadores</span>
           <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
         </div>
-        <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unirse</button>
+        <button @click="joinExistingRoom(room.name)">Unirse</button>
       </li>
     </ul>
 
@@ -126,6 +126,8 @@ function tryConn() {
   })
 
   socket.on('updateRoomState', (room) => {
+    if (vista.value === 'endGame') return
+
     roomState.value = room
     jugadors.value = [...room.players]
     const yo = room.players.find((p) => p.id === jugador.value.id)
@@ -133,6 +135,10 @@ function tryConn() {
 
     if (room.config && room.config.time) {
       tempsInicial.value = room.config.time
+    }
+
+    if (room.beingPlayed && jugador.value.role === 'spectator') {
+      vista.value = 'game'
     }
   })
 

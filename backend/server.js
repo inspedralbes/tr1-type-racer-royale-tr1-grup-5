@@ -67,6 +67,24 @@ function getRandomMage() {
   return mageDefinitions[Math.floor(Math.random() * mageDefinitions.length)];
 }
 
+//Funció per asignar admin
+function assignNewAdmin(room) {
+  if (room.players.length === 0) return;
+
+  let newAdmin = null;
+
+  if (room.beingPlayed) {
+    newAdmin = room.players.find((p) => p.role !== "spectator");
+  } else {
+    newAdmin = room.players[0];
+  }
+
+  if (newAdmin) {
+    newAdmin.role = "admin";
+    io.to(newAdmin.socketId).emit("youAreNowAdmin");
+  } // Si els que queden només son espectadors els jugadors la sala es queda temporalment sense admin fins que acabi el joc ja que en EndGame es reasigna
+}
+
 // Funció per crear rooms
 function createRoom(roomName, hostPlayer, isPrivate = false) {
   const room = {
@@ -137,21 +155,37 @@ function endGame(roomName) {
 
   room.beingPlayed = false;
 
+  const ranking = [...room.players]
+    .filter((player) => player.role === "player" || player.role === "admin")
+    .sort((a, b) => b.points - a.points || a.errors - b.errors);
+
   //netejem els stats
   room.gameStats = [];
   room.spectatorIds = [];
+
+  let adminExists = false;
+
   // Resetear roles de espectadores que eran players antes del juego
   room.players.forEach((p) => {
-    if (p.role !== "admin") {
-      p.role = "player";
-    }
-    p.isReady = false;
     p.debuff = { type: null, duration: 0 };
+    if (p.role === "admin") {
+      adminExists = true;
+      p.isReady = true;
+    } else if (p.role === "spectator") {
+      // Si era espectador, pasa al lobby com jugador,
+      p.role = "player";
+      p.isReady = true;
+    } else {
+      p.role = "player";
+      p.isReady = true;
+    }
   });
 
-  const ranking = [...room.players]
-    .filter((player) => player.role === "player")
-    .sort((a, b) => b.points - a.points || a.errors - b.errors);
+  if (!adminExists && room.players.length > 0) {
+    room.players[0].role = "admin";
+    room.players[0].isReady = true;
+    io.to(room.players[0].socketId).emit("youAreNowAdmin");
+  }
 
   io.to(roomName).emit("gameFinished", { ranking });
 
@@ -189,7 +223,7 @@ io.on("connection", (socket) => {
       socketId: socket.id,
       name: name,
       role: "player",
-      isReady: false,
+      isReady: true,
       points: 0,
       errors: 0,
 
@@ -266,9 +300,13 @@ io.on("connection", (socket) => {
 
     if (room.beingPlayed) {
       player.role = "spectator";
+
+      if (!room.spectatorIds.includes(player.id)) {
+        room.spectatorIds.push(player.id);
+      }
     }
 
-    player.isReady = false;
+    player.isReady = true;
     player.points = 0;
     player.errors = 0;
 
@@ -280,6 +318,7 @@ io.on("connection", (socket) => {
     }
 
     broadcastRoomState(room.name);
+    broadcastRoomList();
     console.log(`${player.name} se unió a ${room.name}`);
   });
 
@@ -542,13 +581,11 @@ io.on("connection", (socket) => {
 
       room.players = room.players.filter((p) => p.socketId !== socket.id);
 
-      if (player.role === "admin" && room.players.length > 0) {
-        room.players[0].role = "admin";
-        io.to(room.players[0].socketId).emit("youAreNowAdmin");
+      if (player.role === "admin") {
+        assignNewAdmin(room); // ⭐️ Usa la nueva función
       }
 
       removeEmptyRooms();
-
       broadcastRoomState(room.name);
       broadcastRoomList();
     });
@@ -563,7 +600,7 @@ io.on("connection", (socket) => {
     const player = room.players.find((p) => p.id === id);
     if (!player) return;
 
-    player.isReady = false;
+    player.isReady = true;
     player.points = 0;
     player.errors = 0;
 
@@ -585,9 +622,8 @@ io.on("connection", (socket) => {
     console.log(`${player.name} ha salido de la sala ${roomName}`);
 
     // Si era admin, pasar rol al siguiente jugador
-    if (player.role === "admin" && room.players.length > 0) {
-      room.players[0].role = "admin";
-      io.to(room.players[0].socketId).emit("youAreNowAdmin");
+    if (player.role === "admin") {
+      assignNewAdmin(room);
     }
 
     // Refrescar estat
