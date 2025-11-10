@@ -1,6 +1,26 @@
 <template>
-  <div id="game-engine">
+  <div id="game-engine" :class="debuffState.isActive ? debuffState.type : ''">
+    <!-- Modificació per els efectes visuals Apagon Y Flash -->
+    <div
+      class="debuff-overlay"
+      v-if="debuffState.isActive && (debuffState.type === 'Apagon' || debuffState.type === 'Flash')"
+    ></div>
+
     <div id="player" v-if="!isSpectator">
+      <div class="mage-info" v-if="jugador.mage">
+        <h3>Ets: {{ jugador.mage.name }}</h3>
+        <p>
+          <strong>Power-up (5 acerts seguits):</strong>
+          {{ jugador.mage.powerUp }} - <em>{{ jugador.mage.description }}</em>
+        </p>
+      </div>
+
+      <div class="powerup-container" v-if="powerUpState.ready && !powerUpState.used">
+        <button @click="usePowerUp" class="powerup-button">
+          🔥 ATACAR A UN OPONENT ALEATORI 🔥
+        </button>
+      </div>
+
       <h2>Escriu les paraules següents:</h2>
 
       <div class="paraules">
@@ -19,13 +39,11 @@
               :key="letterIndex"
               :class="getClasseLletra(letterIndex)"
             >
-              {{ lletra }}
+              {{ getDisplayLetter(lletra, letterIndex) }}
             </span>
           </template>
 
-          <template v-else>
-            {{ paraula.text }}
-          </template>
+          <template v-else> {{ getDisplayWord(paraula.text) }} </template>
         </span>
       </div>
 
@@ -92,11 +110,29 @@ const estatDelJoc = reactive({
     { text: 'taula', estat: 'pendent' },
     { text: 'cadira', estat: 'pendent' },
     { text: 'cotxe', estat: 'pendent' },
+    { text: 'cotxe', estat: 'pendent' },
+    { text: 'magia', estat: 'pendent' },
+    { text: 'poder', estat: 'pendent' },
+    { text: 'foc', estat: 'pendent' },
+    { text: 'aigua', estat: 'pendent' },
+    { text: 'aire', estat: 'pendent' },
   ],
   indexParaulaActiva: 0,
   textEntrat: '',
 })
 
+const powerUpState = reactive({
+  ready: false,
+  used: false,
+  name: '',
+})
+
+// Estat dels Debuffs (atacs rebuts)
+const debuffState = reactive({
+  isActive: false,
+  type: null,
+  duration: 0,
+})
 //Declarem la variable reactiva la qual guarda la informació del jugador que observem com a espectador
 const estatJugadorObservat = reactive({
   paraules: estatDelJoc.paraules.map((p) => ({ ...p })), //Copiem les paraules de dins de estat del joc
@@ -181,6 +217,65 @@ props.socket.on('spectatorGameView', (gameStats) => {
     idJugadorObservat.value = jugadorsReals.value[0].id
   }
   actualitzarVistaEspectador()
+})
+
+// Has guanyat el teu power-up
+props.socket.on('powerUpReady', (mage) => {
+  console.log('Power-up guanyat!', mage.powerUp)
+  powerUpState.ready = true
+  powerUpState.name = mage.powerUp
+})
+
+// El servidor confirma que has fet servir el power-up
+props.socket.on('powerUpUsed', () => {
+  console.log('Power-up utilitzat correctament!')
+  // El botó ja s'amaga al fer click (powerUpState.used = true)
+})
+
+// Reseteja l'estat al començar la partida
+props.socket.on('gameStarted', () => {
+  powerUpState.ready = false
+  powerUpState.used = false
+  powerUpState.name = ''
+  // Reseteja també els debuffs
+  debuffState.isActive = false
+  debuffState.type = null
+  debuffState.duration = 0
+})
+
+// T'han atacat!
+props.socket.on('debuffReceived', ({ type, duration }) => {
+  console.log(`DEBUFF REBUT: ${type} durant ${duration}ms`)
+  debuffState.isActive = true
+  debuffState.type = type
+  debuffState.duration = duration
+})
+
+// S'ha acabat el debuff
+props.socket.on('debuffEnded', () => {
+  console.log('Debuff acabat!')
+  debuffState.isActive = false
+  debuffState.type = null
+  debuffState.duration = 0
+})
+
+// El Tsunami t'ha tocat (has fallat)
+props.socket.on('tsunamiHit', () => {
+  console.log('TSUNAMI! Has de tornar a començar la frase.')
+
+  // Reseteja el progrés del joc
+  estatDelJoc.indexParaulaActiva = 0
+
+  // Comprova si hi ha paraules abans d'assignar
+  if (estatDelJoc.paraules.length > 0) {
+    paraulaActiva.value = estatDelJoc.paraules[0]
+  }
+
+  // Marca totes les paraules com a pendents
+  estatDelJoc.paraules.forEach((p) => (p.estat = 'pendent'))
+
+  // Envia l'estat actualitzat als espectadors
+  playerGameStatus()
 })
 
 // 3. FUNCIONS DEL JOC
@@ -275,6 +370,72 @@ function playerGameStatus() {
     },
   })
 }
+
+function usePowerUp() {
+  if (!powerUpState.ready || powerUpState.used) return
+  powerUpState.used = true // Marca com a utilitzat (amaga el botó)
+
+  // Envia l'event al servidor. El servidor s'encarrega de tot.
+  props.socket.emit('usePowerUp', {
+    roomName: props.roomName,
+    id: props.jugador.id,
+  })
+}
+
+// Funció auxiliar per 'Ignició'
+function posarTildes(lletra) {
+  const tildes = {
+    a: 'á',
+    e: 'é',
+    i: 'í',
+    o: 'ó',
+    u: 'ú',
+    A: 'Á',
+    E: 'É',
+    I: 'Í',
+    O: 'Ó',
+    U: 'Ú',
+  }
+  return tildes[lletra] || lletra
+}
+
+// Funció per 'Enredadera'
+function caracterEspecial() {
+  const chars = '@#$%&*-+?'
+  return chars[Math.floor(Math.random() * chars.length)]
+}
+
+// Per a les paraules que no són l'actual
+function getDisplayWord(text) {
+  if (!debuffState.isActive) return text
+
+  if (debuffState.type === 'Ignicio') {
+    return text.split('').map(posarTildes).join('')
+  }
+
+  if (debuffState.type === 'Enredadera') {
+    return text.split('').map(caracterEspecial).join('')
+  }
+  return text
+}
+
+// Per a les lletres de la paraula actual
+function getDisplayLetter(lletra, index) {
+  if (!debuffState.isActive) return lletra
+
+  if (debuffState.type === 'Ignicio') {
+    return posarTildes(lletra)
+  }
+  if (debuffState.type === 'Enredadera') {
+    // Mostra la lletra correcta si ja l'has escrit bé
+    const lletraIntroduida = estatDelJoc.textEntrat[index]
+    if (lletraIntroduida !== undefined && lletraIntroduida === lletra) {
+      return lletra
+    }
+    return caracterEspecial()
+  }
+  return lletra
+}
 </script>
 
 <style scoped>
@@ -319,5 +480,89 @@ function playerGameStatus() {
   background-color: #777; /* Fons fosc per al "cursor" */
   color: white;
   border-radius: 2px;
+}
+
+/* Estils per els powerups */
+.mage-info {
+  background-color: #f4f0ff;
+  border: 1px solid #dcd1ff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+.mage-info h3 {
+  margin: 0 0 5px 0;
+  color: #6a1b9a;
+}
+.mage-info p {
+  margin: 0;
+}
+.powerup-container {
+  margin-bottom: 20px;
+}
+.powerup-button {
+  background-color: #ffc107;
+  color: #333;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px 0 rgba(255, 193, 7, 0.4);
+}
+.powerup-button:hover {
+  background-color: #ffca2c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(255, 193, 7, 0.5);
+}
+
+/* --- Estils per als Debuffs --- */
+
+#game-engine {
+  position: relative;
+}
+
+.debuff-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Efecte 'Apagón' (Mag Oscur) */
+#game-engine.Apagon .debuff-overlay {
+  background-color: rgba(0, 0, 0, 0.85); /* 85% fosc */
+  transition: background-color 0.5s ease;
+}
+
+/* Efecte 'Flash' (Mag de Llum) */
+#game-engine.Flash .debuff-overlay {
+  animation: flash-animation 0.5s infinite alternate;
+}
+
+@keyframes flash-animation {
+  from {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  to {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Efecte 'Purificar' (Mag de Gel) */
+/* Amaga el fons de la paraula actual */
+#game-engine.Congelar .paraula.actual {
+  background-color: transparent;
+  border: 1px dashed #ccc; /* Mostra una mica d'info */
+}
+/* Amaga el cursor de la lletra actual */
+#game-engine.Congelar .lletra-actual {
+  background-color: transparent;
+  color: inherit;
 }
 </style>

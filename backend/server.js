@@ -31,7 +31,7 @@ let rooms = [];
 const mageDefinitions = [
   {
     name: "Mag de Foc",
-    powerUp: "Ignició",
+    powerUp: "Ignicio",
     description: "Posa tilde a totes les lletres",
   },
   {
@@ -47,7 +47,7 @@ const mageDefinitions = [
   },
   {
     name: "Mag Oscur",
-    powerUp: "Apagón",
+    powerUp: "Apagon",
     description: "Torna tota la pantalla molt oscura ",
   },
   {
