@@ -1,38 +1,80 @@
 <template>
-  <div v-if="!isConnected">
-    <h2 class="centrar">Introduce tu nombre</h2>
-    <div class="centro">
-      <input type="text" v-model="jugador.name" placeholder="Tu nombre" />
-      <button @click="sendNickname(jugador.name)">Continuar</button>
+  <div class="fondo" v-if="!isConnected">
+    <img class="mago mago-fuego" src="../public/img/MagoFuego-removebg-preview.png" alt="Mago de Fuego">
+    <img class="mago mago-angelical" src="../public/img/MagoAngelical-removebg-preview.png" alt="Mago Angelical">
+    <img class="mago mago-obscuro" src="../public/img/MagoObscuro-removebg-preview.png" alt="Mago Obscuro">
+    <img class="mago mago-tierra" src="../public/img/MagoTierra-removebg-preview.png" alt="Mago de Tierra">
+    
+    <div class="login-container">
+    
+      <div class="badge">
+        <span>TYPE RACER ROYALE</span>
+      </div>
+
+      <h1 class="login-title">
+        Desfés la teva màgia. Inicia sessió i continua la teva aventura.
+      </h1>
+
+      <div class="login-form">
+        <input type="text" id="username" class="login-input" v-model="jugador.name" placeholder="Nom de Mag/a" />
+        
+        <button class="login-button" @click="sendNickname(jugador.name)">Inicia el teu Viatge</button>
+      </div>
+
     </div>
   </div>
 
-  <div v-else-if="!joinedRoom">
-    <h2>Salas disponibles (Públicas)</h2>
+  <div class="fondo" v-else-if="!joinedRoom"> <div class="rooms-page-container"> <div class="rooms-grid-top">
+        
+        <div class="profile-card">
+          
+          <img src="../public/img/Aprendiz_Mago.png" alt="Aprenent de Mag" class="profile-avatar" />
+          
+          <div class="profile-info">
+            <span class="badge">Perfil de l'Aprenent</span>
+            <h3>NomUser</h3> 
+            <h5>Aprenent de màgia</h5>
+          </div>
 
-    <ul class="room-list">
-      <li v-for="room in rooms" :key="room.name" class="room-item">
-        <div class="room-info">
-          <strong>{{ room.name }}</strong>
-          <span>👥 {{ room.playerCount }} jugadores</span>
-          <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
+          <p>
+            Benvingut, jove aprenent de màgia! El teu viatge cap a la mestria comença ara. 
+            Demostra el teu valor i habilitat, i la túnica d'un mag de veritat t'espera!
+          </p>
+          
         </div>
-        <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unirse</button>
-      </li>
-    </ul>
+          
+        </div>
+        <div class="actions-container">
+          
+          <div class="action-card create-room-card">
+            <input v-model="roomInput" placeholder="Nom de la sala" />
+            <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
+            <button @click="createRoom">Crear una nova sala</button>
+          </div>
 
-    <hr />
+          <div class="action-card join-private-card">
+            <input v-model="privateCodeInput" placeholder="Codi d'Accés (6 dígits)" maxlength="6" />
+            <button @click="joinPrivateRoom">Unir-se a Sala Privada amb Codi</button>
+          </div>
+        </div>
 
-    <h3>Crear nueva sala</h3>
-    <input v-model="roomInput" placeholder="Nombre de la sala" />
-    <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
-    <button @click="createRoom">Crear sala</button>
+      </div>
 
-    <hr />
+      <div class="rooms-grid-bottom">
+        
+        <h2>Sales disponibles (Públiques)</h2>
+        <ul class="room-list">
+          <li v-for="room in rooms" :key="room.name" class="room-item">
+            <div class="room-info">
+              <strong>{{ room.name }}</strong>
+              <span>👥 {{ room.playerCount }} jugadors</span>
+              <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
+            </div>
+            <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unir-se</button>
+          </li>
+        </ul>
+    </div>
 
-    <h3>Unirse a Sala Privada con Código</h3>
-    <input v-model="privateCodeInput" placeholder="Código de Acceso (6 digitos)" maxlength="6" />
-    <button @click="joinPrivateRoom">Unirse</button>
   </div>
 
   <div v-else-if="vista === 'preGame'">
@@ -264,15 +306,149 @@ function resetToRoomList() {
 }
 </script>
 
-<style scoped>
-.centrar {
-  text-align: center;
+<style>
+/* 1. CODI PER LA LOGIN PAGE */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+body{
+  margin: 0;
 }
-.centro {
+/* Estil global per centrar el contingut */
+#app {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background-color: #15131e;
+  color: #f0f0f0; 
+  height: 100vh; 
   display: flex;
+  justify-content: center; 
+  align-items: center; 
+  overflow: hidden;
+}
+
+button, 
+input {
+  font-family: inherit; 
+}
+
+/* --- ESTILS DEL CONTENEDOR 'fondo' --- */
+.fondo {
+  position: relative; /* ¡MUY IMPORTANTE! */
+  background: linear-gradient(to bottom, #15131e 32%, #006aff 100%);  
+  border-radius: 25px; 
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+  padding: 20px;
+  width: 98%;
+  height: 95%;
+  min-width: 98%;
+  min-height: 95%;
 }
+
+/* --- ESTILS DEL LOGIN CONTAINER --- */
+.login-container {
+  position: relative; /* Necesario para que z-index funcione */
+  z-index: 2;
+  width: 50%;
+  text-align: center; /* Centra el texto */
+  height: 80%;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  justify-content: center; 
+  gap: 15px;
+}
+
+.login-container .login-title {
+  font-weight: 400;
+}
+
+.login-container .badge {
+  background: linear-gradient(to right, #2c2b53 0%, #6a6aff 100%);
+  border-radius: 100px; 
+  color: white; 
+  padding: 8px 20px; 
+  display: inline-flex; 
+  align-items: center;
+  justify-content: center; 
+}
+
+.login-container .login-input {
+  background-color: transparent; 
+  border: none;                  
+  outline: none;                 
+  border-bottom: 2px solid #cb95e6; 
+  color: #f0f0f0; 
+  width: 70%; 
+  padding: 10px 0;
+  text-align: center;
+  font-size: 1.1rem; 
+  margin-bottom: 20px; 
+}
+
+.login-container .login-input::placeholder {
+  color: #cb95e6; 
+  opacity: 1; 
+}
+
+.login-container .login-button {
+  background: linear-gradient(to right, #ffffff 0%, #5866ff 100%);
+  color: #15131e;
+  border-radius: 100px;
+  font-size: 1rem;
+  padding: 10px 30px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  border: solid 1px transparent; 
+  background-clip: padding-box; 
+}
+
+.login-container .login-button:hover, 
+.login-container .login-button:focus {
+  background: transparent; 
+  border-color: #ffffff;
+  color: #ffffff;
+  outline: none;
+}
+
+/* --- ESTILS DELS MAGS (LOGIN) --- */
+.mago {
+  position: absolute; 
+  width: 20%;         
+  height: auto;
+  z-index: 1;         
+}
+.mago-obscuro {
+  bottom: -80px;  
+  left: -10px;     
+  transform: rotate(20deg);
+  width: 30%;
+}
+.mago-tierra {
+  bottom: -70px;  
+  right: 15px;     
+  transform: rotate(-20deg); 
+  width: 30%;
+}
+.mago-fuego {
+  top: -130px;      
+  left: 20px;      
+  transform: rotate(145deg);
+  width: 30%;
+}
+.mago-angelical {
+  top: -150px;      
+  right: 50px;     
+  transform: rotate(-150deg);
+  width: 31%;
+}
+/* --- (NOU CSS) ESTILS PÀGINA DE SALES (!joinedRoom) --- */
+/* --- (CSS ANTIC) ESTILS DE LES LLISTES DE SALES --- */
+/* Mantenim els estils originals per la llista de sales públiques */
+
 .ready {
   background-color: greenyellow;
 }
@@ -294,7 +470,7 @@ function resetToRoomList() {
   margin-bottom: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* Nota: Això ho haurem de canviar per assemblar-se al disseny fosc */
 }
 .room-info {
   display: flex;
