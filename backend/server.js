@@ -280,13 +280,17 @@ io.on("connection", (socket) => {
 
     io.sockets.sockets.get(kickedPlayer.socketId)?.leave(roomName);
     io.to(kickedPlayer.socketId).emit("kicked");
+    io.to(room.players.socketId).emit("kickAlert", (kickedPlayer.name, admin.name) );
 
     room.players = room.players.filter((p) => p.id !== playerId);
 
     if (kickedPlayer.role === "admin" && room.players.length > 0) {
       room.players[0].role = "admin";
+      io.to(room.players.socketId).emit("adminAlert", room.players[0].name);
       io.to(room.players[0].socketId).emit("youAreNowAdmin");
     }
+
+    
 
     removeEmptyRooms();
 
@@ -309,6 +313,7 @@ io.on("connection", (socket) => {
     newAdmin.role = "admin";
 
     io.to(newAdmin.socketId).emit("youAreNowAdmin");
+    io.to(room.players.socketId).emit("adminAlert", newAdmin.name);
     broadcastRoomState(roomName);
   });
 
@@ -464,19 +469,21 @@ io.on("connection", (socket) => {
     room.players = room.players.filter((p) => p.id !== id);
     socket.leave(roomName);
 
+    io.to(room.players.socketId).emit("leaveAlert", player.name);
     console.log(`${player.name} ha salido de la sala ${roomName}`);
 
     // Si era admin, pasar rol al siguiente jugador
     if (player.role === "admin" && room.players.length > 0) {
       room.players[0].role = "admin";
       io.to(room.players[0].socketId).emit("youAreNowAdmin");
+      io.to(room.players.socketId).emit("adminAlert", room.players[0].name);
     }
 
     // Refrescar estat
     removeEmptyRooms();
     broadcastRoomList();
     broadcastRoomState(roomName);
-  });
+  }); 
 });
 
 server.listen(port, () => console.log(`Server listening on port ${port}`));

@@ -1,4 +1,5 @@
 <template>
+  <AlertComponent :message-list="message.value" :class="{disabled: !messageIsEmpty}"/>
   <div v-if="!isConnected">
     <h2 class="centrar">Introduce tu nombre</h2>
     <div class="centro">
@@ -88,6 +89,7 @@ import RankingComponent from './components/RankingComponent.vue'
 import viewLobby from './components/PreGame/lobby/viewLobby.vue'
 import GameEngine from './components/Game/GameEngine.vue'
 import TempsRestant from './components/Game/TempsRestant.vue'
+import AlertComponent from './components/AlertComponent.vue'
 
 let socket = null
 
@@ -105,6 +107,9 @@ const roomInput = ref('')
 const roomState = ref(null)
 const isPrivateCreation = ref(false)
 const privateCodeInput = ref('')
+
+const message = ref([]);
+const messageIsEmpty = ref(message.value > 0);
 
 // --- CONEXIÓN Y EVENTOS ---
 
@@ -173,6 +178,25 @@ function tryConn() {
   //Transferim l'admin
   socket.on('youAreNowAdmin', () => {
     jugador.value.role = 'admin'
+  })
+
+  //Alerts
+  socket.on('leaveAlert', ({playerName}) => {
+    const msg = "El jugador " + playerName + " s'ha desconnectat."
+    message.value.push(msg);
+    timeOut(msg)
+  })
+
+  socket.on('adminAlert', ({playerName}) => {
+    const msg = "El jugador " + playerName + " és ara l'administrador."
+    message.value.push(msg);
+    timeOut(msg)
+  })
+  
+  socket.on('kickAlert', (kickName, adminPlayer) => {
+    const msg = 'El jugador ' + kickName + " ha sigut expulsat per " + adminPlayer;
+    message.value.push(msg);
+    timeOut(msg)
   })
 }
 
@@ -254,6 +278,7 @@ function leaveRoom() {
   resetToRoomList()
 }
 
+// --- Funcions ---
 function resetToRoomList() {
   joinedRoom.value = false
   currentRoom.value = ''
@@ -262,6 +287,12 @@ function resetToRoomList() {
   roomState.value = null
   loadRooms()
 }
+
+function timeOut(msg) {
+    setTimeout(() => {
+      message.value.filter(messageStr => messageStr != msg );
+    }, 5000)
+  }
 </script>
 
 <style scoped>
@@ -322,6 +353,9 @@ function resetToRoomList() {
 .room-item button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+.disabled {
+  display: none;
 }
 hr {
   margin: 30px 0;
