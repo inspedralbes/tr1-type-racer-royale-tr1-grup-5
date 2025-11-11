@@ -1,34 +1,43 @@
 <template>
-  <p>
-    Bienvenido {{ jugadorClient.name }}. Tienes el rol de **{{ jugadorClient.role }}** en la sala.
-  </p>
+  <div class="main-content">
+    <p class="welcome-text">
+      Bienvenido {{ jugadorClient.name }}. Tienes el rol de
+      <strong>{{ jugadorClient.role }}</strong> en la sala.
+    </p>
 
-  <div v-if="accessCodeToDisplay" class="access-code-box">
-    Sala Privada 🔒 | Código de Acceso:
-    <strong>{{ accessCodeToDisplay }}</strong>
-    <p>Comparte este código para que otros se unan.</p>
-  </div>
-  <div>
+    <div v-if="accessCodeToDisplay" class="access-code-box">
+      Sala Privada 🔒 | Código de Acceso:
+      <strong>{{ accessCodeToDisplay }}</strong>
+      <p>Comparte este código para que otros se unan.</p>
+    </div>
+
     <playerList
       :socket-c="socket"
       :llista-jug="llistaJugadors"
       :is-admin="isAdmin"
       :jugador="jugadorClient"
       :room-name="roomName"
+      class="player-list-component"
     />
+  </div>
 
-    <button v-if="isAdmin" @click="changeTime">Temps: {{ tempsEstablert }}</button>
+  <div class="action-bar">
+    <button v-if="isAdmin" @click="changeTime" class="btn btn-secondary">
+      Temps: {{ tempsEstablert }}s
+    </button>
     <button
       v-if="isAdmin"
-      :class="isMajority ? '' : 'disabled'"
+      :class="['btn', 'btn-start', { disabled: !isMajority }]"
       @click="startGame"
       :disabled="!isMajority"
     >
       Comenzar
     </button>
-    <button :class="imReady ? 'ready' : 'notReady'" @click="toggleReady(jugadorClient.id)">
+    <button :class="['btn', imReady ? 'ready' : 'notReady']" @click="toggleReady(jugadorClient.id)">
       {{ imReady ? 'Listo ✔️' : 'No Listo ❌' }}
     </button>
+
+    <button @click="leaveRoom" class="btn btn-leave">Salir de la Sala</button>
   </div>
 </template>
 
@@ -40,6 +49,7 @@ const props = defineProps(['socketC', 'llistaJug', 'jugador', 'roomName', 'roomS
 const socket = computed(() => props.socketC)
 const llistaJugadors = computed(() => props.llistaJug)
 const jugadorClient = computed(() => props.jugador || {})
+const emit = defineEmits(['leave'])
 
 // Aquest valor ara es llegeix de les props que venen del servidor
 const tempsEstablert = computed(() => {
@@ -133,23 +143,151 @@ function toggleReady(id) {
     console.error('No se pudo cambiar estado: Socket no conectado.')
   }
 }
+
+function leaveRoom() {
+  emit('leave')
+}
 </script>
 
 <style scoped>
-/* Estilos para el botón de comenzar */
-.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.fondo {
+  /* Layout principal */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: linear-gradient(to bottom, #1e1b2e 32%, #0058d1 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+  font-family: 'Poppins', sans-serif;
+  color: #f0f0f0;
 }
 
-/* Estilos para la caja del código de acceso */
-.access-code-box {
-  margin: 20px auto;
-  padding: 15px;
-  border: 2px dashed green;
-  background-color: #e6ffe6;
-  border-radius: 5px;
+/* Contenedor de la info y lista de jugadores */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1.5rem; /* Espacio entre los elementos de arriba */
+}
+
+.welcome-text {
+  font-size: 1.2rem;
   text-align: center;
-  max-width: 400px;
+  margin: 0;
+}
+.welcome-text strong {
+  color: #58a6ff; /* Un azul más brillante */
+  text-transform: capitalize;
+}
+
+.access-code-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid #006aff;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  width: 100%;
+  max-width: 500px; /* Limita el ancho de la caja del código */
+  box-sizing: border-box;
+}
+
+.access-code-box strong {
+  color: #79c0ff;
+  font-size: 1.75rem;
+  display: block;
+  margin: 0.5rem 0;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.access-code-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Ajusta el componente de la lista para que ocupe el espacio */
+.player-list-component {
+  width: 100%;
+  /* Puedes añadir más estilos si es necesario, 
+     pero los estilos de playerList.vue deberían encargarse */
+}
+
+/* --- BARRA DE ACCIONES --- */
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap; /* Para que se vea bien en pantallas pequeñas */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Espacio entre botones */
+  width: 100%;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilo base de todos los botones */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: white;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Variantes de botones --- */
+
+.btn-secondary {
+  background-color: #30363d;
+  border: 1px solid #484f58;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #3a4047;
+}
+
+.btn-start {
+  background-color: #238636; /* Verde "Comenzar" */
+}
+.btn-start:hover:not(:disabled) {
+  background-color: #2da042;
+}
+
+.btn.ready {
+  background-color: #238636; /* Verde "Listo" */
+}
+
+.btn.notReady {
+  background-color: #8b0000; /* Rojo oscuro "No Listo" */
+}
+
+.btn-leave {
+  background-color: #da3633; /* Rojo "Salir" */
+}
+.btn-leave:hover:not(:disabled) {
+  background-color: #f85149;
+}
+
+/* Estado deshabilitado */
+.btn:disabled,
+.btn.disabled {
+  background-color: #21262d;
+  color: #6e7681;
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 </style>

@@ -1,83 +1,97 @@
 <template>
   <div class="fondo" v-if="!isConnected">
-    <img class="mago mago-fuego" src="../public/img/MagoFuego-removebg-preview.png" alt="Mago de Fuego">
-    <img class="mago mago-angelical" src="../public/img/MagoAngelical-removebg-preview.png" alt="Mago Angelical">
-    <img class="mago mago-obscuro" src="../public/img/MagoObscuro-removebg-preview.png" alt="Mago Obscuro">
-    <img class="mago mago-tierra" src="../public/img/MagoTierra-removebg-preview.png" alt="Mago de Tierra">
-    
+    <img
+      class="mago mago-fuego"
+      src="../public/img/MagoFuego-removebg-preview.png"
+      alt="Mago de Fuego"
+    />
+    <img
+      class="mago mago-angelical"
+      src="../public/img/MagoAngelical-removebg-preview.png"
+      alt="Mago Angelical"
+    />
+    <img
+      class="mago mago-obscuro"
+      src="../public/img/MagoObscuro-removebg-preview.png"
+      alt="Mago Obscuro"
+    />
+    <img
+      class="mago mago-tierra"
+      src="../public/img/MagoTierra-removebg-preview.png"
+      alt="Mago de Tierra"
+    />
+
     <div class="login-container">
-    
       <div class="badge">
         <span>TYPE RACER ROYALE</span>
       </div>
 
-      <h1 class="login-title">
-        Desfés la teva màgia. Inicia sessió i continua la teva aventura.
-      </h1>
+      <h1 class="login-title">Desfés la teva màgia. Inicia sessió i continua la teva aventura.</h1>
 
       <div class="login-form">
-        <input type="text" id="username" class="login-input" v-model="jugador.name" placeholder="Nom de Mag/a" />
-        
-        <button class="login-button" @click="sendNickname(jugador.name)">Inicia el teu Viatge</button>
-      </div>
+        <input
+          type="text"
+          id="username"
+          class="login-input"
+          v-model="jugador.name"
+          placeholder="Nom de Mag/a"
+        />
 
+        <button class="login-button" @click="sendNickname(jugador.name)">
+          Inicia el teu Viatge
+        </button>
+      </div>
     </div>
   </div>
 
-  <div class="fondo" v-else-if="!joinedRoom"> <div class="rooms-page-container"> <div class="rooms-grid-top">
-        
+  <div class="fondo" v-else-if="!joinedRoom">
+    <div class="rooms-page-container">
+      <div class="rooms-grid-top">
         <div class="profile-card">
-          
           <img src="../public/img/Aprendiz_Mago.png" alt="Aprenent de Mag" class="profile-avatar" />
-          
+
           <div class="profile-info">
             <span class="badge">Perfil de l'Aprenent</span>
-            <h3>NomUser</h3> 
+            <h3>NomUser</h3>
             <h5>Aprenent de màgia</h5>
           </div>
 
           <p>
-            Benvingut, jove aprenent de màgia! El teu viatge cap a la mestria comença ara. 
-            Demostra el teu valor i habilitat, i la túnica d'un mag de veritat t'espera!
+            Benvingut, jove aprenent de màgia! El teu viatge cap a la mestria comença ara. Demostra
+            el teu valor i habilitat, i la túnica d'un mag de veritat t'espera!
           </p>
-          
         </div>
-          
-        </div>
-        <div class="actions-container">
-          
-          <div class="action-card create-room-card">
-            <input v-model="roomInput" placeholder="Nom de la sala" />
-            <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
-            <button @click="createRoom">Crear una nova sala</button>
-          </div>
-
-          <div class="action-card join-private-card">
-            <input v-model="privateCodeInput" placeholder="Codi d'Accés (6 dígits)" maxlength="6" />
-            <button @click="joinPrivateRoom">Unir-se a Sala Privada amb Codi</button>
-          </div>
-        </div>
-
       </div>
+      <div class="actions-container">
+        <div class="action-card create-room-card">
+          <input v-model="roomInput" placeholder="Nom de la sala" />
+          <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
+          <button @click="createRoom">Crear una nova sala</button>
+        </div>
 
-      <div class="rooms-grid-bottom">
-        
-        <h2>Sales disponibles (Públiques)</h2>
-        <ul class="room-list">
-          <li v-for="room in rooms" :key="room.name" class="room-item">
-            <div class="room-info">
-              <strong>{{ room.name }}</strong>
-              <span>👥 {{ room.playerCount }} jugadors</span>
-              <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
-            </div>
-            <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unir-se</button>
-          </li>
-        </ul>
+        <div class="action-card join-private-card">
+          <input v-model="privateCodeInput" placeholder="Codi d'Accés (6 dígits)" maxlength="6" />
+          <button @click="joinPrivateRoom">Unir-se a Sala Privada amb Codi</button>
+        </div>
+      </div>
     </div>
 
+    <div class="rooms-grid-bottom">
+      <h2>Sales disponibles (Públiques)</h2>
+      <ul class="room-list">
+        <li v-for="room in rooms" :key="room.name" class="room-item">
+          <div class="room-info">
+            <strong>{{ room.name }}</strong>
+            <span>👥 {{ room.playerCount }} jugadors</span>
+            <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
+          </div>
+          <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unir-se</button>
+        </li>
+      </ul>
+    </div>
   </div>
 
-  <div v-else-if="vista === 'preGame'">
+  <div class="fondo" v-else-if="vista === 'preGame'">
     <h2>Sala: {{ currentRoom }}</h2>
     <viewLobby
       :socket-c="socket"
@@ -86,6 +100,7 @@
       :jugador="jugador"
       :room-name="currentRoom"
       :room-state="roomState"
+      @leave="leaveRoom"
     />
   </div>
 
@@ -310,7 +325,7 @@ function resetToRoomList() {
 /* 1. CODI PER LA LOGIN PAGE */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
-body{
+body {
   margin: 0;
 }
 /* Estil global per centrar el contingut */
@@ -318,24 +333,24 @@ body{
   font-family: 'Poppins', sans-serif;
   margin: 0;
   background-color: #15131e;
-  color: #f0f0f0; 
-  height: 100vh; 
+  color: #f0f0f0;
+  height: 100vh;
   display: flex;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
 
-button, 
+button,
 input {
-  font-family: inherit; 
+  font-family: inherit;
 }
 
 /* --- ESTILS DEL CONTENEDOR 'fondo' --- */
 .fondo {
   position: relative; /* ¡MUY IMPORTANTE! */
-  background: linear-gradient(to bottom, #15131e 32%, #006aff 100%);  
-  border-radius: 25px; 
+  background: linear-gradient(to bottom, #15131e 32%, #006aff 100%);
+  border-radius: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -356,9 +371,9 @@ input {
   text-align: center; /* Centra el texto */
   height: 80%;
   display: flex;
-  flex-direction: column; 
-  align-items: center;    
-  justify-content: center; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 15px;
 }
 
@@ -368,30 +383,30 @@ input {
 
 .login-container .badge {
   background: linear-gradient(to right, #2c2b53 0%, #6a6aff 100%);
-  border-radius: 100px; 
-  color: white; 
-  padding: 8px 20px; 
-  display: inline-flex; 
+  border-radius: 100px;
+  color: white;
+  padding: 8px 20px;
+  display: inline-flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
 }
 
 .login-container .login-input {
-  background-color: transparent; 
-  border: none;                  
-  outline: none;                 
-  border-bottom: 2px solid #cb95e6; 
-  color: #f0f0f0; 
-  width: 70%; 
+  background-color: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #cb95e6;
+  color: #f0f0f0;
+  width: 70%;
   padding: 10px 0;
   text-align: center;
-  font-size: 1.1rem; 
-  margin-bottom: 20px; 
+  font-size: 1.1rem;
+  margin-bottom: 20px;
 }
 
 .login-container .login-input::placeholder {
-  color: #cb95e6; 
-  opacity: 1; 
+  color: #cb95e6;
+  opacity: 1;
 }
 
 .login-container .login-button {
@@ -402,13 +417,13 @@ input {
   padding: 10px 30px;
   cursor: pointer;
   transition: 0.3s ease-in-out;
-  border: solid 1px transparent; 
-  background-clip: padding-box; 
+  border: solid 1px transparent;
+  background-clip: padding-box;
 }
 
-.login-container .login-button:hover, 
+.login-container .login-button:hover,
 .login-container .login-button:focus {
-  background: transparent; 
+  background: transparent;
   border-color: #ffffff;
   color: #ffffff;
   outline: none;
@@ -416,32 +431,32 @@ input {
 
 /* --- ESTILS DELS MAGS (LOGIN) --- */
 .mago {
-  position: absolute; 
-  width: 20%;         
+  position: absolute;
+  width: 20%;
   height: auto;
-  z-index: 1;         
+  z-index: 1;
 }
 .mago-obscuro {
-  bottom: -80px;  
-  left: -10px;     
+  bottom: -80px;
+  left: -10px;
   transform: rotate(20deg);
   width: 30%;
 }
 .mago-tierra {
-  bottom: -70px;  
-  right: 15px;     
-  transform: rotate(-20deg); 
+  bottom: -70px;
+  right: 15px;
+  transform: rotate(-20deg);
   width: 30%;
 }
 .mago-fuego {
-  top: -130px;      
-  left: 20px;      
+  top: -130px;
+  left: 20px;
   transform: rotate(145deg);
   width: 30%;
 }
 .mago-angelical {
-  top: -150px;      
-  right: 50px;     
+  top: -150px;
+  right: 50px;
   transform: rotate(-150deg);
   width: 31%;
 }
