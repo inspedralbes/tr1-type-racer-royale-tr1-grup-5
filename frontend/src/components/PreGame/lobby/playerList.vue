@@ -2,14 +2,11 @@
   <div class="player-list-container">
     <div v-for="player in props.llistaJug" :key="player.id" class="player-card">
       <div class="player-info">
-        <span class="player-name">{{ player.name }}</span>
-
         <span v-if="player.id === props.jugador.id" class="you-indicator">(Tú)</span>
-        <span v-if="player.role === 'admin'" title="Administrador">⭐</span>
-      </div>
 
-      <div class="status-indicator">
-        <span :class="player.isReady ? 'ready' : 'not-ready'">
+        <span class="margen" v-if="player.role === 'admin'" title="Administrador">⭐</span>
+        <span class="player-name">{{ player.name }}</span>
+        <span class="status-indicator" :class="player.isReady ? 'ready' : 'not-ready'">
           {{ player.isReady ? 'Preparat ✔️' : 'No Preparat ❌' }}
         </span>
       </div>
@@ -72,12 +69,13 @@ function deletePlayer(id) {
 
 /* 🎨 La tarjeta de jugador (Estilo de la imagen) */
 .player-card {
+  text-align: center;
   background-color: #1a1a2e; /* Fondo oscuro */
   border-radius: 16px;
   border: 2px solid #b366ff; /* Borde neón */
   box-shadow: 0 0 10px 1px rgba(179, 102, 255, 0.7); /* Resplandor */
-  padding: 20px;
-  min-height: 160px; /* Altura mínima */
+  padding: 25px;
+  height: 70px; /* Altura mínima */
 
   /* Flexbox para ordenar el contenido verticalmente */
   display: flex;
@@ -94,17 +92,17 @@ function deletePlayer(id) {
   box-shadow: 0 0 18px 3px rgba(179, 102, 255, 0.9);
 }
 
-/* --- Estilos del contenido interno --- */
-
-/* Sección de info (arriba) */
 .player-info {
-  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
 }
 .player-name {
   font-size: 1.3rem;
   font-weight: bold;
   color: #ffffff;
-  margin-right: 8px;
+  margin-left: 5px;
 }
 .you-indicator {
   color: #4dff8a; /* Verde brillante */
@@ -113,16 +111,9 @@ function deletePlayer(id) {
 
 /* Sección de estado (centro) */
 .status-indicator {
-  font-size: 1.1rem;
+  margin-left: 20px;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-top: auto; /* Empuja esto al fondo si el espacio lo permite */
-  padding: 10px 0;
-}
-.status-indicator .ready {
-  color: #4dff8a; /* Verde "listo" */
-}
-.status-indicator .not-ready {
-  color: #ff5c5c; /* Rojo "no listo" */
 }
 
 /* Sección de botones (abajo) */
@@ -153,5 +144,8 @@ function deletePlayer(id) {
 }
 .btn-kick:hover {
   background-color: #c00;
+}
+.margen {
+  margin-right: 20px;
 }
 </style>

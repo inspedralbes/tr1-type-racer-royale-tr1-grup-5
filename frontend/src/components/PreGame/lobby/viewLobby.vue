@@ -17,7 +17,6 @@
       :is-admin="isAdmin"
       :jugador="jugadorClient"
       :room-name="roomName"
-      class="player-list-component"
     />
   </div>
 
@@ -184,38 +183,7 @@ function leaveRoom() {
   text-transform: capitalize;
 }
 
-.access-code-box {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid #006aff;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  text-align: center;
-  width: 100%;
-  max-width: 500px; /* Limita el ancho de la caja del código */
-  box-sizing: border-box;
-}
-
-.access-code-box strong {
-  color: #79c0ff;
-  font-size: 1.75rem;
-  display: block;
-  margin: 0.5rem 0;
-  letter-spacing: 2px;
-  font-weight: 700;
-}
-
-.access-code-box p {
-  margin: 0;
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-
 /* Ajusta el componente de la lista para que ocupe el espacio */
-.player-list-component {
-  width: 100%;
-  /* Puedes añadir más estilos si es necesario, 
-     pero los estilos de playerList.vue deberían encargarse */
-}
 
 /* --- BARRA DE ACCIONES --- */
 
@@ -281,13 +249,4 @@ function leaveRoom() {
 }
 
 /* Estado deshabilitado */
-.btn:disabled,
-.btn.disabled {
-  background-color: #21262d;
-  color: #6e7681;
-  cursor: not-allowed;
-  opacity: 0.7;
-  transform: none;
-  box-shadow: none;
-}
 </style>
