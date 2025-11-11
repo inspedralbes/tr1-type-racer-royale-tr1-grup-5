@@ -280,13 +280,13 @@ io.on("connection", (socket) => {
 
     io.sockets.sockets.get(kickedPlayer.socketId)?.leave(roomName);
     io.to(kickedPlayer.socketId).emit("kicked");
-    io.to(room.players.socketId).emit("kickAlert", (kickedPlayer.name, admin.name) );
+    io.to(roomName).emit("kickAlert", (kickedPlayer.name, admin.name) );
 
     room.players = room.players.filter((p) => p.id !== playerId);
 
     if (kickedPlayer.role === "admin" && room.players.length > 0) {
       room.players[0].role = "admin";
-      io.to(room.players.socketId).emit("adminAlert", room.players[0].name);
+      ioroom.to(roomName).emit("adminAlert", room.players[0].name);
       io.to(room.players[0].socketId).emit("youAreNowAdmin");
     }
 
@@ -476,7 +476,7 @@ io.on("connection", (socket) => {
     if (player.role === "admin" && room.players.length > 0) {
       room.players[0].role = "admin";
       io.to(room.players[0].socketId).emit("youAreNowAdmin");
-      io.to(room.players.socketId).emit("adminAlert", room.players[0].name);
+      io.to(roomName).emit("adminAlert", room.players[0].name);
     }
 
     // Refrescar estat
