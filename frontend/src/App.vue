@@ -1,5 +1,5 @@
 <template>
-  <AlertComponent :message-list="message.value" :class="{disabled: !messageIsEmpty}"/>
+  <AlertComponent :message-list="message.value" :disabled="!messageIsEmpty"/>
   <div v-if="!isConnected">
     <h2 class="centrar">Introduce tu nombre</h2>
     <div class="centro">
@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { io } from 'socket.io-client'
 import RankingComponent from './components/RankingComponent.vue'
 import viewLobby from './components/PreGame/lobby/viewLobby.vue'
@@ -109,7 +109,7 @@ const isPrivateCreation = ref(false)
 const privateCodeInput = ref('')
 
 const message = ref([]);
-const messageIsEmpty = ref(message.value > 0);
+const messageIsEmpty = computed(() => message.value.length === 0)
 
 // --- CONEXIÓN Y EVENTOS ---
 
@@ -290,7 +290,7 @@ function resetToRoomList() {
 
 function timeOut(msg) {
     setTimeout(() => {
-      message.value.filter(messageStr => messageStr != msg );
+      message.value = message.value.filter(messageStr => messageStr != msg );
     }, 5000)
   }
 </script>
