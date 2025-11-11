@@ -255,10 +255,7 @@ function tryConn() {
   })
 
   socket.on('lobbyNotification', ({ message, type }) => {
-    // Solo mostramos estas notificaciones si estamos en el lobby
-    if (vista.value === 'preGame') {
-      showNotification(message, type, 4000) // 4 segundos
-    }
+    showNotification(message, type, 4000) // 4 segundos
   })
 }
 
