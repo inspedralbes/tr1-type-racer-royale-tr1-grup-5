@@ -24,57 +24,67 @@
     </div>
   </div>
 
-  <div class="fondo" v-else-if="!joinedRoom"> <div class="rooms-page-container"> <div class="rooms-grid-top">
-        
-        <div class="profile-card">
-          
-          <img src="../public/img/Aprendiz_Mago.png" alt="Aprenent de Mag" class="profile-avatar" />
-          
-          <div class="profile-info">
-            <span class="badge">Perfil de l'Aprenent</span>
-            <h3>NomUser</h3> 
-            <h5>Aprenent de màgia</h5>
-          </div>
-
-          <p>
-            Benvingut, jove aprenent de màgia! El teu viatge cap a la mestria comença ara. 
-            Demostra el teu valor i habilitat, i la túnica d'un mag de veritat t'espera!
-          </p>
-          
+  <div class="fondo" v-else-if="!joinedRoom">
+  
+    <div class="rooms-page-container">
+      
+      <div class="profile-card">
+        <img
+          src="../public/img/Aprendiz_Mago.png"
+          alt="Aprenent de Mag"
+          class="profile-avatar"
+        />
+        <div class="profile-info">
+          <span class="badge">Perfil de l'Aprenent</span>
+          <h3>NomUser</h3>
+          <h5>Aprenent de màgia</h5>
         </div>
-          
-        </div>
-        <div class="actions-container">
-          
-          <div class="action-card create-room-card">
-            <input v-model="roomInput" placeholder="Nom de la sala" />
-            <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
-            <button @click="createRoom">Crear una nova sala</button>
-          </div>
+        <p>
+          Benvingut, jove <span class="rosa">aprenent de màgia</span>! El teu <span class="rosa">viatge</span> cap a la mestria comença ara. Demostra el teu <span class="rosa">valor</span> i <span class="rosa">habilitat</span>, i la túnica d'un <span class="rosa">mag de veritat</span> t'espera!
+        </p>
+      </div>
 
-          <div class="action-card join-private-card">
-            <input v-model="privateCodeInput" placeholder="Codi d'Accés (6 dígits)" maxlength="6" />
-            <button @click="joinPrivateRoom">Unir-se a Sala Privada amb Codi</button>
-          </div>
+      <div class="actions-container">
+  
+        <div class="action-card create-room-card">
+          <span class="badge">Crear Sala</span>
+          <input v-model="roomInput" placeholder="Nom de la sala" />
+          <label>
+            <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada
+          </label>
+          <button @click="createRoom">Crear una nova sala</button>
         </div>
 
+        <div class="action-card join-private-card">
+          <span class="badge">Unir-se a sala Privada</span>
+          <input
+            v-model="privateCodeInput"
+            placeholder="Codi d'Accés (6 dígits)"
+            maxlength="6"
+          />
+          <button @click="joinPrivateRoom">Unir-se a Sala Privada amb Codi</button>
+        </div>
       </div>
 
       <div class="rooms-grid-bottom">
-        
         <h2>Sales disponibles (Públiques)</h2>
         <ul class="room-list">
           <li v-for="room in rooms" :key="room.name" class="room-item">
             <div class="room-info">
               <strong>{{ room.name }}</strong>
               <span>👥 {{ room.playerCount }} jugadors</span>
-              <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
+              <span v-if="room.beingPlayed" class="status-playing">
+                | 🎮 En partida</span
+              >
             </div>
-            <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">Unir-se</button>
+            <button @click="joinExistingRoom(room.name)" :disabled="room.beingPlayed">
+              Unir-se
+            </button>
           </li>
         </ul>
-    </div>
+      </div>
 
+    </div> 
   </div>
 
   <div v-else-if="vista === 'preGame'">
@@ -445,7 +455,148 @@ input {
   transform: rotate(-150deg);
   width: 31%;
 }
+
 /* --- (NOU CSS) ESTILS PÀGINA DE SALES (!joinedRoom) --- */
+
+.rooms-page-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  grid-template-rows: auto 1fr;
+  gap: 25px; /* L'espai entre els 3 blocs */
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box; 
+}
+
+/* --- 1. Perfil (Dalt-Esquerra) --- */
+.profile-card {
+  /* Posició a la graella principal */
+  grid-column: 1 / 2; 
+  grid-row: 1 / 2;    
+  
+  /* Estil "Glassmorphism" (Del disseny) */
+  background-color: #15131e;
+  border: 1px solid #CB95E6; 
+  border-radius: 20px; 
+  padding: 20px; /* Padding més generós (del disseny) */
+  backdrop-filter: blur(8px); 
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  /* Maquetació interna 2x2 (La que has demanat) */
+  display: grid;
+  grid-template-columns: auto 1fr; /* Col 1 (avatar) auto, Col 2 (text) la resta */
+  grid-template-rows: auto auto;   /* Fila 1 (dalt) auto, Fila 2 (text baix) auto */
+  gap: 8px; 
+  align-items: center; 
+}
+
+/* --- 2. Accions (Dalt-Dreta) --- */
+.actions-container {
+  grid-column: 2 / 3; 
+  grid-row: 1 / 2;    
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espai entre les targetes d'acció */
+}
+.actions-container button{
+  background: linear-gradient(to right, #2c2b53 0%, #6a6aff 100%);
+  border-radius: 100px; 
+  color: white; 
+  padding: 8px 20px; 
+  display: inline-flex; 
+  align-items: center;
+  justify-content: center; 
+}
+
+/* --- 3. Llista de Sales (Baix) --- */
+.rooms-grid-bottom {
+  grid-column: 1 / 3; /* Ocupa TOT l'ample de baix */
+  grid-row: 2 / 3;    
+  overflow-y: auto;
+}
+
+/* Estils genèrics per les caixes (HE TRET .profile-card d'aquí) */
+.actions-container, .rooms-grid-bottom {
+  padding: 15px;
+  background-color: #15131e; /* Mateix fons que el profile */
+  border: 1px solid #CB95E6; /* Mateixa vora */
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(203, 149, 230, 0.25);
+}
+
+/* --- (NOU) Estils interns del Profile Card --- */
+
+.profile-avatar{
+  /* Posició a la graella interna */
+  grid-row: 1 / 2;
+  grid-column: 1 / 2;
+  
+  /* Estils de l'avatar (del disseny) */
+  width: 90%;
+  height: 90%;
+  border-radius: 15px; /* Per fer-lo rodó */
+  border: 1px solid #a88bff; /* Vora lila */
+}
+
+/* Estil pel badge "Perfil de l'Aprenent" */
+.profile-card .badge, .actions-container .badge {
+  background: linear-gradient(to right, #7b2cff, #a855f7); /* Morat */
+  color: white;
+  padding: 6px 16px;
+  border-radius: 9999px; /* Forma de píndola */
+  font-size: 1rem;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 10px; /* Espai sota el badge */
+  text-align: center;
+  width: 200px;
+}
+
+.profile-info {
+  /* Posició a la graella interna */
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+}
+
+.profile-info h3, 
+.profile-info h5 {
+  margin: 0; /* Traiem marges per defecte */
+  margin-left: 5px;
+}
+
+.profile-info h3 {
+  font-size: 1.8rem;
+  color: #ffffff;
+}
+.profile-info h5 {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #d8cfff; /* Un lila/blanc més suau */
+}
+.profile-card .rosa{
+  color: #CB95E6;
+}
+
+/* Seleccionem el paràgraf <p> QUE SIGUI FILL DIRECTE de .profile-card */
+.profile-card > p {
+  /* Posició a la graella interna */
+  grid-row: 2 / 3;    /* Fila 2 (la de baix) */
+  grid-column: 1 / 3; /* Ocupa TOT l'ample */
+  
+  /* Ajustos de text del disseny */
+  margin: 0; 
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.rooms-grid-bottom h2{
+  margin: 0;
+}
+
 /* --- (CSS ANTIC) ESTILS DE LES LLISTES DE SALES --- */
 /* Mantenim els estils originals per la llista de sales públiques */
 
@@ -458,8 +609,8 @@ input {
 .room-list {
   list-style: none;
   padding: 0;
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 100%; /* Canviat de 500px a 100% */
+  margin: 20px 0; /* Canviat auto per 0 */
 }
 .room-item {
   display: flex;
@@ -468,9 +619,11 @@ input {
   gap: 10px;
   padding: 10px 15px;
   margin-bottom: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9; /* Nota: Això ho haurem de canviar per assemblar-se al disseny fosc */
+  /* Estil fosc per la llista de sales */
+  border: 1px solid rgba(136, 114, 255, 0.2);
+  border-radius: 10px;
+  background-color: rgba(21, 19, 30, 0.5); 
+  color: #f0f0f0;
 }
 .room-info {
   display: flex;
@@ -479,29 +632,26 @@ input {
 }
 .room-info strong {
   font-size: 1.1em;
+  color: #ffffff;
 }
 .status-playing {
-  color: orange;
+  color: #ffaa00; /* Taronja per "En partida" */
   font-style: italic;
 }
-.room-item button {
-  padding: 5px 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 .room-item button:hover:not(:disabled) {
-  background-color: #0056b3;
+  opacity: 0.8;
 }
 .room-item button:disabled {
-  background-color: #cccccc;
+  background-color: #555;
+  background: #555; /* Treu el gradient si està desactivat */
+  color: #999;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 hr {
   margin: 30px 0;
   border: 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(136, 114, 255, 0.2); /* Vora lila */
 }
 </style>
