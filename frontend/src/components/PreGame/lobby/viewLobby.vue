@@ -30,7 +30,11 @@
     <button class="comenzar" v-if="isAdmin" :class="['btn', 'btn-start']" @click="startGame">
       Comenzar
     </button>
-    <button :class="['btn', imReady ? 'ready' : 'notReady']" @click="toggleReady(jugadorClient.id)">
+    <button
+      v-if="!isAdmin"
+      :class="['btn', imReady ? 'ready' : 'notReady']"
+      @click="toggleReady(jugadorClient.id)"
+    >
       {{ imReady ? 'Observar' : 'Jugar' }}
     </button>
   </div>
@@ -208,29 +212,29 @@ function leaveRoom() {
 .badget {
   background: linear-gradient(to right, #2c2b53 0%, #f58b00 100%);
   border-radius: 100px;
-  color: white;
   padding: 8px 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .comenzar {
   background: linear-gradient(to right, #8d087b 0%, #000000 100%);
   border-radius: 100px;
-  color: white;
   padding: 8px 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 .salir {
   background: linear-gradient(to right, #ff0202 0%, hsl(337, 100%, 71%) 100%);
   border-radius: 100px;
-  color: white;
   padding: 8px 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.ready {
+  background: linear-gradient(to right, #360505 0%, hsl(337, 100%, 71%) 100%);
+  border-radius: 100px;
+  padding: 8px 20px;
+}
+
+.notReady {
+  background: linear-gradient(to right, #8d087b 0%, #000000 100%);
+  border-radius: 100px;
+  padding: 8px 20px;
 }
 </style>

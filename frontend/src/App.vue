@@ -647,6 +647,10 @@ hr {
   width: 200px;
   align-self: center;
 }
+/*Es posa sense el border ja que sino semblan botons*/
+.actions-container .badge {
+  background: none;
+}
 
 .action-card {
   flex: 1; /* Cada tarjeta ocupa 50% */
@@ -832,14 +836,6 @@ hr {
   color: #999;
   cursor: not-allowed;
   opacity: 0.7;
-}
-
-/* 5. ESTILOS DE ESTADO (Lobby) */
-.ready {
-  background-color: greenyellow;
-}
-.notReady {
-  background-color: red;
 }
 
 .notification {
