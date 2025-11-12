@@ -88,12 +88,6 @@
           <button @click="joinPrivateRoom">Unir-se a Sala Privada</button>
         </div>
       </div>
-      <div class="actions-container">
-        <div class="action-card create-room-card">
-          <input v-model="roomInput" placeholder="Nom de la sala" />
-          <label> <input type="checkbox" v-model="isPrivateCreation" /> Sala Privada 🔒 </label>
-          <button @click="createRoom">Crear una nova sala</button>
-        </div>
 
       <div class="rooms-grid-bottom">
         <h2>Sales disponibles (Públiques)</h2>
@@ -111,10 +105,14 @@
             </button>
           </li>
         </ul>
-        </div>
       </div>
-      </div>
+
+    </div> 
   </div>
+
+
+
+
 
   <div class="fondoLobby" v-else-if="vista === 'preGame'">
     <h2>Sala: {{ currentRoom }}</h2>
@@ -871,6 +869,6 @@ hr {
 .notification.error {
   background: linear-gradient(to right, #ff0202 0%, hsl(337, 100%, 71%) 100%);
 }
-
 </style>
+
 
