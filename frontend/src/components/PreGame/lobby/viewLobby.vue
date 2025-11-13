@@ -77,6 +77,9 @@ function changeTime() {
       newTime = 120
       break
     case 120:
+      newTime = 5
+      break
+    case 5:
       newTime = 30
       break
     case 30:
@@ -319,7 +322,8 @@ function leaveRoom() {
     filter 0.2s ease;
 }
 
-.salir:hover, .salir:focus   {
+.salir:hover,
+.salir:focus {
   transform: translateY(-2px);
   filter: brightness(1.05);
 }

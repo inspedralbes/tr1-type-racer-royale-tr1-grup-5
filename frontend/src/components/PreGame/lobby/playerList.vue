@@ -1,15 +1,8 @@
 <template>
   <div class="player-list-container">
     <div class="player-grid">
-      <div
-        v-for="player in props.llistaJug"
-        :key="player.id"
-        class="player-slot"
-      >
-        <div
-          class="player-card"
-          :class="{ self: player.id === props.jugador.id }"
-        >
+      <div v-for="player in props.llistaJug" :key="player.id" class="player-slot">
+        <div class="player-card" :class="{ self: player.id === props.jugador.id }">
           <div class="player-avatar">
             <img src="/img/Aprendiz_Mago.png" alt="Avatar de jugador" />
           </div>
@@ -42,10 +35,8 @@ const socket = computed(() => props.socketC)
 function roleLabel(player) {
   if (player.role === 'admin') return 'Archimago'
   if (player.isReady) {
-
     return 'Mago'
-  }
-  else{
+  } else {
     return 'Espectro'
   }
 }

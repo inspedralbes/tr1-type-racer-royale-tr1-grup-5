@@ -306,7 +306,7 @@ function broadcastRanking(roomName) {
     .filter((p) => p.role !== "spectator")
     .sort((a, b) => b.points - a.points || a.errors - b.errors);
 
-  io.to(roomName).emit("updateRanking", ranking);
+  io.to(roomName).emit("updateRanking", { ranking });
 }
 
 // Start listening for server connections
@@ -639,6 +639,18 @@ io.on("connection", (socket) => {
         endGame(roomName);
       } else {
         io.to(roomName).emit("updateTime", { time: remainingTime });
+        const updatedGameStats = room.gameStats;
+        room.spectatorIds.forEach((spectatorId) => {
+          const spectatorSocketId = room.players.find(
+            (p) => p.id === spectatorId
+          )?.socketId;
+          if (spectatorSocketId) {
+            io.to(spectatorSocketId).emit(
+              "spectatorGameView",
+              updatedGameStats
+            );
+          }
+        });
       }
     }, 1000);
   });
@@ -731,16 +743,6 @@ io.on("connection", (socket) => {
       playerStat.textEntrat = data.textEntrat;
       playerStat.indexParaulaActiva = data.indexParaulaActiva;
       playerStat.paraules = data.paraules;
-
-      // 🔑 CORRECCIÓN: Enviar actualización a los espectadores en tiempo real
-      // Cada vez que un jugador actualiza su estado, lo enviamos a los espectadores.
-      const updatedGameStats = room.gameStats;
-      room.spectatorIds.forEach((spectatorId) => {
-        io.to(room.players.find((p) => p.id === spectatorId)?.socketId).emit(
-          "spectatorGameView",
-          updatedGameStats
-        );
-      });
     } else {
       return;
     }
@@ -759,6 +761,12 @@ io.on("connection", (socket) => {
 
       if (player.role === "admin") {
         assignNewAdmin(room);
+      }
+
+      if (room.players.length === 0 && room.timer) {
+        clearInterval(room.timer);
+        room.timer = null;
+        console.log(`[TIMER] Timer netejat per a la sala buida: ${room.name}`);
       }
 
       const disconnectMsg = `${player.name} s'ha desconnectat.`;
@@ -811,6 +819,12 @@ io.on("connection", (socket) => {
     // Si era admin, pasar rol al siguiente jugador
     if (player.role === "admin") {
       assignNewAdmin(room);
+    }
+
+    if (room.players.length === 0 && room.timer) {
+      clearInterval(room.timer);
+      room.timer = null;
+      console.log(`[TIMER] Timer netejat per a la sala buida: ${room.name}`);
     }
 
     // Refrescar estat

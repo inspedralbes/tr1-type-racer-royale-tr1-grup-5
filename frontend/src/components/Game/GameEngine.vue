@@ -66,7 +66,12 @@
     </div>
 
     <div id="spectator" v-else>
+      <h4 class="spectator-name" v-if="nomJugadorObservat">
+        Estàs observant a: <strong>{{ nomJugadorObservat }}</strong>
+      </h4>
       <button @click="canviarJugadorObservat('anterior')">◀ Enrere</button>
+      <button @click="canviarJugadorObservat('seguent')">Endavant ▶</button>
+
       <div class="paraules">
         <span
           v-for="(paraula, wordIndex) in estatJugadorObservat.paraules"
@@ -92,7 +97,6 @@
           </template>
         </span>
       </div>
-      <button @click="canviarJugadorObservat('seguent')">Endavant ▶</button>
     </div>
   </div>
 </template>
@@ -145,6 +149,16 @@ const idJugadorObservat = ref(null)
 const darrersGameStats = ref([])
 const jugadorsReals = ref([])
 const notification = ref('')
+
+const nomJugadorObservat = computed(() => {
+  if (!idJugadorObservat.value || !jugadorsReals.value.length) {
+    return '...' // Retorna un text temporal mentre carrega
+  }
+
+  const jugadorObservat = jugadorsReals.value.find((p) => p.id === idJugadorObservat.value)
+
+  return jugadorObservat ? jugadorObservat.name : 'Cap jugador'
+})
 
 // 📢 NOTIFICACIONS
 function showNotification(message, duration = 3000) {
@@ -589,5 +603,18 @@ props.socket.on('tsunamiHit', () => {
 
 .negro {
   color: white;
+}
+
+.spectator-name {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 15px; /* Deixa espai abans dels controls */
+  text-align: center;
+  width: 100%; /* Assegura que ocupi tot l'ample */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.spectator-name strong {
+  color: #ffc107; /* El color groc del power-up per ressaltar */
 }
 </style>

@@ -39,7 +39,7 @@ onUnmounted(() => {
 
 <style scoped>
 h1 {
-  color: #333;
+  color: #ffffff;
   font-size: 1.8rem;
 }
 </style>

@@ -145,13 +145,14 @@
     </div>
   </div>
 
-  <div v-else-if="vista === 'endGame'">
-    <h2>Partida terminada</h2>
-    <RankingComponent :llista-jug="jugadors" />
-
-    <div>
-      <button @click="leaveRoom" class="btn-leave">Salir de la sala</button>
-      <button @click="returnToLobby">Volver al lobby</button>
+  <div v-else-if="vista === 'endGame'" class="fondo">
+    <div class="ranking">
+      <h2>Partida acabada</h2>
+      <RankingComponent :llista-jug="jugadors" />
+    </div>
+    <div class="botonesEndGame">
+      <button @click="returnToLobby" class="btn-time">Seguir En El Portal</button>
+      <button @click="leaveRoom" class="btn salir">Sortir del Portal</button>
     </div>
   </div>
 </template>
@@ -234,7 +235,7 @@ function tryConn() {
     }
   })
 
-  socket.on('updateRanking', (ranking) => {
+  socket.on('updateRanking', ({ ranking }) => {
     if (vista.value === 'game') {
       jugadors.value = [...ranking]
     }
@@ -978,5 +979,105 @@ hr {
 
 .notification.error {
   background: linear-gradient(to right, #ff0202 0%, hsl(337, 100%, 71%) 100%);
+}
+
+.salir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff4fac 0%, #ff6f61 40%, #ffc371 100%);
+  border-radius: 999px;
+  padding: 0 38px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #fff7ff;
+  border: 1px solid rgba(255, 215, 240, 0.55);
+  text-transform: uppercase;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+  min-height: 56px;
+  box-shadow: 0 12px 26px rgba(227, 132, 240, 0.35);
+}
+
+.salir:hover,
+.salir:focus {
+  box-shadow: 0 18px 38px rgba(255, 139, 240, 0.45);
+
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.salir:active {
+  transform: translateY(0);
+  box-shadow: none;
+  filter: brightness(0.95);
+}
+
+.btn-time {
+  gap: 14px;
+  background: linear-gradient(135deg, #251d4a 0%, #4f3fbf 35%, #ffb347 100%);
+  border: 1px solid rgba(255, 238, 206, 0.6);
+  color: #fff9f3;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(90, 57, 180, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+  border-radius: 999px;
+  min-height: 56px;
+  padding: 0 34px;
+}
+
+.btn-time:hover,
+.btn-time:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(90, 57, 180, 0.45);
+  filter: brightness(1.08);
+}
+
+.btn-time:active {
+  transform: translateY(0);
+  box-shadow: none;
+  filter: brightness(0.95);
+}
+.botonesEndGame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  gap: 4rem;
+}
+
+.fondo {
+  /* Layout principal */
+  background: linear-gradient(180deg, #141021 0%, #1c1535 38%, #0057ff 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+  font-family: 'Poppins', sans-serif;
+  color: #f0f0f0;
+}
+
+.ranking h2 {
+  color: #ffffff; /* Color daurat */
+  text-align: center;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  /* Efecte de resplendor daurat */
+  text-shadow:
+    0 0 10px #f700ff,
+    0 0 5px #ffd700;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
 }
 </style>
