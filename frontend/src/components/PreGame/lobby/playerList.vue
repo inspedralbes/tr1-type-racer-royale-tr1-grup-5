@@ -76,7 +76,7 @@ function deletePlayer(id) {
 .player-list-container {
   display: flex;
   justify-content: center;
-  padding: 12px 24px 32px 24px;
+  padding: 0px 24px 0px 24px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -85,7 +85,7 @@ function deletePlayer(id) {
   display: grid;
   grid-template-columns: repeat(2, minmax(320px, 1fr));
   grid-template-rows: repeat(3, minmax(140px, auto));
-  gap: 30px 48px;
+  gap: 20px 48px;
   width: min(80%, 100%);
 }
 

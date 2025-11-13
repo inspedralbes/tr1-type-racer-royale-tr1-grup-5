@@ -278,7 +278,7 @@ function tryConn() {
     currentRoom.value = roomName
     joinedRoom.value = true
     vista.value = 'preGame'
-    showNotification(`Sala ${roomName} creada correctamente 🎉`, 3000)
+    showNotification(`Portal ${roomName} activat 🎉`, 'info', 3000)
   })
 
   //Transferim l'admin
@@ -956,8 +956,8 @@ hr {
 
 .notification {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 8rem;
+  left: 6rem;
   padding: 15px 25px;
   border-radius: 8px;
   color: #ffffff;
