@@ -1106,4 +1106,54 @@ hr {
   margin-top: 0;
   margin-bottom: 1.5rem;
 }
+/*-------------------------------------------------------------------*/
+/*ESTILOS RESPONSIVE*/
+/*-------------------------------------------------------------------*/
+@media (max-width: 1440px) {
+  /* PANTALLA DE PRUEBA: 1440 x 900
+    (Ej: Laptops de 15" o 16" como MacBook Pro)
+  */
+}
+
+/* BREAKPOINT 2: Laptops pequeños
+  (Pantallas MÁS PEQUEÑAS o IGUALES a 1280px)
+*/
+@media (max-width: 1280px) {
+  /* PANTALLA DE PRUEBA: 1280 x 800
+    (Ej: Laptops de 13" como MacBook Air)
+  */
+  .fondo{
+    padding: 0;
+  }
+  .actions-container .badge{
+    margin-bottom: 0;
+  }
+}
+
+/* BREAKPOINT 3: Tablets (Horizontal) y Laptops pequeños
+  (Pantallas MÁS PEQUEÑAS o IGUALES a 1024px)
+*/
+@media (max-width: 1024px) {
+  /* PANTALLA DE PRUEBA: 1024 x 768
+    (Ej: iPad en horizontal)
+  */
+  .profile-card{
+    max-width: 435px;
+    padding: 15px;
+    gap: 10px;
+  }
+  .actions-container{
+    max-width: 400px;
+  }
+  .action-card{
+    width: 40%;
+  }
+  .rooms-grid-bottom{
+    padding: 20px;
+  }
+  .profile-card .badge{
+    min-width: 180px;
+    max-width: 180px;
+  }
+}
 </style>
