@@ -463,6 +463,9 @@ props.socket.on('tsunamiHit', () => {
   left: 2rem;
 }
 .notification-content {
+  position: fixed;
+  bottom: 15rem;
+  left: 32rem;
   background-color: #ffc107;
   color: #333;
   padding: 20px 40px;
