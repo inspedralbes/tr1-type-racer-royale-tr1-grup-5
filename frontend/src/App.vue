@@ -92,7 +92,7 @@
           <li v-for="room in rooms" :key="room.name" class="room-item">
             <div class="room-info">
               <strong>{{ room.name }}</strong>
-              <span>👥 {{ room.playerCount }} jugadors</span>
+              <span>👥 {{ room.playerCount }}/6 mags</span>
               <span v-if="room.beingPlayed" class="status-playing"> | 🎮 En partida</span>
             </div>
             <button @click="joinExistingRoom(room.name)">Creuar Portal</button>
@@ -216,6 +216,9 @@ function tryConn() {
   })
   socket.on('roomJoined', ({ roomName }) => {
     currentRoom.value = roomName
+    //si el servidor envia que hem entrar a la sala, cambiem de vista i cambiem el valor de joinedRoom
+    joinedRoom.value = true;
+    vista.value = 'preGame';
   })
 
   socket.on('updateRoomState', (room) => {
@@ -324,8 +327,6 @@ function joinExistingRoom(roomName) {
 
   socket.emit('joinRoom', { roomName })
   currentRoom.value = roomName
-  joinedRoom.value = true
-  vista.value = 'preGame'
 }
 
 function joinPrivateRoom() {
@@ -338,8 +339,6 @@ function joinPrivateRoom() {
   }
 
   socket.emit('joinRoom', { accessCode: code })
-  joinedRoom.value = true
-  vista.value = 'preGame'
   privateCodeInput.value = ''
 }
 

@@ -416,9 +416,7 @@ io.on("connection", (socket) => {
     room.players.push(player);
     socket.join(room.name);
 
-    if (codeToSearch) {
-      socket.emit("roomJoined", { roomName: room.name });
-    }
+    socket.emit("roomJoined", { roomName: room.name });
 
     broadcastRoomState(room.name);
     broadcastRoomList();
