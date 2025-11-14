@@ -15,7 +15,7 @@
       <div class="mage-info" v-if="jugador.mage">
         <h3>Ets: {{ jugador.mage.name }}</h3>
         <p>
-          <strong>Power-up (3 encert de frases seguit):</strong>
+          <strong>Power-up (2 encert de frases seguit):</strong>
           {{ jugador.mage.powerUp }} - <em>{{ jugador.mage.description }}</em>
         </p>
       </div>
@@ -63,23 +63,6 @@
         autofocus
         :disabled="acabada"
       />
-
-      <!--BORRAR MÁS TARDE-->
-      <button
-        v-if="!isSpectator"
-        @click="usePowerUp"
-        class="test-powerup-button"
-        style="
-          background: #ffc107;
-          color: black;
-          padding: 10px;
-          border: none;
-          cursor: pointer;
-          margin-top: 15px;
-        "
-      >
-        ⚡ USAR PODER (MODO TEST) ⚡
-      </button>
     </div>
 
     <div id="spectator" v-else>
@@ -350,9 +333,7 @@ function playerGameStatus() {
 
 // ⚡ POWER-UP
 function usePowerUp() {
-  /*DESCOMENTAR DESPUES
   if (!powerUpState.ready || powerUpState.used) return
-*/
   // No actualitzem l'estat aquí, esperem la confirmació del servidor
   props.socket.emit('usePowerUp', { roomName: props.roomName, id: props.jugador.id })
 }

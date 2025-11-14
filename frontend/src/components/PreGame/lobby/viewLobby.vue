@@ -178,8 +178,6 @@ function leaveRoom() {
   align-items: center;
   gap: 1.5rem; /* Espacio entre botones */
   width: 100%;
-  padding-top: 2.5rem;
-  padding-bottom: 3.5rem;
 }
 
 .action-bar .btn {
@@ -365,5 +363,53 @@ function leaveRoom() {
   transform: translateY(-3px);
   box-shadow: 0 22px 45px rgba(71, 32, 168, 0.45);
   filter: brightness(1.05);
+}
+
+@media (min-width: 768px) {
+  .fondo {
+    border-radius: 20px; /* Restaura bordes redondeados */
+    padding: 2rem; /* Más padding */
+    min-height: auto; /* Ya no necesita 100vh */
+  }
+
+  .main-content {
+    gap: 1.5rem; /* Más espacio */
+    padding-top: 0; /* Ya no necesita el padding para botones fijos */
+  }
+
+  /* Vuelve a colocar los botones arriba a la derecha */
+  .top-right-buttons {
+    position: fixed;
+    top: 4rem;
+    right: 3rem;
+    left: auto; /* Resetea left */
+    flex-direction: row; /* En fila */
+    align-items: center;
+    gap: 2rem; /* Espacio original */
+    width: auto; /* Ancho automático */
+    padding: 0; /* Sin padding */
+  }
+
+  .btn-time,
+  .salir {
+    width: auto; /* Ancho automático */
+    min-height: 56px;
+    padding: 0 34px;
+    font-size: 0.9rem; /* Restaura fuente */
+  }
+
+  .salir {
+    font-size: 0.96rem;
+    padding: 0 38px;
+  }
+
+  .btn-time-value {
+    padding: 6px 14px;
+    font-size: 1.05rem;
+  }
+
+  .welcome-text {
+    font-size: 1.2rem;
+  }
 }
 </style>

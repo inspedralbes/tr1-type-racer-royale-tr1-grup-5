@@ -112,6 +112,7 @@ function deletePlayer(id) {
     box-shadow 0.3s ease,
     border-color 0.3s ease;
   width: 100%;
+  height: 60%;
 }
 
 .player-card:hover {

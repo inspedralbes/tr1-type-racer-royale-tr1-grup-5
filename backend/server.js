@@ -639,18 +639,6 @@ io.on("connection", (socket) => {
         endGame(roomName);
       } else {
         io.to(roomName).emit("updateTime", { time: remainingTime });
-        const updatedGameStats = room.gameStats;
-        room.spectatorIds.forEach((spectatorId) => {
-          const spectatorSocketId = room.players.find(
-            (p) => p.id === spectatorId
-          )?.socketId;
-          if (spectatorSocketId) {
-            io.to(spectatorSocketId).emit(
-              "spectatorGameView",
-              updatedGameStats
-            );
-          }
-        });
       }
     }, 1000);
   });
@@ -685,6 +673,10 @@ io.on("connection", (socket) => {
 
     player.errors++;
     player.correctWordsInARow = 0;
+
+    if (player.powerUpEarned) {
+      player.powerUpEarned = false;
+    }
 
     if (player.debuff.type === "Tsunami") {
       player.debuff.type = null;
@@ -729,11 +721,10 @@ io.on("connection", (socket) => {
       duration: durationInSeconds * 1000,
     });
 
-    /* DESCOMENTAR DESPUES
     //PowerUps Ilimitats
     attacker.powerUpEarned = false;
     attacker.correctWordsInARow = 0;
-*/
+
     // Avisar a l'atacant que el seu power-up s'ha utilitzat correctament
     io.to(attacker.socketId).emit("powerUpUsed");
   });
@@ -751,7 +742,18 @@ io.on("connection", (socket) => {
     } else {
       return;
     }
-    // La actualización para el espectador se maneja ahora en el setInterval de startGame
+    const updatedGameStats = room.gameStats;
+
+    room.spectatorIds.forEach((spectatorId) => {
+      // Busca el socketId del espectador (que está en room.players)
+      const spectatorSocketId = room.players.find(
+        (p) => p.id === spectatorId
+      )?.socketId;
+
+      if (spectatorSocketId) {
+        io.to(spectatorSocketId).emit("spectatorGameView", updatedGameStats);
+      }
+    });
   });
 
   socket.on("disconnect", () => {
