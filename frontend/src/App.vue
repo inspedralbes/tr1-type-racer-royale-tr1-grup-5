@@ -269,7 +269,7 @@ function tryConn() {
 
   //expulsar al jugador i notificar-lo
   socket.on('kicked', () => {
-    showNotification("Has sigut expulsat per l'admin", 'error', 5000)
+    showNotification('Has sigut expulsat del Portal', 'error', 5000)
     socket.disconnect()
     resetToRoomList()
   })
@@ -299,12 +299,19 @@ function tryConn() {
 // --- ACCIONES DEL USUARIO ---
 
 function sendNickname(nickname) {
-  if (!nickname || nickname.trim() === '') return
-
+  const trimmedName = nickname.trim()
+  if (!trimmedName) {
+    showNotification("Has d'introduir un nom", 'error')
+    return
+  }
+  if (trimmedName.length > 20) {
+    showNotification('El nom no pot tenir més de 20 caràcters', 'error')
+    return
+  }
   // Generar un ID únic per al jugador abans de connectar
   const playerId = jugador.value.id || Date.now()
   jugador.value.id = playerId
-  jugador.value.name = nickname.trim()
+  jugador.value.name = trimmedName
 
   tryConn()
 
@@ -333,7 +340,7 @@ function joinPrivateRoom() {
   const code = privateCodeInput.value.trim().toUpperCase()
 
   if (code.length !== 6) {
-    alert('Por favor, introduce el código de 6 dígitos.')
+    showNotification('El codi ha de tenir 6 dígits', 'error')
     return
   }
 
@@ -346,8 +353,15 @@ function joinPrivateRoom() {
 function createRoom() {
   if (!socket || !socket.connected) return alert('Socket no conectado. Inténtalo de nuevo.')
   const name = roomInput.value.trim()
-  if (!name) return
 
+  if (!name) {
+    showNotification('El portal ha de tenir un nom', 'error')
+    return
+  }
+  if (name.length > 25) {
+    showNotification('El nom del portal no pot tenir més de 25 caràcters', 'error')
+    return
+  }
   socket.emit('createRoom', {
     roomName: name,
     isPrivate: isPrivateCreation.value,
@@ -981,6 +995,17 @@ hr {
 }
 
 .notification.error {
+  position: fixed;
+  bottom: 27rem;
+  left: 52rem;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: #ffffff;
+  z-index: 1000;
+  font-weight: 500;
+  font-size: 1.1rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease-out;
   background: linear-gradient(to right, #ff0202 0%, hsl(337, 100%, 71%) 100%);
 }
 
