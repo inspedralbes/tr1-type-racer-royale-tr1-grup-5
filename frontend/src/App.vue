@@ -38,7 +38,7 @@
         src="/img/MagoTierra-removebg-preview.png"
         alt="Mag de Terra"
       />
-      <img
+      <!-- <img
         class="mago mago-hielo"
         src="/img/MagoHielo.png"
         alt="Mag de Hielo"
@@ -47,7 +47,7 @@
         class="mago mago-agua"
         src="/img/MagoAgua.png"
         alt="Mag de Agua"
-      />
+      /> -->
 
       <h1 class="epic-title">MagicTypeRoyale</h1>
 
@@ -556,7 +556,7 @@ hr {
   right: 0;
   transform: rotate(15deg) scaleX(-1); /* Flipped to face inwards */
 }
-.mago-hielo {
+/* .mago-hielo {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
@@ -567,7 +567,7 @@ hr {
   left: 50%;
   transform: translateX(-50%);
   width: 30%;
-}
+} */
 
 .login-form {
   display: flex;
