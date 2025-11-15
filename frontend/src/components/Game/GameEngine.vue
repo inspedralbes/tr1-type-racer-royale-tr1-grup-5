@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="game-engine"
-    :class="[gameTheme, debuffState.isActive ? debuffState.type : '']"
-  >
+  <div id="game-engine" :class="[gameTheme, debuffState.isActive ? debuffState.type : '']">
     <!-- Efectes espectaculars per tema -->
     <div class="theme-effects">
       <!-- Foc: Partícules + Vora cremant -->
@@ -50,7 +47,7 @@
       <!-- Gel -->
       <div v-if="gameTheme === 'theme-ice'" class="ice-effects">
         <div class="falling-snow">
-            <div v-for="i in 150" :key="`snow-${i}`" class="snowflake" :style="{'--i': i}"></div>
+          <div v-for="i in 150" :key="`snow-${i}`" class="snowflake" :style="{ '--i': i }"></div>
         </div>
       </div>
     </div>
@@ -63,37 +60,54 @@
 
     <div
       class="debuff-overlay"
-      v-if="
-        debuffState.isActive &&
-        (debuffState.type === 'Apagon' || debuffState.type === 'Flash')
-      "
+      v-if="debuffState.isActive && (debuffState.type === 'Apagon' || debuffState.type === 'Flash')"
     ></div>
 
     <div id="player" v-if="!isSpectator">
       <!-- Decoraciones por tema alrededor del libro -->
       <!-- Água: Gotas de agua -->
       <div v-if="gameTheme === 'theme-water'" class="book-decoration water-drops">
-        <div v-for="i in 8" :key="`drop-${i}`" class="water-drop" :style="{'--pos': i}"></div>
+        <div v-for="i in 8" :key="`drop-${i}`" class="water-drop" :style="{ '--pos': i }"></div>
       </div>
       <!-- Selva: Enredaderas decorativas -->
       <div v-if="gameTheme === 'theme-earth'" class="book-decoration jungle-vines">
-        <div v-for="i in 6" :key="`vine-dec-${i}`" class="vine-decoration" :style="{'--side': i % 2}"></div>
+        <div
+          v-for="i in 6"
+          :key="`vine-dec-${i}`"
+          class="vine-decoration"
+          :style="{ '--side': i % 2 }"
+        ></div>
       </div>
       <!-- Luz: Destellos estelares -->
       <div v-if="gameTheme === 'theme-light'" class="book-decoration light-sparkles">
-        <div v-for="i in 12" :key="`sparkle-${i}`" class="sparkle" :style="{'--angle': (i * 30) + 'deg'}"></div>
+        <div
+          v-for="i in 12"
+          :key="`sparkle-${i}`"
+          class="sparkle"
+          :style="{ '--angle': i * 30 + 'deg' }"
+        ></div>
       </div>
       <!-- Fuego: Llamas decorativas -->
       <div v-if="gameTheme === 'theme-fire'" class="book-decoration fire-flames">
-        <div v-for="i in 4" :key="`flame-${i}`" class="flame-decoration" :style="{'--side': i}"></div>
+        <div
+          v-for="i in 4"
+          :key="`flame-${i}`"
+          class="flame-decoration"
+          :style="{ '--side': i }"
+        ></div>
       </div>
       <!-- Oscuridad: Sombras místicas -->
       <div v-if="gameTheme === 'theme-dark'" class="book-decoration dark-mist">
-        <div v-for="i in 6" :key="`mist-${i}`" class="mist-decoration" :style="{'--layer': i}"></div>
+        <div
+          v-for="i in 6"
+          :key="`mist-${i}`"
+          class="mist-decoration"
+          :style="{ '--layer': i }"
+        ></div>
       </div>
       <!-- Hielo: Cristales de hielo -->
       <div v-if="gameTheme === 'theme-ice'" class="book-decoration ice-crystals">
-        <div v-for="i in 8" :key="`crystal-${i}`" class="ice-crystal" :style="{'--pos': i}"></div>
+        <div v-for="i in 8" :key="`crystal-${i}`" class="ice-crystal" :style="{ '--pos': i }"></div>
       </div>
 
       <div class="book-container">
@@ -117,16 +131,10 @@
                 completada: paraula.estat === 'completada',
                 activa: wordIndex === estatDelJoc.indexParaulaActiva,
                 'powerup-word':
-                  powerUpState.ready &&
-                  !powerUpState.used &&
-                  powerUpState.wordIndex === wordIndex,
+                  powerUpState.ready && !powerUpState.used && powerUpState.wordIndex === wordIndex,
               }"
             >
-              <template
-                v-if="
-                  wordIndex === estatDelJoc.indexParaulaActiva && paraula.text
-                "
-              >
+              <template v-if="wordIndex === estatDelJoc.indexParaulaActiva && paraula.text">
                 <span
                   v-for="(lletra, letterIndex) in paraula.text.split('')"
                   :key="letterIndex"
@@ -142,10 +150,7 @@
             </span>
           </div>
 
-          <div
-            v-if="estatDelJoc.paraules.length > 0 && !acabada"
-            class="typing-indicator"
-          >
+          <div v-if="estatDelJoc.paraules.length > 0 && !acabada" class="typing-indicator">
             Escriu el conjur...
           </div>
 
@@ -185,12 +190,7 @@
             actual: wordIndex === estatJugadorObservat.indexParaulaActiva,
           }"
         >
-          <template
-            v-if="
-              wordIndex === estatJugadorObservat.indexParaulaActiva &&
-              paraula.text
-            "
-          >
+          <template v-if="wordIndex === estatJugadorObservat.indexParaulaActiva && paraula.text">
             <span
               v-for="(lletra, letterIndex) in paraula.text.split('')"
               :key="letterIndex"
@@ -222,11 +222,19 @@ const gameTheme = computed(() => {
     return 'theme-fire'
   } else if (mageName.includes('aigua')) {
     return 'theme-water'
-  } else if (mageName.includes('jungla') || mageName.includes('selva') || mageName.includes('terra')) {
+  } else if (
+    mageName.includes('jungla') ||
+    mageName.includes('selva') ||
+    mageName.includes('terra')
+  ) {
     return 'theme-earth'
   } else if (mageName.includes('llum') || mageName.includes('light')) {
     return 'theme-light'
-  } else if (mageName.includes('oscur') || mageName.includes('foscor') || mageName.includes('dark')) {
+  } else if (
+    mageName.includes('oscur') ||
+    mageName.includes('foscor') ||
+    mageName.includes('dark')
+  ) {
     return 'theme-dark'
   } else if (mageName.includes('gel') || mageName.includes('hielo') || mageName.includes('ice')) {
     return 'theme-ice'
@@ -287,9 +295,7 @@ const nomJugadorObservat = computed(() => {
     return '...' // Retorna un text temporal mentre carrega
   }
 
-  const jugadorObservat = jugadorsReals.value.find(
-    (p) => p.id === idJugadorObservat.value,
-  )
+  const jugadorObservat = jugadorsReals.value.find((p) => p.id === idJugadorObservat.value)
 
   return jugadorObservat ? jugadorObservat.name : 'Cap jugador'
 })
@@ -305,9 +311,7 @@ function showNotification(message, duration = 3000) {
 // 🧠 FUNCIONS DE CONTROL DEL JOC
 function initializeActiveWord() {
   paraulaActiva.value =
-    estatDelJoc.paraules && estatDelJoc.paraules.length > 0
-      ? estatDelJoc.paraules[0]
-      : null
+    estatDelJoc.paraules && estatDelJoc.paraules.length > 0 ? estatDelJoc.paraules[0] : null
 }
 
 function validarProgres() {
@@ -358,8 +362,7 @@ function validarProgres() {
     textAnterior.value = ''
 
     if (estatDelJoc.indexParaulaActiva < estatDelJoc.paraules.length) {
-      paraulaActiva.value =
-        estatDelJoc.paraules[estatDelJoc.indexParaulaActiva]
+      paraulaActiva.value = estatDelJoc.paraules[estatDelJoc.indexParaulaActiva]
       if (debuffState.isActive && debuffState.type === 'Enredadera') {
         generarEnredaderaText()
       }
@@ -378,10 +381,7 @@ function getClasseLletra(indexLletra) {
 
   if (debuffState.isActive && debuffState.type === 'Congelar') {
     // Comprobamos si la letra actual es la que "congelamos"
-    if (
-      debuffState.frozenLetterIndex !== null &&
-      indexLletra === debuffState.frozenLetterIndex
-    ) {
+    if (debuffState.frozenLetterIndex !== null && indexLletra === debuffState.frozenLetterIndex) {
       return 'lletra-actual' // ¡Mostrem el cursor congelst aquí!
     }
 
@@ -395,14 +395,10 @@ function getClasseLletra(indexLletra) {
   const lletraIntroduida = estatDelJoc.textEntrat[indexLletra]
 
   if (lletraIntroduida === undefined) {
-    return indexLletra === estatDelJoc.textEntrat.length
-      ? 'lletra-actual'
-      : 'lletra-noArribada'
+    return indexLletra === estatDelJoc.textEntrat.length ? 'lletra-actual' : 'lletra-noArribada'
   }
 
-  return lletraIntroduida === lletraEsperada
-    ? 'lletra-correcta'
-    : 'lletra-incorrecta'
+  return lletraIntroduida === lletraEsperada ? 'lletra-correcta' : 'lletra-incorrecta'
 }
 
 function getSpectatorClasseLletra(indexLletra, paraulaSencera) {
@@ -415,9 +411,7 @@ function getSpectatorClasseLletra(indexLletra, paraulaSencera) {
       : 'lletra-noArribada'
   }
 
-  return lletraIntroduida === lletraEsperada
-    ? 'lletra-correcta'
-    : 'lletra-incorrecta'
+  return lletraIntroduida === lletraEsperada ? 'lletra-correcta' : 'lletra-incorrecta'
 }
 
 // 🧩 UTILITARIS
@@ -511,8 +505,7 @@ function canviarJugadorObservat(direccio) {
   let nouIndex = indexActual
 
   if (direccio === 'seguent') nouIndex = (nouIndex + 1) % llista.length
-  else if (direccio === 'anterior')
-    nouIndex = (nouIndex - 1 + llista.length) % llista.length
+  else if (direccio === 'anterior') nouIndex = (nouIndex - 1 + llista.length) % llista.length
 
   idJugadorObservat.value = llista[nouIndex].id
   actualitzarVistaEspectador()
@@ -520,9 +513,7 @@ function canviarJugadorObservat(direccio) {
 
 function actualitzarVistaEspectador() {
   if (!isSpectator.value) return
-  const stats = darrersGameStats.value.find(
-    (s) => s.id === idJugadorObservat.value,
-  )
+  const stats = darrersGameStats.value.find((s) => s.id === idJugadorObservat.value)
   if (!stats) return
 
   estatJugadorObservat.indexParaulaActiva = stats.indexParaulaActiva
@@ -559,13 +550,8 @@ props.socket.on('spectatorGameView', (gameStats) => {
   darrersGameStats.value = gameStats
   jugadorsReals.value = props.llistaJug.filter((p) => p.role !== 'spectator')
 
-  const jugadorActualExisteix = jugadorsReals.value.find(
-    (p) => p.id === idJugadorObservat.value,
-  )
-  if (
-    (!idJugadorObservat.value || !jugadorActualExisteix) &&
-    jugadorsReals.value.length > 0
-  ) {
+  const jugadorActualExisteix = jugadorsReals.value.find((p) => p.id === idJugadorObservat.value)
+  if ((!idJugadorObservat.value || !jugadorActualExisteix) && jugadorsReals.value.length > 0) {
     idJugadorObservat.value = jugadorsReals.value[0].id
   }
   actualitzarVistaEspectador()
@@ -574,6 +560,7 @@ props.socket.on('spectatorGameView', (gameStats) => {
 props.socket.on('powerUpReady', (mage) => {
   showNotification('🔥 Power-up a punt! 🔥')
   powerUpState.ready = true
+  powerUpState.used = false
   powerUpState.name = mage.powerUp
   powerUpState.wordIndex = estatDelJoc.indexParaulaActiva
 })
@@ -714,7 +701,9 @@ props.socket.on('tsunamiHit', () => {
   background-color: transparent;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transition:
+    transform 0.5s ease,
+    box-shadow 0.5s ease;
 }
 
 .book-page {
@@ -814,8 +803,11 @@ props.socket.on('tsunamiHit', () => {
 .theme-fire::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
     radial-gradient(ellipse at 30% 40%, rgba(255, 140, 0, 0.3) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 60%, rgba(255, 69, 0, 0.2) 0%, transparent 50%);
   animation: fire-glow 4s ease-in-out infinite;
@@ -823,8 +815,13 @@ props.socket.on('tsunamiHit', () => {
   z-index: 0;
 }
 @keyframes fire-glow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 .theme-fire .book-page {
   background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
@@ -834,9 +831,14 @@ props.socket.on('tsunamiHit', () => {
 .theme-fire .book-left-page {
   background-image: linear-gradient(135deg, #ffebee 0%, #ffccbc 100%);
 }
-.theme-fire .paraules { color: #5d1e01; text-shadow: 0 1px 2px rgba(255, 200, 100, 0.2); }
+.theme-fire .paraules {
+  color: #5d1e01;
+  text-shadow: 0 1px 2px rgba(255, 200, 100, 0.2);
+}
 .theme-fire .mage-title,
-.theme-fire .mage-description { color: #5d1e01; }
+.theme-fire .mage-description {
+  color: #5d1e01;
+}
 .theme-fire .book-container {
   animation: heat-warp 4s ease-in-out infinite;
   box-shadow: 0 0 40px rgba(255, 102, 0, 0.6);
@@ -846,7 +848,14 @@ props.socket.on('tsunamiHit', () => {
   position: absolute;
   inset: -15px;
   border-radius: 15px;
-  background: linear-gradient(45deg, #ff8c00 0%, #ff6b35 25%, #ff4500 50%, #ff6b35 75%, #ff8c00 100%);
+  background: linear-gradient(
+    45deg,
+    #ff8c00 0%,
+    #ff6b35 25%,
+    #ff4500 50%,
+    #ff6b35 75%,
+    #ff8c00 100%
+  );
   background-size: 200% 200%;
   animation: burning-edge 2.5s ease infinite;
   filter: blur(20px);
@@ -866,13 +875,27 @@ props.socket.on('tsunamiHit', () => {
   z-index: -2;
 }
 @keyframes burning-edge {
-  0% { background-position: 0% 50%; filter: brightness(1) blur(20px); }
-  50% { background-position: 100% 50%; filter: brightness(1.2) blur(25px); }
-  100% { background-position: 0% 50%; filter: brightness(1) blur(20px); }
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1) blur(20px);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2) blur(25px);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1) blur(20px);
+  }
 }
 @keyframes heat-warp {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.01); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
 }
 .theme-fire .particle {
   position: absolute;
@@ -881,16 +904,24 @@ props.socket.on('tsunamiHit', () => {
   opacity: 0;
   animation: rise-fire 3s to 10s infinite;
   background-color: #ffc107;
-  --size: calc( (var(--i) * 0.1) + 3px);
+  --size: calc((var(--i) * 0.1) + 3px);
   width: var(--size);
   height: var(--size);
   left: calc(var(--i) * 2%);
   animation-delay: calc(var(--i) * 0.1s);
 }
 @keyframes rise-fire {
-  0% { transform: translateY(0) scale(1); opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110vh) scale(0.5);
+    opacity: 0;
+  }
 }
 .theme-fire .smoke {
   position: absolute;
@@ -899,18 +930,25 @@ props.socket.on('tsunamiHit', () => {
   border-radius: 50%;
   opacity: 0;
   animation: rise-smoke 8s to 15s infinite;
-  --size: calc( (var(--i) * 2) + 10px);
+  --size: calc((var(--i) * 2) + 10px);
   width: var(--size);
   height: var(--size);
   left: calc(var(--i) * 5%);
   animation-delay: calc(var(--i) * 0.3s);
 }
 @keyframes rise-smoke {
-  0% { transform: translateY(0) scale(1); opacity: 0; }
-  20% { opacity: 0.4; }
-  100% { transform: translateY(-100vh) scale(3); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100vh) scale(3);
+    opacity: 0;
+  }
 }
-
 
 /* --- TEMA AIGUA (OLAS ANIMADAS ESPECTACULARES) --- */
 .theme-water {
@@ -921,16 +959,23 @@ props.socket.on('tsunamiHit', () => {
 .theme-water::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: 
-    radial-gradient(ellipse at 50% 0%, rgba(64, 164, 223, 0.2) 0%, transparent 60%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(64, 164, 223, 0.2) 0%, transparent 60%);
   animation: water-glow 6s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
 @keyframes water-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 .theme-water .book-page {
   background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
@@ -940,9 +985,14 @@ props.socket.on('tsunamiHit', () => {
 .theme-water .book-left-page {
   background-image: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
 }
-.theme-water .paraules { color: #004d7a; text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4); }
+.theme-water .paraules {
+  color: #004d7a;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
+}
 .theme-water .mage-title,
-.theme-water .mage-description { color: #004d7a; }
+.theme-water .mage-description {
+  color: #004d7a;
+}
 .wave {
   position: absolute;
   bottom: 0;
@@ -953,17 +1003,38 @@ props.socket.on('tsunamiHit', () => {
   background-repeat: repeat-x;
   animation: wave-motion 6s linear infinite;
 }
-.wave:nth-child(1) { bottom: 10px; animation-duration: 8s; opacity: 0.9; }
-.wave:nth-child(2) { bottom: 30px; animation-duration: 10s; animation-direction: reverse; opacity: 0.6; }
-.wave:nth-child(3) { bottom: 50px; animation-duration: 12s; opacity: 0.4; }
+.wave:nth-child(1) {
+  bottom: 10px;
+  animation-duration: 8s;
+  opacity: 0.9;
+}
+.wave:nth-child(2) {
+  bottom: 30px;
+  animation-duration: 10s;
+  animation-direction: reverse;
+  opacity: 0.6;
+}
+.wave:nth-child(3) {
+  bottom: 50px;
+  animation-duration: 12s;
+  opacity: 0.4;
+}
 @keyframes wave-motion {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(300px); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(300px);
+  }
 }
 .bubble {
   position: absolute;
   bottom: -20px;
-  background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.4), rgba(100, 200, 255, 0.2));
+  background: radial-gradient(
+    ellipse at 30% 30%,
+    rgba(255, 255, 255, 0.4),
+    rgba(100, 200, 255, 0.2)
+  );
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   animation: rise-bubble 6s to 15s ease-in infinite;
@@ -975,8 +1046,14 @@ props.socket.on('tsunamiHit', () => {
   box-shadow: inset -1px -1px 3px rgba(255, 255, 255, 0.5);
 }
 @keyframes rise-bubble {
-  0% { transform: translateY(0) translateX(0); opacity: 0.8; }
-  100% { transform: translateY(-110vh) translateX(calc(sin(var(--i)) * 60px)); opacity: 0; }
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(calc(sin(var(--i)) * 60px));
+    opacity: 0;
+  }
 }
 
 /* --- TEMA TIERRA/JUNGLA (VERDE BRILLANTE Y LIMPIO) --- */
@@ -987,7 +1064,10 @@ props.socket.on('tsunamiHit', () => {
 .theme-earth::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
@@ -1002,15 +1082,24 @@ props.socket.on('tsunamiHit', () => {
   background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
 }
 .theme-earth .book-container {
-  box-shadow: 0 0 60px rgba(124, 179, 66, 0.5), 0 0 100px rgba(156, 204, 101, 0.3);
+  box-shadow:
+    0 0 60px rgba(124, 179, 66, 0.5),
+    0 0 100px rgba(156, 204, 101, 0.3);
 }
-.theme-earth .paraules { color: #1b5e20; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); font-weight: 500; }
+.theme-earth .paraules {
+  color: #1b5e20;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-weight: 500;
+}
 .theme-earth .mage-title {
   color: #2e7d32;
   text-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
   letter-spacing: 0.05em;
 }
-.theme-earth .mage-description { color: #1b5e20; font-weight: 500; }
+.theme-earth .mage-description {
+  color: #1b5e20;
+  font-weight: 500;
+}
 .vine-path {
   position: absolute;
   bottom: 0;
@@ -1020,21 +1109,34 @@ props.socket.on('tsunamiHit', () => {
   opacity: 0.15;
 }
 .vine {
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, #66bb6a 30%, #81c784 50%, #66bb6a 70%, transparent);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #66bb6a 30%,
+    #81c784 50%,
+    #66bb6a 70%,
+    transparent
+  );
   border-radius: 50% 50% 0 0;
   animation: vine-grow 10s ease-out infinite;
   animation-delay: calc(var(--i) * -1.2s);
 }
 @keyframes vine-grow {
-  0% { clip-path: inset(100% 0 0 0); }
-  100% { clip-path: inset(0% 0 0 0); }
+  0% {
+    clip-path: inset(100% 0 0 0);
+  }
+  100% {
+    clip-path: inset(0% 0 0 0);
+  }
 }
 .leaf {
   position: absolute;
   top: -5%;
   left: calc(var(--i) * 3.33%);
-  width: 28px; height: 28px;
+  width: 28px;
+  height: 28px;
   background: linear-gradient(135deg, #8bc34a, #9ccc65);
   clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 50% 85%, 18% 100%, 0% 38%);
   animation: fall-leaf-jungle 7s to 18s linear infinite;
@@ -1043,8 +1145,14 @@ props.socket.on('tsunamiHit', () => {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 }
 @keyframes fall-leaf-jungle {
-  0% { transform: translateY(0) rotateZ(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotateZ(calc(var(--i) * 35deg)); opacity: 0; }
+  0% {
+    transform: translateY(0) rotateZ(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotateZ(calc(var(--i) * 35deg));
+    opacity: 0;
+  }
 }
 
 /* --- TEMA LLUM (BLANCO PURO CON AURA DORADA) --- */
@@ -1055,15 +1163,23 @@ props.socket.on('tsunamiHit', () => {
 .theme-light::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 60%);
   animation: divine-glow 4s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
 @keyframes divine-glow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 .theme-light .book-page {
   background: linear-gradient(135deg, #ffffff 0%, #fffef5 50%, #ffffff 100%);
@@ -1075,18 +1191,25 @@ props.socket.on('tsunamiHit', () => {
   background: linear-gradient(135deg, #ffffff 0%, #fffef5 100%);
 }
 .theme-light .book-container {
-  box-shadow: 
+  box-shadow:
     0 0 80px rgba(255, 215, 0, 0.7),
     0 0 120px rgba(255, 200, 50, 0.5),
     0 0 160px rgba(255, 180, 0, 0.3);
 }
-.theme-light .paraules { color: #1a1a1a; text-shadow: 0 1px 3px rgba(255, 215, 0, 0.15); font-weight: 500; }
+.theme-light .paraules {
+  color: #1a1a1a;
+  text-shadow: 0 1px 3px rgba(255, 215, 0, 0.15);
+  font-weight: 500;
+}
 .theme-light .mage-title {
   color: #1a1a1a;
   text-shadow: 0 2px 6px rgba(255, 215, 0, 0.25);
   letter-spacing: 0.05em;
 }
-.theme-light .mage-description { color: #2a2a2a; font-weight: 500; }
+.theme-light .mage-description {
+  color: #2a2a2a;
+  font-weight: 500;
+}
 .light-effects {
   position: absolute;
   width: 100%;
@@ -1101,19 +1224,51 @@ props.socket.on('tsunamiHit', () => {
   background: radial-gradient(circle at 30% 30%, #ffff99, #ffd700);
   border-radius: 50%;
   animation: twinkle-divine 2.5s ease-in-out infinite;
-  box-shadow: 0 0 12px #ffeb3b, 0 0 25px #ffc107;
+  box-shadow:
+    0 0 12px #ffeb3b,
+    0 0 25px #ffc107;
 }
 @keyframes twinkle-divine {
-  0%, 100% { opacity: 0.5; transform: scale(0.7); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
-.light-effects .star:nth-child(5n) { top: 5%; left: 15%; animation-delay: 0s; }
-.light-effects .star:nth-child(7n) { top: 15%; left: 80%; animation-delay: 0.5s; }
-.light-effects .star:nth-child(11n) { top: 10%; left: 45%; animation-delay: 1s; }
-.light-effects .star:nth-child(13n) { top: 35%; left: 20%; animation-delay: 1.5s; }
-.light-effects .star:nth-child(17n) { top: 3%; left: 88%; animation-delay: 2s; }
-.light-effects .star:nth-child(19n) { top: 30%; left: 60%; animation-delay: 2.5s; }
-
+.light-effects .star:nth-child(5n) {
+  top: 5%;
+  left: 15%;
+  animation-delay: 0s;
+}
+.light-effects .star:nth-child(7n) {
+  top: 15%;
+  left: 80%;
+  animation-delay: 0.5s;
+}
+.light-effects .star:nth-child(11n) {
+  top: 10%;
+  left: 45%;
+  animation-delay: 1s;
+}
+.light-effects .star:nth-child(13n) {
+  top: 35%;
+  left: 20%;
+  animation-delay: 1.5s;
+}
+.light-effects .star:nth-child(17n) {
+  top: 3%;
+  left: 88%;
+  animation-delay: 2s;
+}
+.light-effects .star:nth-child(19n) {
+  top: 30%;
+  left: 60%;
+  animation-delay: 2.5s;
+}
 
 /* --- TEMA FOSCOR (AZUL PROFUNDO Y PÚRPURA BRILLANTE) --- */
 .theme-dark {
@@ -1123,7 +1278,10 @@ props.socket.on('tsunamiHit', () => {
 .theme-dark::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(circle at 50% 50%, rgba(150, 100, 200, 0.15) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
@@ -1138,15 +1296,24 @@ props.socket.on('tsunamiHit', () => {
   background: linear-gradient(135deg, #f0e8f8 0%, #e8e0f5 100%);
 }
 .theme-dark .book-container {
-  box-shadow: 0 0 70px rgba(100, 50, 200, 0.6), 0 0 110px rgba(150, 100, 200, 0.4);
+  box-shadow:
+    0 0 70px rgba(100, 50, 200, 0.6),
+    0 0 110px rgba(150, 100, 200, 0.4);
 }
-.theme-dark .paraules { color: #2a2a5a; text-shadow: 0 1px 3px rgba(100, 50, 200, 0.15); font-weight: 500; }
+.theme-dark .paraules {
+  color: #2a2a5a;
+  text-shadow: 0 1px 3px rgba(100, 50, 200, 0.15);
+  font-weight: 500;
+}
 .theme-dark .mage-title {
   color: #3a3a6a;
   text-shadow: 0 2px 6px rgba(100, 50, 200, 0.25);
   letter-spacing: 0.05em;
 }
-.theme-dark .mage-description { color: #2a2a5a; font-weight: 500; }
+.theme-dark .mage-description {
+  color: #2a2a5a;
+  font-weight: 500;
+}
 .shadow {
   position: absolute;
   bottom: 0;
@@ -1157,13 +1324,22 @@ props.socket.on('tsunamiHit', () => {
   pointer-events: none;
 }
 @keyframes shadow-drift-mystique {
-  0%, 100% { transform: translateX(-40px) translateY(0) scale(1); opacity: 0.4; }
-  50% { transform: translateX(40px) translateY(-30px) scale(1.05); opacity: 0.7; }
+  0%,
+  100% {
+    transform: translateX(-40px) translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(40px) translateY(-30px) scale(1.05);
+    opacity: 0.7;
+  }
 }
 .lightning {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(150, 80, 255, 0.6);
   opacity: 0;
   animation: lightning-mystique 12s steps(3, end) infinite;
@@ -1172,13 +1348,28 @@ props.socket.on('tsunamiHit', () => {
   pointer-events: none;
 }
 @keyframes lightning-mystique {
-  0%, 93% { opacity: 0; }
-  94% { opacity: 0.5; }
-  95% { opacity: 0; }
-  96% { opacity: 0.7; }
-  97% { opacity: 0; }
-  98% { opacity: 0.6; }
-  100% { opacity: 0; }
+  0%,
+  93% {
+    opacity: 0;
+  }
+  94% {
+    opacity: 0.5;
+  }
+  95% {
+    opacity: 0;
+  }
+  96% {
+    opacity: 0.7;
+  }
+  97% {
+    opacity: 0;
+  }
+  98% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* --- TEMA GEL (CONGELADO CON ESCARCHA) --- */
@@ -1189,8 +1380,11 @@ props.socket.on('tsunamiHit', () => {
 .theme-ice::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
     radial-gradient(ellipse at 20% 50%, rgba(176, 224, 230, 0.3) 0%, transparent 40%),
     radial-gradient(ellipse at 80% 20%, rgba(200, 235, 245, 0.2) 0%, transparent 50%);
   animation: ice-shimmer 4s ease-in-out infinite;
@@ -1198,14 +1392,19 @@ props.socket.on('tsunamiHit', () => {
   z-index: 0;
 }
 @keyframes ice-shimmer {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 .theme-ice .book-page {
   background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
   color: #004d7a;
   border: 2px solid rgba(100, 200, 255, 0.3);
-  box-shadow: 
+  box-shadow:
     inset 0 0 30px rgba(100, 200, 255, 0.2),
     inset 0 0 60px rgba(200, 230, 245, 0.1);
 }
@@ -1222,7 +1421,7 @@ props.socket.on('tsunamiHit', () => {
   position: absolute;
   inset: -10px;
   border-radius: 12px;
-  background: 
+  background:
     linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 25%, transparent 50%),
     linear-gradient(-45deg, transparent 0%, rgba(255, 255, 255, 0.1) 25%, transparent 50%);
   pointer-events: none;
@@ -1230,16 +1429,30 @@ props.socket.on('tsunamiHit', () => {
   z-index: -1;
 }
 @keyframes ice-pulse {
-  0%, 100% { box-shadow: 0 0 40px rgba(144, 202, 249, 0.6); }
-  50% { box-shadow: 0 0 60px rgba(200, 235, 245, 1); }
+  0%,
+  100% {
+    box-shadow: 0 0 40px rgba(144, 202, 249, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(200, 235, 245, 1);
+  }
 }
 @keyframes frost-shimmer {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
-.theme-ice .paraules { color: #004d7a; }
+.theme-ice .paraules {
+  color: #004d7a;
+}
 .theme-ice .mage-title,
-.theme-ice .mage-description { color: #00838f; }
+.theme-ice .mage-description {
+  color: #00838f;
+}
 .snowflake {
   position: absolute;
   top: -10%;
@@ -1257,16 +1470,21 @@ props.socket.on('tsunamiHit', () => {
 .snowflake::after {
   content: '';
   position: absolute;
-  top: 50%; left: 50%;
-  width: 100%; height: 100%;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
   background: inherit;
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
 }
-.snowflake::after { transform: translate(-50%, -50%) rotate(90deg); }
+.snowflake::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
 @keyframes fall-snow {
   to {
-    transform: translateY(110vh) translateX(calc(sin(var(--i) / 5) * 40px)) rotateZ(calc(var(--i) * 1deg));
+    transform: translateY(110vh) translateX(calc(sin(var(--i) / 5) * 40px))
+      rotateZ(calc(var(--i) * 1deg));
     opacity: 0;
   }
 }
@@ -1298,21 +1516,65 @@ props.socket.on('tsunamiHit', () => {
   transform: rotate(-45deg);
   animation: drop-fall 2.5s to 5s ease-in infinite;
   opacity: 0.9;
-  box-shadow: 0 0 15px rgba(100, 200, 255, 0.8), inset -2px -2px 8px rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 0 15px rgba(100, 200, 255, 0.8),
+    inset -2px -2px 8px rgba(255, 255, 255, 0.4);
 }
-.water-drop:nth-child(1) { top: 5%; left: 8%; animation-delay: 0s; }
-.water-drop:nth-child(2) { top: 12%; right: 10%; animation-delay: 0.8s; }
-.water-drop:nth-child(3) { top: 30%; left: 5%; animation-delay: 1.2s; }
-.water-drop:nth-child(4) { top: 45%; right: 6%; animation-delay: 1.6s; }
-.water-drop:nth-child(5) { top: 60%; left: 7%; animation-delay: 2s; }
-.water-drop:nth-child(6) { top: 75%; right: 8%; animation-delay: 2.4s; }
-.water-drop:nth-child(7) { top: 18%; left: 3%; animation-delay: 0.4s; }
-.water-drop:nth-child(8) { top: 68%; right: 4%; animation-delay: 1.4s; }
+.water-drop:nth-child(1) {
+  top: 5%;
+  left: 8%;
+  animation-delay: 0s;
+}
+.water-drop:nth-child(2) {
+  top: 12%;
+  right: 10%;
+  animation-delay: 0.8s;
+}
+.water-drop:nth-child(3) {
+  top: 30%;
+  left: 5%;
+  animation-delay: 1.2s;
+}
+.water-drop:nth-child(4) {
+  top: 45%;
+  right: 6%;
+  animation-delay: 1.6s;
+}
+.water-drop:nth-child(5) {
+  top: 60%;
+  left: 7%;
+  animation-delay: 2s;
+}
+.water-drop:nth-child(6) {
+  top: 75%;
+  right: 8%;
+  animation-delay: 2.4s;
+}
+.water-drop:nth-child(7) {
+  top: 18%;
+  left: 3%;
+  animation-delay: 0.4s;
+}
+.water-drop:nth-child(8) {
+  top: 68%;
+  right: 4%;
+  animation-delay: 1.4s;
+}
 @keyframes drop-fall {
-  0% { transform: rotate(-45deg) translateY(-80px); opacity: 0; }
-  5% { opacity: 0.9; }
-  95% { opacity: 0.9; }
-  100% { transform: rotate(-45deg) translateY(80px); opacity: 0; }
+  0% {
+    transform: rotate(-45deg) translateY(-80px);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.9;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(-45deg) translateY(80px);
+    opacity: 0;
+  }
 }
 
 /* --- SELVA: Hojas y ramas grandes estilo jungla --- */
@@ -1330,17 +1592,60 @@ props.socket.on('tsunamiHit', () => {
   box-shadow: 0 0 18px rgba(76, 175, 80, 0.8);
   filter: brightness(1.1);
 }
-.vine-decoration:nth-child(1) { top: 5%; left: 6%; animation-delay: 0s; transform: rotate(-15deg); }
-.vine-decoration:nth-child(2) { top: 12%; right: 8%; animation-delay: 0.5s; transform: scaleX(-1) rotate(20deg); }
-.vine-decoration:nth-child(3) { top: 45%; left: 3%; animation-delay: 1s; transform: rotate(-10deg); }
-.vine-decoration:nth-child(4) { top: 50%; right: 5%; animation-delay: 1.5s; transform: scaleX(-1) rotate(-18deg); }
-.vine-decoration:nth-child(5) { top: 70%; left: 5%; animation-delay: 0.3s; transform: rotate(12deg); }
-.vine-decoration:nth-child(6) { top: 75%; right: 4%; animation-delay: 0.8s; transform: scaleX(-1) rotate(-20deg); }
+.vine-decoration:nth-child(1) {
+  top: 5%;
+  left: 6%;
+  animation-delay: 0s;
+  transform: rotate(-15deg);
+}
+.vine-decoration:nth-child(2) {
+  top: 12%;
+  right: 8%;
+  animation-delay: 0.5s;
+  transform: scaleX(-1) rotate(20deg);
+}
+.vine-decoration:nth-child(3) {
+  top: 45%;
+  left: 3%;
+  animation-delay: 1s;
+  transform: rotate(-10deg);
+}
+.vine-decoration:nth-child(4) {
+  top: 50%;
+  right: 5%;
+  animation-delay: 1.5s;
+  transform: scaleX(-1) rotate(-18deg);
+}
+.vine-decoration:nth-child(5) {
+  top: 70%;
+  left: 5%;
+  animation-delay: 0.3s;
+  transform: rotate(12deg);
+}
+.vine-decoration:nth-child(6) {
+  top: 75%;
+  right: 4%;
+  animation-delay: 0.8s;
+  transform: scaleX(-1) rotate(-20deg);
+}
 @keyframes leaf-flutter {
-  0%, 100% { transform: rotateZ(-10deg) translateY(0) scale(0.95); opacity: 0.85; }
-  25% { transform: rotateZ(8deg) translateY(-4px) scale(1); opacity: 0.95; }
-  50% { transform: rotateZ(-12deg) translateY(0) scale(0.98); opacity: 0.9; }
-  75% { transform: rotateZ(5deg) translateY(-3px) scale(1); opacity: 0.95; }
+  0%,
+  100% {
+    transform: rotateZ(-10deg) translateY(0) scale(0.95);
+    opacity: 0.85;
+  }
+  25% {
+    transform: rotateZ(8deg) translateY(-4px) scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: rotateZ(-12deg) translateY(0) scale(0.98);
+    opacity: 0.9;
+  }
+  75% {
+    transform: rotateZ(5deg) translateY(-3px) scale(1);
+    opacity: 0.95;
+  }
 }
 
 /* --- LUZ: Destellos estelares GRANDES --- */
@@ -1354,24 +1659,84 @@ props.socket.on('tsunamiHit', () => {
   background: radial-gradient(circle at 30% 30%, #ffff99, #ffd700, #ffb700);
   border-radius: 50%;
   animation: sparkle-pulse 1.2s ease-in-out infinite;
-  box-shadow: 0 0 20px #ffeb3b, 0 0 35px #ffc107, 0 0 50px #ff9800;
+  box-shadow:
+    0 0 20px #ffeb3b,
+    0 0 35px #ffc107,
+    0 0 50px #ff9800;
   filter: drop-shadow(0 0 8px #ffea00);
 }
-.sparkle:nth-child(1) { top: 5%; left: 8%; animation-delay: 0s; }
-.sparkle:nth-child(2) { top: 12%; right: 10%; animation-delay: 0.2s; }
-.sparkle:nth-child(3) { top: 22%; left: 6%; animation-delay: 0.4s; }
-.sparkle:nth-child(4) { top: 32%; right: 8%; animation-delay: 0.6s; }
-.sparkle:nth-child(5) { top: 48%; left: 4%; animation-delay: 0.8s; }
-.sparkle:nth-child(6) { top: 58%; right: 6%; animation-delay: 0.1s; }
-.sparkle:nth-child(7) { top: 68%; left: 5%; animation-delay: 0.3s; }
-.sparkle:nth-child(8) { top: 78%; right: 7%; animation-delay: 0.5s; }
-.sparkle:nth-child(9) { top: 10%; left: 12%; animation-delay: 0.7s; }
-.sparkle:nth-child(10) { top: 40%; right: 12%; animation-delay: 0.2s; }
-.sparkle:nth-child(11) { top: 65%; left: 8%; animation-delay: 0.4s; }
-.sparkle:nth-child(12) { top: 85%; right: 9%; animation-delay: 0.6s; }
+.sparkle:nth-child(1) {
+  top: 5%;
+  left: 8%;
+  animation-delay: 0s;
+}
+.sparkle:nth-child(2) {
+  top: 12%;
+  right: 10%;
+  animation-delay: 0.2s;
+}
+.sparkle:nth-child(3) {
+  top: 22%;
+  left: 6%;
+  animation-delay: 0.4s;
+}
+.sparkle:nth-child(4) {
+  top: 32%;
+  right: 8%;
+  animation-delay: 0.6s;
+}
+.sparkle:nth-child(5) {
+  top: 48%;
+  left: 4%;
+  animation-delay: 0.8s;
+}
+.sparkle:nth-child(6) {
+  top: 58%;
+  right: 6%;
+  animation-delay: 0.1s;
+}
+.sparkle:nth-child(7) {
+  top: 68%;
+  left: 5%;
+  animation-delay: 0.3s;
+}
+.sparkle:nth-child(8) {
+  top: 78%;
+  right: 7%;
+  animation-delay: 0.5s;
+}
+.sparkle:nth-child(9) {
+  top: 10%;
+  left: 12%;
+  animation-delay: 0.7s;
+}
+.sparkle:nth-child(10) {
+  top: 40%;
+  right: 12%;
+  animation-delay: 0.2s;
+}
+.sparkle:nth-child(11) {
+  top: 65%;
+  left: 8%;
+  animation-delay: 0.4s;
+}
+.sparkle:nth-child(12) {
+  top: 85%;
+  right: 9%;
+  animation-delay: 0.6s;
+}
 @keyframes sparkle-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.6); filter: brightness(0.7) drop-shadow(0 0 5px rgba(255, 215, 0, 0.6)); }
-  50% { opacity: 1; transform: scale(1.5); filter: brightness(1.5) drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.6);
+    filter: brightness(0.7) drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+    filter: brightness(1.5) drop-shadow(0 0 25px rgba(255, 215, 0, 1));
+  }
 }
 
 /* --- FUEGO: Llamas decorativas EXAGERADAS --- */
@@ -1382,21 +1747,61 @@ props.socket.on('tsunamiHit', () => {
   position: absolute;
   width: 60px;
   height: 90px;
-  background: linear-gradient(to top, rgba(255, 100, 0, 0.8), rgba(255, 200, 0, 0.5), rgba(255, 255, 0, 0.3));
+  background: linear-gradient(
+    to top,
+    rgba(255, 100, 0, 0.8),
+    rgba(255, 200, 0, 0.5),
+    rgba(255, 255, 0, 0.3)
+  );
   clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 80% 100%, 50% 85%, 20% 100%, 0% 50%);
   animation: flame-flicker 0.6s ease-in-out infinite;
   opacity: 0.85;
-  box-shadow: 0 0 25px rgba(255, 100, 0, 1), 0 0 40px rgba(255, 150, 0, 0.6);
+  box-shadow:
+    0 0 25px rgba(255, 100, 0, 1),
+    0 0 40px rgba(255, 150, 0, 0.6);
 }
-.flame-decoration:nth-child(1) { top: 10%; left: 4%; animation-delay: 0s; }
-.flame-decoration:nth-child(2) { top: 40%; right: 3%; animation-delay: 0.15s; }
-.flame-decoration:nth-child(3) { top: 65%; left: 3%; animation-delay: 0.3s; }
-.flame-decoration:nth-child(4) { top: 30%; right: 4%; animation-delay: 0.08s; }
+.flame-decoration:nth-child(1) {
+  top: 10%;
+  left: 4%;
+  animation-delay: 0s;
+}
+.flame-decoration:nth-child(2) {
+  top: 40%;
+  right: 3%;
+  animation-delay: 0.15s;
+}
+.flame-decoration:nth-child(3) {
+  top: 65%;
+  left: 3%;
+  animation-delay: 0.3s;
+}
+.flame-decoration:nth-child(4) {
+  top: 30%;
+  right: 4%;
+  animation-delay: 0.08s;
+}
 @keyframes flame-flicker {
-  0%, 100% { transform: scaleY(1) scaleX(0.9); opacity: 0.8; filter: brightness(1); }
-  25% { transform: scaleY(1.15) scaleX(1); opacity: 0.95; filter: brightness(1.2); }
-  50% { transform: scaleY(0.95) scaleX(1.05); opacity: 0.85; filter: brightness(1.1); }
-  75% { transform: scaleY(1.2) scaleX(0.95); opacity: 0.9; filter: brightness(1.15); }
+  0%,
+  100% {
+    transform: scaleY(1) scaleX(0.9);
+    opacity: 0.8;
+    filter: brightness(1);
+  }
+  25% {
+    transform: scaleY(1.15) scaleX(1);
+    opacity: 0.95;
+    filter: brightness(1.2);
+  }
+  50% {
+    transform: scaleY(0.95) scaleX(1.05);
+    opacity: 0.85;
+    filter: brightness(1.1);
+  }
+  75% {
+    transform: scaleY(1.2) scaleX(0.95);
+    opacity: 0.9;
+    filter: brightness(1.15);
+  }
 }
 
 /* --- OSCURIDAD: Sombras místicas GRANDES --- */
@@ -1407,20 +1812,56 @@ props.socket.on('tsunamiHit', () => {
   position: absolute;
   width: 160px;
   height: 160px;
-  background: radial-gradient(ellipse at 40% 40%, rgba(100, 50, 200, 0.35), rgba(150, 100, 200, 0.1), transparent);
+  background: radial-gradient(
+    ellipse at 40% 40%,
+    rgba(100, 50, 200, 0.35),
+    rgba(150, 100, 200, 0.1),
+    transparent
+  );
   border-radius: 50%;
   animation: mist-drift 7s ease-in-out infinite;
   box-shadow: 0 0 30px rgba(100, 50, 200, 0.5);
 }
-.mist-decoration:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; }
-.mist-decoration:nth-child(2) { top: 15%; right: 8%; animation-delay: 1.5s; }
-.mist-decoration:nth-child(3) { top: 48%; left: 2%; animation-delay: 2.5s; }
-.mist-decoration:nth-child(4) { top: 58%; right: 5%; animation-delay: 4s; }
-.mist-decoration:nth-child(5) { top: 72%; left: 6%; animation-delay: 1s; }
-.mist-decoration:nth-child(6) { top: 35%; right: 3%; animation-delay: 3.5s; }
+.mist-decoration:nth-child(1) {
+  top: 8%;
+  left: 5%;
+  animation-delay: 0s;
+}
+.mist-decoration:nth-child(2) {
+  top: 15%;
+  right: 8%;
+  animation-delay: 1.5s;
+}
+.mist-decoration:nth-child(3) {
+  top: 48%;
+  left: 2%;
+  animation-delay: 2.5s;
+}
+.mist-decoration:nth-child(4) {
+  top: 58%;
+  right: 5%;
+  animation-delay: 4s;
+}
+.mist-decoration:nth-child(5) {
+  top: 72%;
+  left: 6%;
+  animation-delay: 1s;
+}
+.mist-decoration:nth-child(6) {
+  top: 35%;
+  right: 3%;
+  animation-delay: 3.5s;
+}
 @keyframes mist-drift {
-  0%, 100% { transform: translateX(0) scale(0.95); opacity: 0.4; }
-  50% { transform: translateX(20px) scale(1.1); opacity: 0.7; }
+  0%,
+  100% {
+    transform: translateX(0) scale(0.95);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(20px) scale(1.1);
+    opacity: 0.7;
+  }
 }
 
 /* --- HIELO: Cristales de hielo GRANDES --- */
@@ -1431,30 +1872,89 @@ props.socket.on('tsunamiHit', () => {
   position: absolute;
   width: 45px;
   height: 45px;
-  background: linear-gradient(135deg, rgba(150, 220, 255, 0.8), rgba(100, 200, 255, 0.5), rgba(180, 230, 255, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(150, 220, 255, 0.8),
+    rgba(100, 200, 255, 0.5),
+    rgba(180, 230, 255, 0.3)
+  );
   clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 50% 85%, 18% 100%, 0% 38%);
   animation: crystal-shimmer 1.8s ease-in-out infinite;
   opacity: 0.85;
-  box-shadow: 0 0 20px rgba(100, 200, 255, 1), 0 0 35px rgba(150, 220, 255, 0.6);
+  box-shadow:
+    0 0 20px rgba(100, 200, 255, 1),
+    0 0 35px rgba(150, 220, 255, 0.6);
 }
-.ice-crystal:nth-child(1) { top: 10%; left: 4%; animation-delay: 0s; }
-.ice-crystal:nth-child(2) { top: 20%; right: 6%; animation-delay: 0.25s; }
-.ice-crystal:nth-child(3) { top: 38%; left: 3%; animation-delay: 0.5s; }
-.ice-crystal:nth-child(4) { top: 52%; right: 4%; animation-delay: 0.75s; }
-.ice-crystal:nth-child(5) { top: 68%; left: 5%; animation-delay: 1s; }
-.ice-crystal:nth-child(6) { top: 80%; right: 5%; animation-delay: 0.15s; }
-.ice-crystal:nth-child(7) { top: 28%; left: 2%; animation-delay: 0.4s; }
-.ice-crystal:nth-child(8) { top: 62%; right: 3%; animation-delay: 0.6s; }
+.ice-crystal:nth-child(1) {
+  top: 10%;
+  left: 4%;
+  animation-delay: 0s;
+}
+.ice-crystal:nth-child(2) {
+  top: 20%;
+  right: 6%;
+  animation-delay: 0.25s;
+}
+.ice-crystal:nth-child(3) {
+  top: 38%;
+  left: 3%;
+  animation-delay: 0.5s;
+}
+.ice-crystal:nth-child(4) {
+  top: 52%;
+  right: 4%;
+  animation-delay: 0.75s;
+}
+.ice-crystal:nth-child(5) {
+  top: 68%;
+  left: 5%;
+  animation-delay: 1s;
+}
+.ice-crystal:nth-child(6) {
+  top: 80%;
+  right: 5%;
+  animation-delay: 0.15s;
+}
+.ice-crystal:nth-child(7) {
+  top: 28%;
+  left: 2%;
+  animation-delay: 0.4s;
+}
+.ice-crystal:nth-child(8) {
+  top: 62%;
+  right: 3%;
+  animation-delay: 0.6s;
+}
 @keyframes crystal-shimmer {
-  0%, 100% { opacity: 0.6; transform: scale(0.85) rotateZ(0deg); filter: brightness(0.9); }
-  50% { opacity: 1; transform: scale(1.15) rotateZ(5deg); filter: brightness(1.4); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.85) rotateZ(0deg);
+    filter: brightness(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotateZ(5deg);
+    filter: brightness(1.4);
+  }
 }
-
 
 /* --- MAGE INFO & POWER-UPS --- */
-.mage-info { text-align: center; }
-.mage-title { margin: 0 0 15px 0; font-size: 3rem; font-weight: 300; letter-spacing: 0.02em; font-family: 'Cinzel', serif; }
-.mage-description { margin: 0; font-size: 1.1rem; font-style: italic; }
+.mage-info {
+  text-align: center;
+}
+.mage-title {
+  margin: 0 0 15px 0;
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  font-family: 'Cinzel', serif;
+}
+.mage-description {
+  margin: 0;
+  font-size: 1.1rem;
+  font-style: italic;
+}
 
 .paraula.powerup-word {
   color: #ffc107;
@@ -1465,18 +1965,59 @@ props.socket.on('tsunamiHit', () => {
 }
 
 @keyframes pulse-powerup {
-  from { transform: scale(1); box-shadow: 0 0 5px rgba(255, 193, 7, 0.5); }
-  to { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 193, 7, 0.8); }
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
 }
 
 /* --- DEBUFFS --- */
-.debuff-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
-#game-engine.Apagon .debuff-overlay { animation: apagon-animation 0.7s infinite alternate; }
-#game-engine.Flash .debuff-overlay { animation: flash-animation 0.4s infinite alternate; }
-@keyframes flash-animation { from { background-color: rgb(255, 255, 255); } to { background-color: rgba(250, 250, 250, 0.158); } }
-@keyframes apagon-animation { from { background-color: rgba(0, 0, 0, 0.8); } to { background-color: rgb(0, 0, 0); } }
+.debuff-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+#game-engine.Apagon .debuff-overlay {
+  animation: apagon-animation 0.7s infinite alternate;
+}
+#game-engine.Flash .debuff-overlay {
+  animation: flash-animation 0.4s infinite alternate;
+}
+@keyframes flash-animation {
+  from {
+    background-color: rgb(255, 255, 255);
+  }
+  to {
+    background-color: rgba(250, 250, 250, 0.158);
+  }
+}
+@keyframes apagon-animation {
+  from {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  to {
+    background-color: rgb(0, 0, 0);
+  }
+}
 
 /* --- SPECTATOR --- */
-.spectator-name { color: #ffffff; font-size: 1.3rem; margin-bottom: 15px; text-align: center; width: 100%; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
-.spectator-name strong { color: #ffc107; }
+.spectator-name {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.spectator-name strong {
+  color: #ffc107;
+}
 </style>
