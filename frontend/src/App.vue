@@ -26,8 +26,8 @@
       />
       <img class="mago mago-obscuro" src="/img/MagoObscuro-removebg-preview.png" alt="Mag Obscur" />
       <img class="mago mago-tierra" src="/img/MagoTierra-removebg-preview.png" alt="Mag de Terra" />
-      <img class="mago mago-hielo" src="/img/MagoHielo.png" alt="Mag de Hielo" />
-      <img class="mago mago-agua" src="/img/MagoAgua.png" alt="Mag de Agua" />
+      <!-- <img class="mago mago-hielo" src="/img/MagoHielo.png" alt="Mag de Hielo" /> -->
+      <!-- <img class="mago mago-agua" src="/img/MagoAgua.png" alt="Mag de Agua" /> -->
 
       <h1 class="epic-title">MagicTypeRoyale</h1>
 
