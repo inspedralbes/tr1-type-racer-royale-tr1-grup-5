@@ -560,7 +560,6 @@ props.socket.on('spectatorGameView', (gameStats) => {
 props.socket.on('powerUpReady', (mage) => {
   showNotification('🔥 Power-up a punt! 🔥')
   powerUpState.ready = true
-  powerUpState.used = false
   powerUpState.name = mage.powerUp
   powerUpState.wordIndex = estatDelJoc.indexParaulaActiva
 })
