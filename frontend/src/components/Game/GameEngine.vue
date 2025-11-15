@@ -1,5 +1,19 @@
 <template>
-  <div id="game-engine" :class="[gameTheme, debuffState.isActive ? debuffState.type : '']">
+  <div
+    id="game-engine"
+    :class="[
+      gameTheme,
+      debuffState.isActive ? debuffState.type : '',
+      {
+        'casting-fire-spell': isCastingFireSpell,
+        'casting-ice-spell': isCastingIceSpell,
+        'casting-light-spell': isCastingLightSpell,
+        'casting-dark-spell': isCastingDarkSpell,
+        'casting-jungle-spell': isCastingJungleSpell,
+        'casting-water-spell': isCastingWaterSpell,
+      },
+    ]"
+  >
     <!-- Efectes espectaculars per tema -->
     <div class="theme-effects">
       <!-- Foc: Partícules + Vora cremant -->
@@ -122,6 +136,12 @@
           </div>
         </div>
         <div class="book-page book-right-page">
+          <FireSpellAnimation v-if="showFireSpellAnimation" />
+          <IceSpellAnimation v-if="showIceSpellAnimation" />
+          <LightSpellAnimation v-if="showLightSpellAnimation" />
+          <DarkSpellAnimation v-if="showDarkSpellAnimation" />
+          <JungleSpellAnimation v-if="showJungleSpellAnimation" />
+          <WaterSpellAnimation v-if="showWaterSpellAnimation" />
           <div class="paraules">
             <span
               v-for="(paraula, wordIndex) in estatDelJoc.paraules"
@@ -211,6 +231,12 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
+import FireSpellAnimation from './FireSpellAnimation.vue'
+import IceSpellAnimation from './IceSpellAnimation.vue'
+import LightSpellAnimation from './LightSpellAnimation.vue'
+import DarkSpellAnimation from './DarkSpellAnimation.vue'
+import JungleSpellAnimation from './JungleSpellAnimation.vue'
+import WaterSpellAnimation from './WaterSpellAnimation.vue'
 
 // 🎨 COMPUTED THEME
 const gameTheme = computed(() => {
@@ -272,6 +298,20 @@ const debuffState = reactive({
   frozenLetterIndex: null,
   enredaderaText: null,
 })
+
+const showFireSpellAnimation = ref(false)
+const showIceSpellAnimation = ref(false)
+const showLightSpellAnimation = ref(false)
+const showDarkSpellAnimation = ref(false)
+const showJungleSpellAnimation = ref(false)
+const showWaterSpellAnimation = ref(false)
+
+const isCastingFireSpell = ref(false)
+const isCastingIceSpell = ref(false)
+const isCastingLightSpell = ref(false)
+const isCastingDarkSpell = ref(false)
+const isCastingJungleSpell = ref(false)
+const isCastingWaterSpell = ref(false)
 
 const estatJugadorObservat = reactive({
   paraules: [],
@@ -555,6 +595,28 @@ props.socket.on('powerUpReady', (mage) => {
 
 props.socket.on('powerUpUsed', () => {
   showNotification(`Has utilitzat el teu poder: ${powerUpState.name}!`)
+  const powerName = powerUpState.name.toLowerCase()
+
+  if (powerName.includes('ignició')) {
+    isCastingFireSpell.value = true
+    setTimeout(() => (isCastingFireSpell.value = false), 1000)
+  } else if (powerName.includes('congelació')) {
+    isCastingIceSpell.value = true
+    setTimeout(() => (isCastingIceSpell.value = false), 1000)
+  } else if (powerName.includes('flash')) {
+    isCastingLightSpell.value = true
+    setTimeout(() => (isCastingLightSpell.value = false), 1000)
+  } else if (powerName.includes('apagada')) {
+    isCastingDarkSpell.value = true
+    setTimeout(() => (isCastingDarkSpell.value = false), 1300)
+  } else if (powerName.includes('enredadera')) {
+    isCastingJungleSpell.value = true
+    setTimeout(() => (isCastingJungleSpell.value = false), 1000)
+  } else if (powerName.includes('tsunami')) {
+    isCastingWaterSpell.value = true
+    setTimeout(() => (isCastingWaterSpell.value = false), 1200)
+  }
+
   powerUpState.ready = false
   powerUpState.wordIndex = null
 })
@@ -565,6 +627,34 @@ props.socket.on('powerUpFailed', ({ message }) => {
 
 props.socket.on('debuffReceived', ({ type, duration }) => {
   showNotification(`HAN FET SERVIR ${type.toUpperCase()} CONTRA TU!`)
+
+  if (type === 'Ignicio') {
+    showFireSpellAnimation.value = true
+    setTimeout(() => {
+      showFireSpellAnimation.value = false
+    }, 1000) // Durada de l'animació
+  } else if (type === 'Congelar') {
+    showIceSpellAnimation.value = true
+    setTimeout(() => {
+      showIceSpellAnimation.value = false
+    }, 1000)
+  } else if (type === 'Flash') {
+    showLightSpellAnimation.value = true
+    setTimeout(() => {
+      showLightSpellAnimation.value = false
+    }, 1000)
+  } else if (type === 'Apagon') {
+    showDarkSpellAnimation.value = true
+    setTimeout(() => {
+      showDarkSpellAnimation.value = false
+    }, 1300)
+  } else if (type === 'Enredadera') {
+    showJungleSpellAnimation.value = true
+    setTimeout(() => {
+      showJungleSpellAnimation.value = false
+    }, 1000)
+  }
+
   debuffState.isActive = true
   debuffState.type = type
   debuffState.duration = duration
@@ -579,6 +669,25 @@ props.socket.on('debuffReceived', ({ type, duration }) => {
 
 props.socket.on('debuffEnded', () => {
   showNotification("L'efecte del debuff ha acabat.")
+  const lastDebuffType = debuffState.type
+
+  if (lastDebuffType === 'Ignicio') {
+    showFireSpellAnimation.value = true
+    setTimeout(() => (showFireSpellAnimation.value = false), 1000)
+  } else if (lastDebuffType === 'Congelar') {
+    showIceSpellAnimation.value = true
+    setTimeout(() => (showIceSpellAnimation.value = false), 1000)
+  } else if (lastDebuffType === 'Flash') {
+    showLightSpellAnimation.value = true
+    setTimeout(() => (showLightSpellAnimation.value = false), 1000)
+  } else if (lastDebuffType === 'Apagon') {
+    showDarkSpellAnimation.value = true
+    setTimeout(() => (showDarkSpellAnimation.value = false), 1300)
+  } else if (lastDebuffType === 'Enredadera') {
+    showJungleSpellAnimation.value = true
+    setTimeout(() => (showJungleSpellAnimation.value = false), 1000)
+  }
+
   debuffState.isActive = false
   debuffState.type = null
   debuffState.duration = 0
@@ -588,6 +697,10 @@ props.socket.on('debuffEnded', () => {
 
 props.socket.on('tsunamiHit', () => {
   showNotification('🌊 TSUNAMI! Has de tornar a començar la frase.')
+  showWaterSpellAnimation.value = true
+  setTimeout(() => {
+    showWaterSpellAnimation.value = false
+  }, 1200)
   estatDelJoc.indexParaulaActiva = 0
   estatDelJoc.textEntrat = ''
   textAnterior.value = ''
@@ -1975,6 +2088,63 @@ props.socket.on('tsunamiHit', () => {
 #game-engine.Flash .debuff-overlay {
   animation: flash-animation 0.4s infinite alternate;
 }
+
+/* CASTER ANIMATION */
+#game-engine.casting-fire-spell .book-container::before {
+  animation: burning-edge 1s ease-in-out infinite, intense-glow 1s ease-in-out infinite;
+}
+
+#game-engine.casting-ice-spell .book-container {
+  animation: ice-pulse 1s ease-in-out infinite;
+}
+
+#game-engine.casting-light-spell .book-container {
+  box-shadow:
+    0 0 120px rgba(255, 215, 0, 1),
+    0 0 180px rgba(255, 200, 50, 0.8),
+    0 0 240px rgba(255, 180, 0, 0.6);
+}
+
+#game-engine.casting-dark-spell .book-container {
+  animation: shadow-pulse 1.3s ease-in-out infinite;
+}
+
+#game-engine.casting-jungle-spell .book-container {
+  box-shadow:
+    0 0 100px rgba(124, 179, 66, 0.8),
+    0 0 150px rgba(156, 204, 101, 0.6);
+}
+
+#game-engine.casting-water-spell .water-effects .wave {
+  animation-duration: 4s;
+}
+
+@keyframes intense-glow {
+  0%,
+  100% {
+    filter: brightness(1.5) blur(30px);
+    opacity: 0.8;
+  }
+  50% {
+    filter: brightness(2.5) blur(40px);
+    opacity: 1;
+  }
+}
+
+@keyframes shadow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 70px rgba(100, 50, 200, 0.6),
+      0 0 110px rgba(150, 100, 200, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 90px rgba(100, 50, 200, 0.9),
+      0 0 140px rgba(150, 100, 200, 0.7);
+  }
+}
+
 /*animacions powerup */
 @keyframes flash-animation {
   from {
