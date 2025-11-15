@@ -9,42 +9,47 @@
   </div>
 
   <div class="fondo" v-if="!isConnected">
-    <!-- Partículas mágicas flotantes -->
-    <div class="magic-particles-login">
-      <div class="particle-layer-login particle-layer-login-1"></div>
-      <div class="particle-layer-login particle-layer-login-2"></div>
-      <div class="particle-layer-login particle-layer-login-3"></div>
-      <div class="particle-layer-login particle-layer-login-4"></div>
-      <div class="particle-layer-login particle-layer-login-5"></div>
-    </div>
-
-    <img
-      class="mago mago-fuego"
-      src="../public/img/MagoFuego-removebg-preview.png"
-      alt="Mag de foc"
-    />
-    <img
-      class="mago mago-angelical"
-      src="../public/img/MagoAngelical-removebg-preview.png"
-      alt="Mag Angelical"
-    />
-    <img
-      class="mago mago-obscuro"
-      src="../public/img/MagoObscuro-removebg-preview.png"
-      alt="Mag Obscur"
-    />
-    <img
-      class="mago mago-tierra"
-      src="../public/img/MagoTierra-removebg-preview.png"
-      alt="Mag de Terra"
-    />
-
-    <div class="login-container">
-      <div class="badge">
-        <span>MAGIC TYPE RACER</span>
+    <div class="epic-login-container">
+      <div class="magic-particles-login">
+        <div class="particle-layer-login particle-layer-login-1"></div>
+        <div class="particle-layer-login particle-layer-login-2"></div>
+        <div class="particle-layer-login particle-layer-login-3"></div>
+        <div class="particle-layer-login particle-layer-login-4"></div>
+        <div class="particle-layer-login particle-layer-login-5"></div>
       </div>
 
-      <h1 class="login-title">Desfés la teva màgia. Inicia sessió i continua la teva aventura.</h1>
+      <img
+        class="mago mago-fuego"
+        src="/img/MagoFuego-removebg-preview.png"
+        alt="Mag de foc"
+      />
+      <img
+        class="mago mago-angelical"
+        src="/img/MagoAngelical-removebg-preview.png"
+        alt="Mag Angelical"
+      />
+      <img
+        class="mago mago-obscuro"
+        src="/img/MagoObscuro-removebg-preview.png"
+        alt="Mag Obscur"
+      />
+      <img
+        class="mago mago-tierra"
+        src="/img/MagoTierra-removebg-preview.png"
+        alt="Mag de Terra"
+      />
+      <img
+        class="mago mago-hielo"
+        src="/img/MagoHielo.png"
+        alt="Mag de Hielo"
+      />
+      <img
+        class="mago mago-agua"
+        src="/img/MagoAgua.png"
+        alt="Mag de Agua"
+      />
+
+      <h1 class="epic-title">MagicTypeRoyale</h1>
 
       <div class="login-form">
         <input
@@ -57,7 +62,7 @@
         />
 
         <button class="login-button" @click="sendNickname(jugador.name)">
-          Inicia el teu viatge
+          Entra a la Batalla
         </button>
       </div>
     </div>
@@ -76,7 +81,7 @@
     <div class="rooms-page-container">
       <div class="profile-card">
         <div class="profile-avatar-wrapper">
-          <img src="../public/img/Aprendiz_Mago.png" alt="Aprenent de Mag" class="profile-avatar" />
+          <img src="/img/Aprendiz_Mago.png" alt="Aprenent de Mag" class="profile-avatar" />
         </div>
         <div class="profile-info">
           <span class="badge">Perfil de l'aprenent</span>
@@ -502,6 +507,143 @@ hr {
 }
 
 /* 3. PÁGINA DE LOGIN (!isConnected) */
+.epic-login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.epic-title {
+  font-family: 'Cinzel', serif;
+  font-size: 5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff, 0 0 60px #ff00ff, 0 0 70px #ff00ff;
+  margin-bottom: 2rem;
+  animation: flicker 1.5s infinite alternate;
+  z-index: 3;
+}
+
+.mago {
+  position: absolute;
+  width: 25%; /* Adjusted size to fit all mages */
+  height: auto;
+  z-index: 2;
+  transition: transform 0.3s ease-in-out;
+}
+.mago-obscuro {
+  bottom: 0;
+  left: 0;
+  transform: rotate(15deg);
+}
+.mago-tierra {
+  bottom: 0;
+  right: 0;
+  transform: rotate(-15deg);
+}
+.mago-fuego {
+  top: 0;
+  left: 0;
+  transform: rotate(-15deg) scaleX(-1); /* Flipped to face inwards */
+}
+.mago-angelical {
+  top: 0;
+  right: 0;
+  transform: rotate(15deg) scaleX(-1); /* Flipped to face inwards */
+}
+.mago-hielo {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+}
+.mago-agua {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 3;
+}
+
+.login-input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #8a2be2;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 0.8rem 1.5rem;
+  text-align: center;
+  width: 300px;
+  transition: all 0.3s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff;
+}
+
+.login-button {
+  background: linear-gradient(45deg, #8a2be2, #ff00ff);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0.8rem 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+.login-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #fff,
+      0 0 30px #ff00ff,
+      0 0 40px #ff00ff,
+      0 0 50px #ff00ff,
+      0 0 60px #ff00ff,
+      0 0 70px #ff00ff;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
 
 /* --- Partículas Mágicas Flotantes para Login --- */
 .magic-particles-login {
@@ -1423,27 +1565,27 @@ hr {
 }
 .mago-obscuro {
   bottom: -80px;
-  left: -10px;
+  left: -100px;
   transform: rotate(20deg);
-  width: 30%;
+  width: 35%;
 }
 .mago-tierra {
-  bottom: -70px;
-  right: 15px;
+  bottom: -160px;
+  right: 0px;
   transform: rotate(-20deg);
-  width: 30%;
+  width: 37%;
 }
 .mago-fuego {
-  top: -130px;
-  left: 20px;
+  top: -190px;
+  left: -50px;
   transform: rotate(145deg);
-  width: 30%;
+  width: 35%;
 }
 .mago-angelical {
-  top: -150px;
+  top: -230px;
   right: 50px;
   transform: rotate(-150deg);
-  width: 31%;
+  width: 35%;
 }
 
 /* 4. PÁGINA DE SALAS (!joinedRoom) */
