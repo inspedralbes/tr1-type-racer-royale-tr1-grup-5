@@ -129,7 +129,7 @@ async function getRandomSpellText(category, limit = null) {
     const params = [category, titol, mag];
 
     if (limit) {
-      const numericLimit = parseInt(limit, 10); // Explicitly cast to integer
+      const numericLimit = parseInt(limit, 10);
       if (isNaN(numericLimit)) {
         console.error(
           `[ERROR] 'limit' is NaN for category: ${category}, titol: ${titol}, limit: ${limit}`
@@ -246,7 +246,7 @@ function removeEmptyRooms() {
   }
 }
 
-// Function to end the game and send the final ranking
+// Funció per acabar el joc i mostrar el Rankning
 function endGame(roomName) {
   const room = findRoom(roomName);
   if (!room) return;
@@ -260,7 +260,7 @@ function endGame(roomName) {
   //netejem els stats
   room.gameStats = [];
   room.spectatorIds = [];
-  room.spellText = []; // 🔑 Limpiar el texto del conjuro
+  room.spellText = [];
 
   let adminExists = false;
 
