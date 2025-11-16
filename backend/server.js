@@ -408,6 +408,8 @@ io.on("connection", (socket) => {
 
       //emitim al jugador que s'uneix quan la partida esta empezada
       io.to(player.socketId).emit("spectatorGameView", room.gameStats);
+    } else {
+      player.role = "player";
     }
 
     player.isReady = true;

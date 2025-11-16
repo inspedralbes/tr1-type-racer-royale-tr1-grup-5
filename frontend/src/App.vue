@@ -435,6 +435,7 @@ function resetToRoomList() {
   vista.value = 'preGame'
   jugadors.value = []
   roomState.value = null
+  jugador.value.role = 'player'
   loadRooms()
 }
 
@@ -1442,7 +1443,6 @@ hr {
   flex-direction: column;
   gap: 20px;
 }
-
 
 .game-timer {
   flex: 0 0 auto;
