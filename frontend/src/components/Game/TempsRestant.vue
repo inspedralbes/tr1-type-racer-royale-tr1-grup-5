@@ -7,7 +7,7 @@
 <script setup>
 import { ref, onUnmounted, watch } from 'vue'
 
-// Definim les dades que rebem del pare (App.vue)
+// Definim les dades que rebem del pare
 const props = defineProps({
   tempsInicial: {
     type: Number,
@@ -17,8 +17,6 @@ const props = defineProps({
 })
 
 const tempsRestant = ref(props.tempsInicial)
-
-// 'watch' per actualitzar el temps si la prop canvia així agafa el nou temps quan comença la partida
 
 watch(
   () => props.tempsInicial,
@@ -39,14 +37,11 @@ onUnmounted(() => {
 
 <style scoped>
 h1 {
-  /* Tipografía potente y legible */
   font-family: 'Cinzel', serif;
   font-weight: 900;
   font-size: 2.2rem;
   letter-spacing: 0.5px;
   margin: 0;
-
-  /* Color y brillo mágico, consistente con el juego */
   color: #ffffff;
   text-shadow:
     0 2px 8px rgba(0, 0, 0, 0.45),
@@ -60,7 +55,6 @@ h1 {
   backdrop-filter: blur(2px);
 }
 
-/* Línea de brillo sutil por debajo */
 h1::after {
   content: '';
   position: absolute;
@@ -74,6 +68,7 @@ h1::after {
     0 0 8px rgba(0, 242, 255, 0.8),
     0 0 12px rgba(103, 29, 199, 0.6);
 }
+
 #tempsRestant {
   margin-bottom: -15px;
   margin-top: 15px;

@@ -1,6 +1,5 @@
 <template>
   <div class="ranking-container">
-    <!-- 2. Contenidor de partícules màgiques -->
     <div class="particles">
       <span
         v-for="(p, i) in particles"
@@ -45,19 +44,15 @@
 </template>
 
 <script setup>
-/* ranking*/
 import { computed } from 'vue'
 
 const props = defineProps(['llistaJug'])
-
 const llistatJugadors = computed(() => {
   if (!props.llistaJug) return []
 
   return (
     props.llistaJug
-      // Filtrem espectadors
       .filter((player) => player.role !== 'spectator')
-      // Ordenem per punts (més és millor)
       .sort((a, b) => {
         if (a.points !== b.points) {
           return b.points - a.points
@@ -69,11 +64,8 @@ const llistatJugadors = computed(() => {
 
 //Funció que retorna la imatge del mag segons el nom del mag assinat
 const getMageImage = (player) => {
-  //Declarem el avatar per defecte 
   const defaultAvatar = '/img/Aprendiz_Mago.png'
   if (!player || !player.mage || !player.mage.name) return defaultAvatar
-
-  //Guardem el nom del mag en minuscules en una constant
   const mageName = String(player.mage.name).toLowerCase()
 
   if (mageName.includes('foc')){
@@ -102,8 +94,6 @@ const getMageImage = (player) => {
   return defaultAvatar
 }
 
-
-
 const particleCount = 40
 const colors = ['#00f2ff', '#ffd700', '#c0c0c0', '#f0f0f0'] //
 
@@ -121,50 +111,42 @@ const particles = Array.from({ length: particleCount }).map(() => ({
 .ranking-container {
   border-radius: 2rem;
   position: relative;
-  overflow: hidden; /* Molt important: retalla les partícules que surten */
+  overflow: hidden; 
   width: 100%;
   margin: 2rem auto;
-  background: #ffffff; /* Un fons fosc per sota de la taula */
+  background: #ffffff;
 
-  /* --- ✨ NOU ESTIL DE VORA LLUMINOSA --- */
-
-  /* Definim el color de la brillantor */
+  /* --- NOU ESTIL DE VORA LLUMINOSA --- */
   --glow-color: #671dc7;
 
-  /* Vora física subtil del mateix color */
   border: 1px solid rgba(0, 242, 255, 0.5);
 
-  /* Apilem múltiples ombres per crear l'efecte de "resplendor màgica".
-    Comença des de la més propera/intensa fins a la més llunyana/difusa.
-  */
   box-shadow:
-    /* 1. Resplendor interior subtil */
     inset 0 0 10px rgba(7, 107, 238, 0.3),
     0 0 15px var(--glow-color),
     0 0 30px var(--glow-color),
     0 0 50px rgba(10, 96, 255, 0.5);
 }
+
 .particles {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Darrere de la taula */
-  pointer-events: none; /* No interfereix amb el ratolí */
+  z-index: 1; 
+  pointer-events: none; 
 }
+
 .particle {
   position: absolute;
-  bottom: -10px; /* Comença just a sota */
+  bottom: -10px;
   border-radius: 50%;
   opacity: 0;
 
-  /* Aquest és el nom de l'animació */
   animation-name: float-up;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-
-  /* La durada i el retard s'apliquen via :style des de JS */
 }
 
 @keyframes float-up {
@@ -174,11 +156,9 @@ const particles = Array.from({ length: particleCount }).map(() => ({
   }
   10%,
   90% {
-    /* Apareix i es manté visible la major part del temps */
     opacity: 0.9;
   }
   100% {
-    /* Puja 100% de l'alçada de la pantalla i desapareix */
     transform: translateY(-100vh);
     opacity: 0;
   }
@@ -230,15 +210,12 @@ tbody tr:hover {
 }
 
 /* --- 6. NOUS ESTILS PER A LA POSICIÓ I EL PODI --- */
-
-/* Cel·la de posició (números/emojis) */
 .rank-cell {
   vertical-align: middle;
   text-align: center;
-  width: 150px; /* Amplada més gran perquè la taula ocupi més llargada */
+  width: 150px; 
 }
 
-/* Avatar petit del mag a la taula de rànquing */
 .mage-avatar {
   width: 64px;
   height: 64px;
@@ -249,35 +226,31 @@ tbody tr:hover {
 
 /* --- 7. AJUSTAR 'NTH-CHILD' PERQUÈ COINCIDEIXIN AMB LES NOVES COLUMNES --- */
 
-/* Posició: 1r fill (ja centrat a .rank-cell) */
 th:first-child {
   text-align: center;
 }
 
-/* Errors: Ara és el 3r fill */
 th:nth-child(3),
 td:nth-child(3) {
   text-align: center;
 }
 
-/* Encerts: Ara és el 4t fill */
 th:nth-child(4),
 td:nth-child(4) {
   text-align: center;
 }
 
-/* Errors (Color): 3r fill */
 td:nth-child(3) {
   font-weight: bold;
   color: #ff4d4d;
   text-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
 }
 
-/* Encerts (Color): 4t fill */
 td:nth-child(4) {
   font-weight: bold;
   font-size: 1.1em;
   color: #00f2ff;
   text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
 }
+
 </style>

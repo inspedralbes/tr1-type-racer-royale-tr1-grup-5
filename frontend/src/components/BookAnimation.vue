@@ -1,22 +1,22 @@
 <template>
   <div class="container">
-    <!-- Fondo animado -->
+    <!-- Fons animat -->
     <div class="background"></div>
     <div class="stars-background">
       <div v-for="i in 100" :key="i" class="star" :style="{ left: Math.random() * 100 + '%', top: Math.random() * 100 + '%', animationDelay: Math.random() * 2 + 's' }"></div>
     </div>
 
-    <!-- Efecto de luz mágica -->
+    <!-- Efecte de llum màgiques -->
     <div class="magic-glow"></div>
 
-    <!-- Libro 3D simple y limpio -->
+    <!-- Llibres 3D simple i net -->
     <div class="book-container" :class="{ opening: isOpen, zooming: isZoomed }">
-      <!-- Partículas -->
+      <!-- Partícules -->
       <div class="magic-particles">
         <div v-for="i in 15" :key="`particle-${i}`" class="particle" :style="{ '--i': i }"></div>
       </div>
 
-      <!-- Libro -->
+      <!-- Llibre -->
       <div class="book">
         <!-- Portada -->
         <div class="book-cover front">
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Destello final -->
+    <!-- Destell final -->
     <div class="flash-effect" :class="{ active: isZoomed }"></div>
   </div>
 </template>
@@ -84,7 +84,7 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* ==================== FONDO ==================== */
+/* ==================== FONS ==================== */
 .background {
   position: absolute;
   width: 100%;
@@ -103,7 +103,7 @@ onMounted(() => {
   }
 }
 
-/* ==================== ESTRELLAS ==================== */
+/* ==================== ESTRELLES ==================== */
 .stars-background {
   position: absolute;
   width: 100%;
@@ -154,7 +154,7 @@ onMounted(() => {
   }
 }
 
-/* ==================== CONTENEDOR DEL LIBRO ==================== */
+/* ==================== CONTENIDOR DEL LLIBRE ==================== */
 .book-container {
   position: relative;
   width: 350px;
@@ -175,7 +175,7 @@ onMounted(() => {
   filter: drop-shadow(0 0 100px rgba(123, 44, 255, 0.9));
 }
 
-/* ==================== PARTÍCULAS ==================== */
+/* ==================== PARTÍCULES ==================== */
 .particle {
   position: absolute;
   width: 8px;
@@ -189,7 +189,7 @@ onMounted(() => {
   animation-delay: calc(var(--i) * 0.08s);
 }
 
-/* ==================== CONTENEDOR DEL LIBRO ==================== */
+/* ==================== CONTENIDOR DEL LLIBRE ==================== */
 .book-container {
   position: relative;
   width: 350px;
@@ -210,7 +210,7 @@ onMounted(() => {
   filter: drop-shadow(0 0 100px rgba(200, 100, 255, 0.9));
 }
 
-/* ==================== PARTÍCULAS ==================== */
+/* ==================== PARTÍCULES ==================== */
 .magic-particles {
   position: absolute;
   width: 100%;
@@ -245,7 +245,7 @@ onMounted(() => {
   }
 }
 
-/* ==================== LIBRO ==================== */
+/* ==================== LLIBRE ==================== */
 .book {
   position: relative;
   width: 100%;
@@ -258,7 +258,7 @@ onMounted(() => {
   transform: rotateY(130deg);
 }
 
-/* ==================== PORTADAS ==================== */
+/* ==================== PORTADES ==================== */
 .book-cover {
   position: absolute;
   width: 100%;
@@ -293,7 +293,7 @@ onMounted(() => {
   transform: rotateY(180deg);
 }
 
-/* ==================== CONTENIDO ==================== */
+/* ==================== CONTINGUT ==================== */
 .cover-content {
   text-align: center;
   padding: 50px;

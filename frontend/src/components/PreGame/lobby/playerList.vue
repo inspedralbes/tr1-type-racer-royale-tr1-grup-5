@@ -41,7 +41,7 @@ function roleLabel(player) {
   }
 }
 
-// Functions
+// Funcions
 function setAdmin(id) {
   // Verificar la conexión del socket antes de emitir
   if (socket.value && socket.value.connected && props.isAdmin && props.jugador?.id) {
@@ -72,7 +72,7 @@ function deletePlayer(id) {
 </script>
 
 <style scoped>
-/* Estilos necesarios para la lista */
+/* Estils necesaris per a la llista */
 .player-list-container {
   display: flex;
   justify-content: center;
@@ -97,7 +97,7 @@ function deletePlayer(id) {
   box-sizing: border-box;
 }
 
-/* 🎨 La tarjeta de jugador (Estilo de la imagen) */
+/* La targeta de jugador */
 .player-card {
   display: flex;
   align-items: center;
@@ -175,13 +175,13 @@ function deletePlayer(id) {
   color: #ffcf6b;
 }
 
-/* Sección de botones (abajo) */
+/* Secció de botons */
 .admin-actions {
   display: flex;
-  gap: 1rem; /* Espacio entre botones */
+  gap: 1rem; 
   margin-left: auto;
 }
-/* modificacion targetes*/
+/* Modificacions targetes*/
 .btn-admin,
 .btn-kick {
   border: none;
