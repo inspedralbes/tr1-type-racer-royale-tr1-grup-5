@@ -19,7 +19,7 @@
 
 El nostre **Type Racer Royale** és una batalla de mecanografia màgica en la que diversos jugadors s'uneixen a una sala.
 
-Quan comença la partida, a tots els apareix una pila de paraules. A mesura que completen paraules correctament, obtenen *power-ups* que poden penalitzar als seus oponents, fent que les seves piles creixin, desapareguin o s'alenteixin.
+Quan comença la partida, a tots els apareix una pila de paraules. A mesura que completen paraules correctament, obtenen _power-ups_ que poden penalitzar als seus oponents, fent que les seves piles creixin, desapareguin o s'alenteixin.
 
 Si els errors de paraules d'un jugador arriba a un límit màxim, queda eliminat.
 
@@ -29,9 +29,19 @@ Si els errors de paraules d'un jugador arriba a un límit màxim, queda eliminat
 
 Per saber com configurar i executar el projecte al teu ordinador, o per entendre'n l'arquitectura, consulta els següents enllaços:
 
-* **[Guia d'Instal·lació Local](https://github.com/inspedralbes/tr1-type-racer-royale-tr1-grup-5/blob/main/doc/README.md)**
+- **[Guia d'Instal·lació Local](https://github.com/inspedralbes/tr1-type-racer-royale-tr1-grup-5/blob/main/doc/README.md)**
 
-* [![Documentació Tècnica del Projecte](https://deepwiki.com/badge.svg)](https://deepwiki.com/inspedralbes/tr1-type-racer-royale-tr1-grup-5)
+- [![Documentació Tècnica del Projecte](https://deepwiki.com/badge.svg)](https://deepwiki.com/inspedralbes/tr1-type-racer-royale-tr1-grup-5)
+
+## SonarQube i Lighthouse
+
+Resultats de SonarQube al nostre projecte:
+
+<a href="doc/SonarQube.png"><img alt="sonar" src="doc/SonarQube.png" /></a>
+
+Resultats de Lighthouse al nostre projecte:
+
+<a href="doc/Lighthouse.png"><img alt="sonar" src="doc/Lighthouse.png" /></a>
 
 ---
 
