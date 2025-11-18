@@ -1,0 +1,80 @@
+# Fichero: docker-compose.prod.yml
+# Descripción: Entorno de producción con Nginx, Backend y MongoDB.
+# Uso: docker-compose -f docker-compose.prod.yml up --build
+
+services:
+  # Nginx actúa como reverse proxy y sirve el frontend estático.
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile # Asume un Dockerfile de Nginx en la raíz.
+    container_name: trr-nginx-prod
+    # Puerto HTTP estándar
+    ports: 
+      - "80:80" 
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - trr-net
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: trr-mysql-prod
+    ports:
+      - "3307:3306" # Acceso desde el host (cambiado a 3307 para evitar conflictos)
+    environment:
+      # Variables de desarrollo HARDCODEADAS (como en tu ejemplo), cámbialas si es necesario.
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - trr-net
+
+  # Servicio del backend (versión de producción)
+  backend:
+    build: ./backend
+    container_name: trr-backend-prod
+    command: npm start
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
+      # El backend se conectará a 'mysql' por la red interna de Docker.
+      - DB_HOST=mysql
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - trr-net
+    restart: unless-stopped
+
+  # Servicio del frontend (solo para construir la imagen)
+  # Nginx usa esta imagen construida para copiar los archivos estáticos.
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Variable para el build de Vite.
+        VITE_NODE_ENV: production
+    container_name: trr-frontend-builder
+    # No se ejecuta como un contenedor persistente.
+
+# Definición de la red
+networks:
+  trr-net:
+    driver: bridge
+
+# Definición de los volúmenes para persistencia de datos
+volumes:
+  mysql-data:   
